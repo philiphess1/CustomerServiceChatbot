@@ -10,117 +10,46 @@ from io import BytesIO
 from PyPDF2 import PdfReader
 from werkzeug.utils import secure_filename
 import openai
+import psycopg2
+
+
 
 load_dotenv()
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-
-document_id_mapping = {}
-
-def generate_document_id():
-    """Generate a unique document ID."""
-    max_id = max(document_id_mapping.keys()) if document_id_mapping else 0
-    return max_id + 1
-
-# @app.route('/')
-# def index():
-#     # Create a list of documents with IDs and names
-#     documents = [{'id': doc_id, 'name': filename} for doc_id, filename in document_id_mapping.items()]
-#     return render_template('index.html', documents=documents)
-
-# @app.route('/upload', methods=['POST'])
-# def upload():
-#     uploaded_files = request.files.getlist('document')
-
-#     for file in uploaded_files:
-#         if file.filename != '':
-#             filename = secure_filename(file.filename)
-#             # Generate a unique document ID and store the mapping
-#             doc_id = generate_document_id()
-#             document_id_mapping[doc_id] = filename
-#             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
-#     return redirect(url_for('index'))
-
-# @app.route('/delete/<int:doc_id>')
-# def delete(doc_id):
-#     if doc_id in document_id_mapping:
-#         filename = document_id_mapping.pop(doc_id, None)
-#         if filename:
-#             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-#             if os.path.exists(file_path):
-#                 os.remove(file_path)
-#                 print(f"Deleted file: {file_path}")
-#         else:
-#             print(f"File not found for ID {doc_id}")
-
-#     return redirect(url_for('index'))
 
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 environment = os.getenv("PINECONE_ENVIRONMENT")
 openai_api_key = os.getenv("OPENAI_API_KEY")
-
-users = {1: {'id': 1, 'username': 'philip', 'password': 'password'}}
-
-embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
+db_name = os.getenv('DB_NAME')
+db_user = os.getenv('DB_USER')
+db_password = os.getenv('DB_PASSWORD')
+db_host = os.getenv('DB_HOST')
+db_port = os.getenv('DB_PORT')
 
 pinecone.init(api_key=pinecone_api_key, environment=environment)
 index = pinecone.Index("hrbot")
-#print("Type of index:", type(index))
+embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
-vectorstore = Pinecone(index, embeddings.embed_query, "text")
+# Connect to PostgreSQL database
+db_conn = psycopg2.connect(
+    dbname=db_name,
+    user=db_user,
+    password=db_password,
+    host=db_host,
+    port=db_port
+)
+cursor = db_conn.cursor()
 
+# Initialize Flask-Login
 app.secret_key = 'secretkey'
 login_manager = LoginManager()
 login_manager.init_app(app)
+users = {1: {'id': 1, 'username': 'philip', 'password': 'password'}}
 
 class AuthenticatedUser(UserMixin):
     def __init__(self, id):
         self.id = id
-
-# def get_vector_store():
-#     index_name = "my_vector_store"
-#     pinecone.deinit()
-#     pinecone.init(api_key=pinecone_api_key)
-    
-#     if index_name not in pinecone.list_indexes():
-#         pinecone.create_index(name=index_name, metric="cosine", shards=1)
-    
-#     index = pinecone.Index(index_name=index_name)
-#     return index
-
-# Existing routes ...
-
-# # Query route for RAG
-# @app.route('/query', methods=['POST'])
-# def query():
-#     query_text = request.form['query_text']
-#     vector_store = get_vector_store()
-
-#     # Fetch top-N similar document IDs from Pinecone
-#     top_ids, _ = vector_store.query(queries=[query_text], top_k=5)
-#     top_ids = top_ids[0]
-
-#     # Retrieve the original text corresponding to these document IDs
-#     # Assume you have a function `get_text_by_ids` that does this
-#     retrieved_texts = get_text_by_ids(top_ids)
-    
-#     # Now query OpenAI with the retrieved text as context
-#     prompt_with_context = f"Query: {query_text}\nContext: {retrieved_texts}"
-    
-#     response = openai.Completion.create(
-#         engine="text-davinci-003",
-#         prompt=prompt_with_context,
-#         max_tokens=100,
-#         top_p=1.0,
-#         frequency_penalty=0,
-#         presence_penalty=0,
-#     )
-    
-#     answer = response.choices[0].text.strip()
-    
-#     return render_template('result.html', answer=answer)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -146,36 +75,36 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('home'))
 
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
 @app.route('/admin')
 @login_required
 def admin():
-    documents = [{'id': doc_id, 'name': filename} for doc_id, filename in document_id_mapping.items()]
+    # Query PostgreSQL to get the list of documents
+    cursor.execute("SELECT id, filename FROM document_mapping;")
+    documents = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+
     return render_template('admin.html', documents=documents)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    uploaded_files = request.files.getlist('file')  # This should match the name attribute in your HTML form
+
+    uploaded_files = request.files.getlist('file')
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
-            # Generate a unique document ID and store the mapping
-            doc_id = generate_document_id()
-            document_id_mapping[doc_id] = filename
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
-            # Open the saved file and create a BytesIO stream
-            with open(file_path, "rb") as f:
-                file_stream = BytesIO(f.read())
 
-            # Initialize Pinecone
-            pinecone.init(api_key=pinecone_api_key, environment=environment)
-            index = pinecone.Index("hrbot")
+            # Insert this mapping into PostgreSQL
+            cursor.execute("INSERT INTO document_mapping (filename) VALUES (%s) RETURNING id;", (filename,))
+            #doc_id = cursor.fetchone()[0]
+            db_conn.commit()
+
+            # Create a BytesIO stream from the uploaded file
+            file_stream = BytesIO(file.read())
 
             # Use PyPDF2 to read the PDF from the BytesIO stream
             pdf_reader = PdfReader(file_stream)
@@ -196,87 +125,39 @@ def upload_file():
                     # Generate embeddings
                     embedding = embeddings.embed_query(text_chunk)
 
-                    # Create a document ID
-                    chunk_doc_id = f"{filename}_page{page_num}_start{start}"
+                    # Create a chunk ID
+                    chunk_doc_id = f"{filename}_page{page_num}"
 
+                    # Prepare data for Pinecone
                     upsert_data = [(chunk_doc_id, embedding, {"filename": filename})]
 
                     # Store the embeddings in Pinecone using 'upsert' method
                     index.upsert(upsert_data)
+
     return redirect(url_for('admin'))
-# def upload_file():
-#     uploaded_files = request.files.getlist('file') # This should match the name attribute of your input tag in your HTML form
-
-#     for file in uploaded_files:
-#         if file.filename != '':
-#             filename = secure_filename(file.filename)
-#             # Generate a unique document ID and store the mapping
-#             doc_id = generate_document_id()
-#             document_id_mapping[doc_id] = filename
-#             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-#             file.save(file_path)
-
-#             with open(file_path, "rb") as f:
-#                 file_stream = BytesIO(f.read())
-
-#     pinecone.init(api_key=pinecone_api_key, environment=environment)
-#     index = pinecone.Index("hrbot")
-#     #print(f"Type of index within upload_file: {type(index)}")
-#     file = request.files['file']
-#     file_stream = BytesIO(file.read())
-
-#     # Use PyPDF2 to read the PDF
-#     pdf_reader = PdfReader(file_stream)
-#     num_pages = len(pdf_reader.pages)
-    
-#     # Loop through each page
-#     for page_num in range(num_pages):
-#         page = pdf_reader.pages[page_num]
-#         text = page.extract_text()
-
-#         # Process the text (i.e., break it into chunks and create embeddings)
-#         chunk_size = 1000
-#         overlap = 200
-#         for start in range(0, len(text), chunk_size - overlap):
-#             end = start + chunk_size
-#             text_chunk = text[start:end]
-            
-#             # Generate embeddings (Assuming you have a method to generate embeddings)
-#             embedding = embeddings.embed_query(text_chunk)
-            
-#             #print(f"Embedding for doc_id source_page{page_num}_start{start}: {embedding}")
-            
-
-#             # Create a document ID
-#             doc_id = f"{file.filename}_page{page_num}_start{start}"
-
-#             upsert_data = [(doc_id, embedding, {"filename": file.filename})]
-            
-#             # Print the upsert data to the console for inspection
-            
-            
-#             # Store the embeddings in Pinecone using 'upsert' method
-#             index.upsert(upsert_data)  # Note the use of 'upsert' here
 
 @app.route('/delete/<doc_id>', methods=['POST'])
 @login_required
 def delete(doc_id):
-    if doc_id in document_id_mapping:
-            filename = document_id_mapping.pop(doc_id, None)
-            if filename:
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-                    print(f"Deleted file: {file_path}")
-            else:
-                print(f"File not found for ID {doc_id}")
+    # Delete from PostgreSQL
+    cursor.execute("DELETE FROM document_mapping WHERE id = %s RETURNING filename;", (doc_id,))
+    result = cursor.fetchone()
+    db_conn.commit()
+    if result:
+        filename = result[0]  # Assuming filename is the first element returned
+        print(f"Deleted entry for ID {doc_id} from the database")
+
+        # Delete from Pinecone
+        delete_filter = {
+            "filename": {"$eq": filename}
+        }
+        index.delete(filter=delete_filter)
+        print(f"Deleted vectors with filename {filename} from Pinecone")
+
+    else:
+        print(f"File not found for ID {doc_id}")
+
     return redirect(url_for('admin'))
-
-def query_database_for_documents():
-    return [{"id": 1, "name": "doc1"}, {"id": 2, "name": "doc2"}]
-
-def delete_document_from_database(doc_id):
-    pass
 
 if __name__ == '__main__':
     app.run(debug=True)

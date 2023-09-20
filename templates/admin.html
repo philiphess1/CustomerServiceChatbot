@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>Admin Panel</title>
 </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+</head>
 <body>
     <h1>Admin Panel</h1>
   
@@ -15,20 +22,18 @@
         <input type="submit" value="Upload">
     </form>
 
-    <!-- Delete form -->
-    <h2>Delete Document</h2>
-    <form action="/delete" method="post">
-        <label for="doc_id">Document ID:</label>
-        <input type="text" id="doc_id" name="doc_id" required>
-        <input type="submit" value="Delete">
-    </form>
-
     <!-- List of existing documents -->
     <h2>Existing Documents</h2>
     <ul>
         {% for document in documents %}
-            <li>ID: {{ document.id }}, Name: {{ document.name }}</li>
+            <li>Document ID: {{ document.id }}  Document Name: {{ document.name }}
+                <!-- Delete form for each document -->
+                <form action="/delete/{{ document.id }}" method="post" style="display: inline;">
+                    <input type="submit" value="Delete">
+                </form>
+            </li>
         {% endfor %}
     </ul>
 </body>
 </html>
+
