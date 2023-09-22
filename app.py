@@ -1,8 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user
 from langchain.vectorstores import Pinecone
 from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.chat_models import ChatOpenAI
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain.chains import RetrievalQA
+from langchain.agents import Tool, initialize_agent
 import pinecone
 import os
 from dotenv import load_dotenv
@@ -30,6 +34,46 @@ db_port = os.getenv('DB_PORT')
 pinecone.init(api_key=pinecone_api_key, environment=environment)
 index = pinecone.Index("hrbot")
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
+
+vectorstore = Pinecone(
+    pinecone.Index("hrbot"), embeddings.embed_query, "text"
+)
+
+conversational_memory = ConversationBufferWindowMemory(
+    memory_key='chat_history',
+    k=5,
+    return_messages=True
+)
+
+llm = ChatOpenAI(
+    openai_api_key=openai_api_key,
+    model_name='gpt-3.5-turbo',
+    temperature=0.3
+)
+
+qa = RetrievalQA.from_chain_type(
+    llm=llm,
+    chain_type="stuff",
+    retriever=vectorstore.as_retriever()
+)
+
+tools = [
+    Tool(
+        name='Knowledge Base',
+        func=qa.run,
+        description='use this tool when answering general knowledge queries to get more information about the topic'
+    )
+]
+
+agent = initialize_agent(
+    agent='chat-conversational-react-description',
+    tools=tools,
+    llm=llm,
+    verbose=True,
+    max_iterations=3,
+    early_stopping_method='generate',
+    memory=conversational_memory
+)
 
 # Connect to PostgreSQL database
 db_conn = psycopg2.connect(
@@ -80,6 +124,27 @@ def logout():
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    user_message = request.form.get('message')
+    
+    try:
+        # Interact with the agent and get the response
+        response = agent(user_message)
+        
+        # Extract the response text from the agent's output
+        bot_response = response.get('output', 'Sorry, I am unable to answer your question at the moment.')
+        
+    except Exception as e:
+        # Log the raw response and the exception for debugging purposes
+        app.logger.error(f"Raw Response: {response}")
+        app.logger.error(f"An error occurred: {e}")
+        
+        # Return a user-friendly message
+        bot_response = "Sorry, an error occurred while processing your request. Please try again later."
+    
+    return jsonify(response=bot_response)
 
 @app.route('/admin')
 @login_required

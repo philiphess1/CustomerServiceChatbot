@@ -90,18 +90,19 @@
       msgerChat.scrollTop += 500;
     }
 
-    function botResponse(rawText) {
-
-      // Bot Response
-      $.get("/get", { msg: rawText }).done(function (data) {
-        console.log(rawText);
-        console.log(data);
-        const msgText = data;
-        appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
-
-      });
-
-    }
+      function botResponse(rawText) {
+    // Bot Response
+    $.post("/chat", { message: rawText })
+  .done(function(data) {
+    // Handle successful response
+    const msgText = data.response; 
+    appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
+    })
+    .fail(function() {
+      // Handle failure
+      appendMessage(BOT_NAME, BOT_IMG, "left", "An error occurred while processing your request");
+    });
+  }
 
 
     // Utils
