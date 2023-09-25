@@ -7,6 +7,13 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.chains import RetrievalQA
 from langchain.agents import Tool, initialize_agent
+# from langchain.chains import RetrievalQAWithSourcesChain
+# from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
+# from langchain.schema.messages import SystemMessage
+# from langchain.prompts import MessagesPlaceholder
+# from langchain.prompts import PromptTemplate
+# from langchain.chains import ConversationalRetrievalChain
+# from langchain.llms import OpenAI
 import pinecone
 import os
 from dotenv import load_dotenv
@@ -32,11 +39,13 @@ db_host = os.getenv('DB_HOST')
 db_port = os.getenv('DB_PORT')
 
 pinecone.init(api_key=pinecone_api_key, environment=environment)
-index = pinecone.Index("hrbot")
+index_name="hrbot"
+index = pinecone.Index(index_name)
+text_field="text"
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
 vectorstore = Pinecone(
-    pinecone.Index("hrbot"), embeddings.embed_query, "text"
+    index, embeddings.embed_query, text_field
 )
 
 conversational_memory = ConversationBufferWindowMemory(
@@ -128,22 +137,26 @@ def home():
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.form.get('message')
-    
+    response = None
     try:
-        # Interact with the agent and get the response
-        response = agent(user_message)
+        # Interact with the qa object and get the response
+        response = qa.run(user_message)
         
-        # Extract the response text from the agent's output
-        bot_response = response.get('output', 'Sorry, I am unable to answer your question at the moment.')
+        # If response is a string, directly assign it to bot_response
+        if isinstance(response, str):
+            bot_response = response
+        else:
+            # If response is a dict, extract the 'output'
+            bot_response = response.get('output', 'Sorry, I am unable to answer your question at the moment.')
         
     except Exception as e:
-        # Log the raw response and the exception for debugging purposes
-        app.logger.error(f"Raw Response: {response}")
+        # Log the exception for debugging purposes
         app.logger.error(f"An error occurred: {e}")
         
         # Return a user-friendly message
         bot_response = "Sorry, an error occurred while processing your request. Please try again later."
     
+    print(response)
     return jsonify(response=bot_response)
 
 @app.route('/admin')
@@ -181,12 +194,12 @@ def upload_file():
                 text = page.extract_text()
 
                 # Process the text (i.e., break it into chunks and create embeddings)
-                chunk_size = 1000
-                overlap = 200
+                chunk_size = 750
+                overlap = 100
                 for start in range(0, len(text), chunk_size - overlap):
                     end = start + chunk_size
                     text_chunk = text[start:end]
-
+                    #print("Text Chunk:", text_chunk)
                     # Generate embeddings
                     embedding = embeddings.embed_query(text_chunk)
 
@@ -194,7 +207,7 @@ def upload_file():
                     chunk_doc_id = f"{filename}_page{page_num}"
 
                     # Prepare data for Pinecone
-                    upsert_data = [(chunk_doc_id, embedding, {"filename": filename})]
+                    upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
 
                     # Store the embeddings in Pinecone using 'upsert' method
                     index.upsert(upsert_data)
