@@ -48,11 +48,11 @@ vectorstore = Pinecone(
     index, embeddings.embed_query, text_field
 )
 
-conversational_memory = ConversationBufferWindowMemory(
-    memory_key='chat_history',
-    k=5,
-    return_messages=True
-)
+# conversational_memory = ConversationBufferWindowMemory(
+#     memory_key='chat_history',
+#     k=5,
+#     return_messages=True
+# )
 
 llm = ChatOpenAI(
     openai_api_key=openai_api_key,
@@ -66,23 +66,23 @@ qa = RetrievalQA.from_chain_type(
     retriever=vectorstore.as_retriever()
 )
 
-tools = [
-    Tool(
-        name='Knowledge Base',
-        func=qa.run,
-        description='use this tool when answering general knowledge queries to get more information about the topic'
-    )
-]
+# tools = [
+#     Tool(
+#         name='Knowledge Base',
+#         func=qa.run,
+#         description='use this tool when answering general knowledge queries to get more information about the topic'
+#     )
+# ]
 
-agent = initialize_agent(
-    agent='chat-conversational-react-description',
-    tools=tools,
-    llm=llm,
-    verbose=True,
-    max_iterations=3,
-    early_stopping_method='generate',
-    memory=conversational_memory
-)
+# agent = initialize_agent(
+#     agent='chat-conversational-react-description',
+#     tools=tools,
+#     llm=llm,
+#     verbose=True,
+#     max_iterations=3,
+#     early_stopping_method='generate',
+#     memory=conversational_memory
+# )
 
 # Connect to PostgreSQL database
 db_conn = psycopg2.connect(
