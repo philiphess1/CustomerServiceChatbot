@@ -199,16 +199,16 @@ def upload_file():
                 for start in range(0, len(text), chunk_size - overlap):
                     end = start + chunk_size
                     text_chunk = text[start:end]
-                    #print("Text Chunk:", text_chunk)
+
                     # Generate embeddings
                     embedding = embeddings.embed_query(text_chunk)
 
                     # Create a chunk ID
-                    chunk_doc_id = f"{filename}_page{page_num}"
+                    chunk_doc_id = f"{filename}_page{page_num}_start{start}:{end}"
 
                     # Prepare data for Pinecone
                     upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
-
+                    
                     # Store the embeddings in Pinecone using 'upsert' method
                     index.upsert(upsert_data)
 
