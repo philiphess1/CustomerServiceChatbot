@@ -4,15 +4,15 @@ from langchain.vectorstores import Pinecone
 from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
-from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.chains import RetrievalQA
 from langchain.agents import Tool, initialize_agent
 # from langchain.chains import RetrievalQAWithSourcesChain
 # from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
 # from langchain.schema.messages import SystemMessage
 # from langchain.prompts import MessagesPlaceholder
-# from langchain.prompts import PromptTemplate
-# from langchain.chains import ConversationalRetrievalChain
+from langchain.prompts import PromptTemplate
+from langchain.chains import ConversationalRetrievalChain
 # from langchain.llms import OpenAI
 import pinecone
 import os
@@ -48,23 +48,34 @@ vectorstore = Pinecone(
     index, embeddings.embed_query, text_field
 )
 
-# conversational_memory = ConversationBufferWindowMemory(
-#     memory_key='chat_history',
-#     k=5,
-#     return_messages=True
-# )
-
 llm = ChatOpenAI(
     openai_api_key=openai_api_key,
     model_name='gpt-3.5-turbo',
     temperature=0.3
 )
+prompt_template = """"You are a digital academic advisor for a prestigious business school. Your primary function is to provide accurate, detailed, and comprehensive information about the school's academic programs, requirements, courses, and any other related academic queries provided by the user's QUESTION. You have access to CONTEXT that contains all the academic information about the business school. Your responses should be clear, concise, and tailored to guide students and prospective students in their academic journey. Always ensure that your advice is based on the latest information from the vector database and is in line with the school's academic guidelines. Remember, your main goal is to assist, inform, and guide students to make the best academic decisions for their future.
+    CONTEXT: {context}
 
-qa = RetrievalQA.from_chain_type(
-    llm=llm,
-    chain_type="stuff",
-    retriever=vectorstore.as_retriever()
-)
+    QUESTION: {question}"""
+TEST_PROMPT = PromptTemplate(input_variables=["context", "question"], template=prompt_template)
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+conversation_chain = ConversationalRetrievalChain.from_llm(
+        llm=llm,
+        retriever=vectorstore.as_retriever(),
+        memory=memory,
+        combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
+    )
+
+# memory = ConversationBufferWindowMemory(
+#     memory_key='chat_history',
+#     return_messages=True
+# )
+
+# qa = RetrievalQA.from_chain_type(
+#     llm=llm,
+#     chain_type="stuff",
+#     retriever=vectorstore.as_retriever()
+# )
 
 # tools = [
 #     Tool(
@@ -137,27 +148,41 @@ def home():
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.form.get('message')
-    response = None
-    try:
-        # Interact with the qa object and get the response
-        response = qa.run(user_message)
-        
-        # If response is a string, directly assign it to bot_response
-        if isinstance(response, str):
-            bot_response = response
-        else:
-            # If response is a dict, extract the 'output'
-            bot_response = response.get('output', 'Sorry, I am unable to answer your question at the moment.')
-        
-    except Exception as e:
-        # Log the exception for debugging purposes
-        app.logger.error(f"An error occurred: {e}")
-        
-        # Return a user-friendly message
-        bot_response = "Sorry, an error occurred while processing your request. Please try again later."
     
-    print(response)
-    return jsonify(response=bot_response)
+    # Load the conversation history from memory
+    conversation_history = memory.load_memory_variables({})
+    print(conversation_history)  # This will print the conversation history
+    
+    # Handle the user input and get the response
+    response = conversation_chain.run({'question': user_message})
+    
+    # Save the user message and bot response to memory
+    memory.save_context({"input": user_message}, {"output": response})
+    
+    return jsonify(response=response)
+# def chat():
+#     user_message = request.form.get('message')
+#     response = None
+#     try:
+#         # Interact with the qa object and get the response
+#         response = qa.run(user_message)
+        
+#         # If response is a string, directly assign it to bot_response
+#         if isinstance(response, str):
+#             bot_response = response
+#         else:
+#             # If response is a dict, extract the 'output'
+#             bot_response = response.get('output', 'Sorry, I am unable to answer your question at the moment.')
+        
+#     except Exception as e:
+#         # Log the exception for debugging purposes
+#         app.logger.error(f"An error occurred: {e}")
+        
+#         # Return a user-friendly message
+#         bot_response = "Sorry, an error occurred while processing your request. Please try again later."
+    
+#     print(response)
+#     return jsonify(response=bot_response)
 
 @app.route('/admin')
 @login_required
