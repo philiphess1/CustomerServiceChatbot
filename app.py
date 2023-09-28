@@ -1,26 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user
 from langchain.vectorstores import Pinecone
-from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 from langchain.chains.conversation.memory import ConversationBufferMemory
-from langchain.chains import RetrievalQA
-from langchain.agents import Tool, initialize_agent
-# from langchain.chains import RetrievalQAWithSourcesChain
-# from langchain.agents.openai_functions_agent.base import OpenAIFunctionsAgent
-# from langchain.schema.messages import SystemMessage
-# from langchain.prompts import MessagesPlaceholder
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
-# from langchain.llms import OpenAI
 import pinecone
 import os
+import tiktoken
 from dotenv import load_dotenv
 from io import BytesIO
 from PyPDF2 import PdfReader
 from werkzeug.utils import secure_filename
-import openai
 import psycopg2
 
 
@@ -106,7 +98,7 @@ db_conn = psycopg2.connect(
 cursor = db_conn.cursor()
 
 # Initialize Flask-Login
-app.secret_key = 'secretkey'
+app.secret_key = os.getenv('SECRET_KEY')
 login_manager = LoginManager()
 login_manager.init_app(app)
 users = {1: {'id': 1, 'username': 'philip', 'password': 'password'}}
