@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -14,6 +14,7 @@ from io import BytesIO
 from PyPDF2 import PdfReader
 from werkzeug.utils import secure_filename
 import psycopg2
+import bcrypt
 
 
 
@@ -88,30 +89,40 @@ conversation_chain = ConversationalRetrievalChain.from_llm(
 # )
 
 # Connect to PostgreSQL database
-db_conn = psycopg2.connect(
-    dbname=db_name,
-    user=db_user,
-    password=db_password,
-    host=db_host,
-    port=db_port
-)
+database_url = os.getenv('DATABASE_URL')
+
+db_conn = psycopg2.connect(database_url)
 cursor = db_conn.cursor()
 
 # Initialize Flask-Login
 app.secret_key = os.getenv('SECRET_KEY')
 login_manager = LoginManager()
 login_manager.init_app(app)
-users = {1: {'id': 1, 'username': 'philip', 'password': 'password'}}
 
 class AuthenticatedUser(UserMixin):
     def __init__(self, id):
         self.id = id
 
+@app.before_request
+def before_request():
+    g.db_conn = psycopg2.connect(database_url)
+    g.cursor = g.db_conn.cursor()
+
+@app.teardown_request
+def teardown_request(exception):
+    cursor = getattr(g, 'cursor', None)
+    if cursor is not None:
+        cursor.close()
+    db_conn = getattr(g, 'db_conn', None)
+    if db_conn is not None:
+        db_conn.close()
+
 @login_manager.user_loader
 def load_user(user_id):
-    user_data = users.get(int(user_id))
+    g.cursor.execute("SELECT id FROM users WHERE id = %s", (user_id,))
+    user_data = g.cursor.fetchone()
     if user_data:
-        return AuthenticatedUser(id=user_data['id'])
+        return AuthenticatedUser(id=user_data[0])
     return None
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -120,11 +131,26 @@ def login():
         username = request.form['username']
         password = request.form['password']
         
-        # Manually authenticate the user
-        if username == 'philip' and password == 'password':
-            user = AuthenticatedUser(id=1)
-            login_user(user)
-            return redirect(url_for('admin'))
+        g.cursor.execute("SELECT id, password FROM users WHERE username = %s", (username,))
+        user_data = g.cursor.fetchone()
+        
+        if user_data:
+            stored_password = user_data[1]
+            if stored_password:
+                try:
+                    if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+                        user = AuthenticatedUser(id=user_data[0])
+                        login_user(user)
+                        return redirect(url_for('admin'))
+                    else:  # Passwords do not match
+                        flash('Invalid password', 'error')
+                except ValueError:  # Invalid bcrypt salt
+                    flash('Invalid password', 'error')
+            else:  
+                flash('Invalid password', 'error')  # Stored Password is None
+        else:
+            flash('Invalid username', 'error')  # User Data is None
+            
     return render_template('login.html')
 
 @app.route('/logout')
@@ -193,10 +219,8 @@ def upload_file():
         if file.filename != '':
             filename = secure_filename(file.filename)
 
-            # Insert this mapping into PostgreSQL
-            cursor.execute("INSERT INTO document_mapping (filename) VALUES (%s) RETURNING id;", (filename,))
-            #doc_id = cursor.fetchone()[0]
-            db_conn.commit()
+            g.cursor.execute("INSERT INTO document_mapping (filename) VALUES (%s) RETURNING id;", (filename,))
+            g.db_conn.commit()
 
             # Create a BytesIO stream from the uploaded file
             file_stream = BytesIO(file.read())
@@ -235,9 +259,9 @@ def upload_file():
 @login_required
 def delete(doc_id):
     # Delete from PostgreSQL
-    cursor.execute("DELETE FROM document_mapping WHERE id = %s RETURNING filename;", (doc_id,))
-    result = cursor.fetchone()
-    db_conn.commit()
+    g.cursor.execute("DELETE FROM document_mapping WHERE id = %s RETURNING filename;", (doc_id,))
+    result = g.cursor.fetchone()
+    g.db_conn.commit()
     if result:
         filename = result[0]  # Assuming filename is the first element returned
         print(f"Deleted entry for ID {doc_id} from the database")
