@@ -279,4 +279,5 @@ def delete(doc_id):
     return redirect(url_for('admin'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))  # Use PORT if it's there
+    app.run(host='0.0.0.0', port=port, debug=False)  # Set host to '0.0.0.0'
