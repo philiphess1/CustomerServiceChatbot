@@ -3,37 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Panel</title>
-</head>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+        h2 {
+            margin: 20px 0 10px;
+            font-size: 24px;
+        }
+        form {
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type=file] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .upload-area {
+            border: 1px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .upload-area:hover {
+            background-color: #e0e0e0;
+        }
+        input[type=submit] {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type=submit]:hover {
+            background-color: #555;
+        }
+        table {
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+        section {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Admin Panel</h1>
+    <header>
+        <h1>Admin Panel</h1>
+    </header>
   
     <!-- Upload form -->
-    <h2>Upload Document</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <label for="file">Choose a file:</label>
-        <input type="file" id="file" name="file" required>
-        <input type="submit" value="Upload">
-    </form>
+    <section>
+        <h2>Upload Document</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
+            <div class="upload-area" id="upload-area">
+                <label for="file">Drag and drop files here or click to choose a file:</label>
+                <input type="file" id="file" name="file" required multiple>
+            </div>
+            <input type="submit" value="Upload">
+        </form>
+    </section>
 
-    <!-- List of existing documents -->
-    <h2>Existing Documents</h2>
-    <ul>
-        {% for document in documents %}
-            <li>Document ID: {{ document.id }}  Document Name: {{ document.name }}
-                <!-- Delete form for each document -->
-                <form action="/delete/{{ document.id }}" method="post" style="display: inline;">
-                    <input type="submit" value="Delete">
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
+    <section>
+        <h2>Existing Documents</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for document in documents %}
+                    <tr>
+                        <td>{{ document.id }}</td>
+                        <td>{{ document.name }}</td>
+                        <td>
+                            <form action="/delete/{{ document.id }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">
+                                <input type="submit" value="Delete">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
 </body>
+<script>
+    function handleDragOver(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+    }
+    
+    function handleDrop(event) {
+        event.preventDefault();
+        var files = event.dataTransfer.files;
+        document.getElementById("file").files = files;
+    }
+    
+    document.body.addEventListener("dragover", handleDragOver);
+    document.body.addEventListener("drop", handleDrop);
+</script>
 </html>
-
