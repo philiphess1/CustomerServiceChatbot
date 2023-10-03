@@ -1,126 +1,276 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Chatbot</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Chatbot Widget</title>
+    <style>
+        /* CSS styles for the widget */
+
+        .widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .widget-button {
+            width: 100px;
+            height: 100px;
+            background-image: url('https://images-platform.99static.com/4VNlmbLPzOCSHP8RB4bAwwohd0g=/0x0:1024x1024/500x500/top/smart/99designs-contests-attachments/91/91577/attachment_91577988');
+            background-size: cover;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .widget-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot {
+            display: none;
+            position: fixed;
+            bottom: 15px;
+            right: 20px;
+            z-index: 9999;
+            width: 350px;
+            height: 600px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            animation: slide-up 0.5s ease-out;
+        }
+
+        .chatbox-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .chatbox-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .chatbox-close {
+            width: 20px;
+            height: 20px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            cursor: pointer;
+            border-radius: 50%;
+            color: rgb(141, 141, 141);
+            font-family: Arial, sans-serif;
+            transition-delay: 0.1s;
+        }
+        .chatbox-close:hover {
+            width: 20px;
+            height: 20px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            cursor: pointer;
+            border-radius: 50%;
+            color: rgb(111, 111, 111);
+            font-family: Arial, sans-serif;
+        }
+
+        .chatbox-body {
+            flex-grow: 1;
+            padding: 10px;
+            width: 330px;
+            height: 460px;
+            overflow-y: scroll;
+            background-color: #e0e0e0;
+            font-family: Poppins, sans-serif;
+        }
+
+        .chatbox-input {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-top: 1px solid #ccc;
+            
+        }
+
+        .chatbox-input input[type="text"] {
+            flex-grow: 1;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+            font-family: Poppins, sans-serif;
+        }
+        .chatbox-title img {
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .chatbox-input button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: none;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .msg {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 10px;
+        }
+
+        .left-msg {
+            justify-content: flex-start;
+        }
+
+        .right-msg {
+            justify-content: flex-end;
+        }
+
+        .msg-bubble {
+            border-radius: 15px;
+            padding: 10px;
+            max-width: 70%;
+        }
+
+        .right-msg .msg-bubble {
+            background-color: #4c90af;
+            color: white;
+        }
+          .left-msg .msg-bubble {
+          background-color: #f1f0f0;
+        }
+
+        /* Add more CSS styles as needed */
+
+        /* Animation for sliding up the chatbot */
+        @keyframes slide-up {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0%);
+            }
+        }
+
+        /* Animation for sliding down the widget button */
+        @keyframes slide-down {
+            from {
+                transform: translateY(0%);
+            }
+            to {
+                transform: translateY(100%);
+            }
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
 </head>
-
 <body>
-  <!-- partial:index.partial.html -->
-  <section class="msger">
-    <header class="msger-header">
-      <div class="msger-header-title">
-        <i class="fas fa-bug"></i> Chatbot <i class="fas fa-bug"></i>
-      </div>
-    </header>
-
-    <main class="msger-chat">
-      <div class="msg left-msg">
-        <div class="msg-img" style="background-image: url(https://image.flaticon.com/icons/svg/327/327779.svg)"></div>
-
-        <div class="msg-bubble">
-          <div class="msg-info">
-            <div class="msg-info-name">Chatbot</div>
-            <div class="msg-info-time">12:45</div>
-          </div>
-
-          <div class="msg-text">
-            Hi, welcome to ChatBot! Go ahead and send me a message. 😄
-          </div>
+    <div class="widget">
+        <div class="widget-button" id="widget-button"></div>
+        <div class="chatbot" id="chatbot">
+            <div class="chatbox">
+                <div class="chatbox-header">
+                    <span class="chatbox-title">
+                        <img src="https://i.etsystatic.com/24405885/r/il/bdf30d/3626740271/il_fullxfull.3626740271_snse.jpg" alt="HR Assistant" width="30" height="30">
+                        HR Assistant
+                    </span>
+                    <div class="chatbox-close" id="chatbox-close">X</div>
+                </div>
+                <div class="chatbox-body">
+                    <!-- Chat messages go here -->
+                </div>
+                <div class="chatbox-input">
+                    <input type="text" id="user-input" placeholder="Type a message...">
+                    <button id="send-button">Send</button>
+                </div>
+            </div>
         </div>
-      </div>
-
-    </main>
-
-    <form class="msger-inputarea">
-      <input type="text" class="msger-input" id="textInput" placeholder="Enter your message...">
-      <button type="submit" class="msger-send-btn">Send</button>
-    </form>
-  </section>
-  <!-- partial -->
-  <script src='https://use.fontawesome.com/releases/v5.0.13/js/all.js'></script>
-  <script>
-
-    const msgerForm = get(".msger-inputarea");
-    const msgerInput = get(".msger-input");
-    const msgerChat = get(".msger-chat");
-
-
-    // Icons made by Freepik from www.flaticon.com
-    const BOT_IMG = "https://image.flaticon.com/icons/svg/327/327779.svg";
-    const PERSON_IMG = "https://image.flaticon.com/icons/svg/145/145867.svg";
-    const BOT_NAME = "    ChatBot";
-    const PERSON_NAME = "You";
-
-    msgerForm.addEventListener("submit", event => {
-      event.preventDefault();
-
-      const msgText = msgerInput.value;
-      if (!msgText) return;
-
-      appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
-      msgerInput.value = "";
-      botResponse(msgText);
-    });
-
-    function appendMessage(name, img, side, text) {
-      //   Simple solution for small apps
-      const msgHTML = `
-<div class="msg ${side}-msg">
-  <div class="msg-img" style="background-image: url(${img})"></div>
-
-  <div class="msg-bubble">
-    <div class="msg-info">
-      <div class="msg-info-name">${name}</div>
-      <div class="msg-info-time">${formatDate(new Date())}</div>
     </div>
+    <script>
+        // JavaScript for the widget
 
-    <div class="msg-text">${text}</div>
-  </div>
-</div>
-`;
+        // Function to open the chatbot
+        function openChatbot() {
+            var widgetButton = document.getElementById("widget-button");
+            widgetButton.style.animation = "slide-down 0.5s ease-out";
+            setTimeout(function() {
+                widgetButton.style.display = "none";
+                document.getElementById("chatbot").style.display = "block";
+                document.addEventListener("click", closeChatbotOnClickOutside);
+            }, 300);
+        }
 
-      msgerChat.insertAdjacentHTML("beforeend", msgHTML);
-      msgerChat.scrollTop += 500;
-    }
+        // Function to close the chatbot
+        function closeChatbot() {
+    var widgetButton = document.getElementById("widget-button");
+    var chatbot = document.getElementById("chatbot");
+    chatbot.style.animation = "slide-down 0.5s ease-out";
+    setTimeout(function() {
+        chatbot.style.display = "none";
+        chatbot.style.animation = ""; // Remove animation property
+        document.removeEventListener("click", closeChatbotOnClickOutside);
+        setTimeout(function() {
+            widgetButton.style.display = "block";
+            widgetButton.style.animation = "slide-up 0.5s ease-out";
+        }, 100);
+    }, 300);
+}
 
-      function botResponse(rawText) {
-    // Bot Response
-    $.post("/chat", { message: rawText })
-  .done(function(data) {
-    // Handle successful response
-    const msgText = data.response; 
-    appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
-    })
-    .fail(function() {
-      // Handle failure
-      appendMessage(BOT_NAME, BOT_IMG, "left", "An error occurred while processing your request");
-    });
-  }
+        // Function to close the chatbot when clicked outside
+        function closeChatbotOnClickOutside(event) {
+            var chatbot = document.getElementById("chatbot");
+            if (!chatbot.contains(event.target)) {
+                closeChatbot();
+            }
+        }
 
+        // Attach event listeners to the widget button and chatbox close button
+        document.getElementById("widget-button").addEventListener("click", openChatbot);
+        document.getElementById("chatbox-close").addEventListener("click", closeChatbot);
 
-    // Utils
-    function get(selector, root = document) {
-      return root.querySelector(selector);
-    }
+        document.getElementById("send-button").addEventListener("click", function() {
+            const userInput = document.getElementById("user-input").value;
+            if (!userInput) return;
 
-    function formatDate(date) {
-      const h = "0" + date.getHours();
-      const m = "0" + date.getMinutes();
+            appendMessage("You", "right", userInput);
+            document.getElementById("user-input").value = "";
+            botResponse(userInput);
+        });
 
-      return `${h.slice(-2)}:${m.slice(-2)}`;
-    }
+        function appendMessage(name, side, text) {
+            const chatboxBody = document.querySelector(".chatbox-body");
+            const msgHTML = `
+                <div class="msg ${side}-msg">
+                    <div class="msg-bubble">
+                        <div class="msg-info">
+                            <div class="msg-info-name">${name}</div>
+                        </div>
+                        <div class="msg-text">${text}</div>
+                    </div>
+                </div>
+            `;
+            chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
+            chatboxBody.scrollTop = chatboxBody.scrollHeight;
+        }
 
-
-
-  </script>
-
+        function botResponse(rawText) {
+            $.post("/chat", { message: rawText })
+            .done(function(data) {
+                appendMessage("Chatbot", "left", data.response);
+            })
+            .fail(function() {
+                appendMessage("Chatbot", "left", "An error occurred while processing your request");
+            });
+        }
+    </script>
 </body>
-
 </html>

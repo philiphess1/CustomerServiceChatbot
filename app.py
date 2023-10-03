@@ -46,47 +46,26 @@ llm = ChatOpenAI(
     model_name='gpt-3.5-turbo',
     temperature=0.3
 )
-prompt_template = """"You are a digital academic advisor for a prestigious business school. Your primary function is to provide accurate, detailed, and comprehensive information about the school's academic programs, requirements, courses, and any other related academic queries provided by the user's QUESTION. You have access to CONTEXT that contains all the academic information about the business school. Your responses should be clear, concise, and tailored to guide students and prospective students in their academic journey. Always ensure that your advice is based on the latest information from the vector database and is in line with the school's academic guidelines. Remember, your main goal is to assist, inform, and guide students to make the best academic decisions for their future.
+
+# Define the prompt template with placeholders for context and chat history
+prompt_template = """"You are a digital academic advisor for a prestigious business school. Your primary function is to provide accurate, detailed, and comprehensive information about the school's academic programs, requirements, courses, and any other related academic queries provided by the user's QUESTION. You have access to CONTEXT that contains all the academic information about the business school.
     CONTEXT: {context}
 
     QUESTION: {question}"""
+
+# Create a PromptTemplate object with input variables for context and chat history
 TEST_PROMPT = PromptTemplate(input_variables=["context", "question"], template=prompt_template)
+
+# Create a ConversationBufferMemory object to store the chat history
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+# Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
 conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
         memory=memory,
-        combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
+        combine_docs_chain_kwargs={"prompt": TEST_PROMPT}
     )
-
-# memory = ConversationBufferWindowMemory(
-#     memory_key='chat_history',
-#     return_messages=True
-# )
-
-# qa = RetrievalQA.from_chain_type(
-#     llm=llm,
-#     chain_type="stuff",
-#     retriever=vectorstore.as_retriever()
-# )
-
-# tools = [
-#     Tool(
-#         name='Knowledge Base',
-#         func=qa.run,
-#         description='use this tool when answering general knowledge queries to get more information about the topic'
-#     )
-# ]
-
-# agent = initialize_agent(
-#     agent='chat-conversational-react-description',
-#     tools=tools,
-#     llm=llm,
-#     verbose=True,
-#     max_iterations=3,
-#     early_stopping_method='generate',
-#     memory=conversational_memory
-# )
 
 # Connect to PostgreSQL database
 database_url = os.getenv('DATABASE_URL')
@@ -178,29 +157,6 @@ def chat():
     memory.save_context({"input": user_message}, {"output": response})
     
     return jsonify(response=response)
-# def chat():
-#     user_message = request.form.get('message')
-#     response = None
-#     try:
-#         # Interact with the qa object and get the response
-#         response = qa.run(user_message)
-        
-#         # If response is a string, directly assign it to bot_response
-#         if isinstance(response, str):
-#             bot_response = response
-#         else:
-#             # If response is a dict, extract the 'output'
-#             bot_response = response.get('output', 'Sorry, I am unable to answer your question at the moment.')
-        
-#     except Exception as e:
-#         # Log the exception for debugging purposes
-#         app.logger.error(f"An error occurred: {e}")
-        
-#         # Return a user-friendly message
-#         bot_response = "Sorry, an error occurred while processing your request. Please try again later."
-    
-#     print(response)
-#     return jsonify(response=bot_response)
 
 @app.route('/admin')
 @login_required
