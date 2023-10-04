@@ -25,14 +25,10 @@ app = Flask(__name__)
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 environment = os.getenv("PINECONE_ENVIRONMENT")
 openai_api_key = os.getenv("OPENAI_API_KEY")
-db_name = os.getenv('DB_NAME')
-db_user = os.getenv('DB_USER')
-db_password = os.getenv('DB_PASSWORD')
-db_host = os.getenv('DB_HOST')
-db_port = os.getenv('DB_PORT')
+database_url = os.getenv('DATABASE_URL')
 
 pinecone.init(api_key=pinecone_api_key, environment=environment)
-index_name="hrbot"
+index_name= os.getenv("PINECONE_INDEX")
 index = pinecone.Index(index_name)
 text_field="text"
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
@@ -68,7 +64,7 @@ conversation_chain = ConversationalRetrievalChain.from_llm(
     )
 
 # Connect to PostgreSQL database
-database_url = os.getenv('DATABASE_URL')
+
 
 db_conn = psycopg2.connect(database_url)
 cursor = db_conn.cursor()
