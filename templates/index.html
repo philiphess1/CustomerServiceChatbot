@@ -5,6 +5,7 @@
     <title>Chatbot Widget</title>
     <style>
         /* CSS styles for the widget */
+
         .widget {
             position: fixed;
             bottom: 20px;
@@ -47,11 +48,18 @@
             color: rgb(0, 0, 0);
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
+            text-align: center;
         }
 
         .chatbox-title {
             font-size: 20px;
             font-weight: bold;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        .chatbox-icon {
+            margin-right: 10px;
         }
 
         .chatbox-close {
@@ -108,6 +116,15 @@
             height: 40px;
             border-radius: 50%;
         }
+        .chatbox-top {
+            flex-grow: 1;
+            padding: 10px;
+            width: 20;
+            height: 20;
+            overflow-y: scroll;
+            background-color: #ffffff;
+            font-family: 'Oswald', sans-serif
+        }
 
         .chatbox-input button {
             background-color: #4CAF50;
@@ -135,15 +152,29 @@
         .msg-bubble {
             border-radius: 15px;
             padding: 10px;
-            max-width: 70%;
+            max-width: 80%;
+        }
+        .msg-info {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .msg-info-name {
+            display: block;
+            margin-bottom: 5px;
+            background-color: #f2f2f2;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .right-msg .msg-bubble {
-            background-color: #4c90af;
+            background-color: #318aff;
             color: white;
         }
           .left-msg .msg-bubble {
-          background-color: #f1f0f0;
+          background-color: #ffffff;
         }
 
         /* Add more CSS styles as needed */
@@ -179,8 +210,10 @@
             <div class="chatbox">
                 <div class="chatbox-header">
                     <span class="chatbox-title">
-                        <img src="https://i.etsystatic.com/24405885/r/il/bdf30d/3626740271/il_fullxfull.3626740271_snse.jpg" alt="HR Assistant" width="30" height="30">
-                        HR Assistant
+                        <div class="chatbox-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Indiana_University_seal.svg/1200px-Indiana_University_seal.svg.png" alt="HR Assistant" width="150" height="150">
+                        </div>
+                        <div class="chatbox-top">HR Assistant</div> 
                     </span>
                     <div class="chatbox-close" id="chatbox-close">X</div>
                 </div>
@@ -248,14 +281,17 @@
         function appendMessage(name, side, text) {
             const chatboxBody = document.querySelector(".chatbox-body");
             const msgHTML = `
+            <div class="msg ${side}-msg">
+                <div class="msg-info">
+                        <div class="msg-info-name">${name}</div>
+                    </div>
+                </div>
                 <div class="msg ${side}-msg">
                     <div class="msg-bubble">
-                        <div class="msg-info">
-                            <div class="msg-info-name">${name}</div>
-                        </div>
                         <div class="msg-text">${text}</div>
                     </div>
                 </div>
+                
             `;
             chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
             chatboxBody.scrollTop = chatboxBody.scrollHeight;
