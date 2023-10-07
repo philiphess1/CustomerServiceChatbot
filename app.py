@@ -138,6 +138,11 @@ def logout():
 def home():
     return render_template('index.html')
 
+@app.route('/IU_HR')
+def HR():
+    return render_template('IU_HR.html')
+
+
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.form.get('message')

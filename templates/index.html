@@ -161,10 +161,6 @@
 
         .msg-info-name {
             display: block;
-            margin-bottom: 0px;
-            background-color: #f2f2f2;
-            padding: 5px 10px;
-            border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
         }
@@ -176,6 +172,53 @@
           .left-msg .msg-bubble {
           background-color: #ffffff;
         }
+        /* Add this CSS code to set the background image of the "msg-image" element */
+        /* .msg-image {
+            background-image: url('https://lottiefiles.com/images/home/lottie-gif-comparison.webp');
+            background-size: cover;
+            width: 50px;
+            height: 50px;
+        } */
+        /* Add this CSS code to create the typing animation */
+        .msg-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 50px;
+            height: 50px;
+        }
+
+        .msg-image span {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin: 1px;
+            border-radius: 50%;
+            background-color: #e65b5b;
+            animation: typing 1s ease-in-out infinite;
+        }
+
+        .msg-image span:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .msg-image span:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        @keyframes typing {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
 
         /* Add more CSS styles as needed */
 
@@ -204,6 +247,7 @@
     <title>Chatbot</title>
 </head>
 <body>
+    <a href="/IU_HR" class="button">Go to HR page</a>
     <div class="widget">
         <div class="widget-button" id="widget-button"></div>
         <div class="chatbot" id="chatbot">
@@ -229,7 +273,7 @@
     </div>
     <script>
         // JavaScript for the widget
-
+    
         // Function to open the chatbot
         function openChatbot() {
             var widgetButton = document.getElementById("widget-button");
@@ -240,23 +284,23 @@
                 document.addEventListener("click", closeChatbotOnClickOutside);
             }, 300);
         }
-
+    
         // Function to close the chatbot
         function closeChatbot() {
-    var widgetButton = document.getElementById("widget-button");
-    var chatbot = document.getElementById("chatbot");
-    chatbot.style.animation = "slide-down 0.5s ease-out";
-    setTimeout(function() {
-        chatbot.style.display = "none";
-        chatbot.style.animation = ""; // Remove animation property
-        document.removeEventListener("click", closeChatbotOnClickOutside);
-        setTimeout(function() {
-            widgetButton.style.display = "block";
-            widgetButton.style.animation = "slide-up 0.5s ease-out";
-        }, 100);
-    }, 300);
-}
-
+            var widgetButton = document.getElementById("widget-button");
+            var chatbot = document.getElementById("chatbot");
+            chatbot.style.animation = "slide-down 0.5s ease-out";
+            setTimeout(function() {
+                chatbot.style.display = "none";
+                chatbot.style.animation = ""; // Remove animation property
+                document.removeEventListener("click", closeChatbotOnClickOutside);
+                setTimeout(function() {
+                    widgetButton.style.display = "block";
+                    widgetButton.style.animation = "slide-up 0.5s ease-out";
+                }, 100);
+            }, 300);
+        }
+    
         // Function to close the chatbot when clicked outside
         function closeChatbotOnClickOutside(event) {
             var chatbot = document.getElementById("chatbot");
@@ -264,48 +308,80 @@
                 closeChatbot();
             }
         }
+    
+        // Function to show the three dots typing indicator
+        function showTypingIndicator() {
+        const chatboxBody = document.querySelector(".chatbox-body");
+        const typingIndicatorHTML = `
+            <div class="msg left-msg">
+                <div class="msg-image">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        `;
+        chatboxBody.insertAdjacentHTML("beforeend", typingIndicatorHTML);
+        chatboxBody.scrollTop = chatboxBody.scrollHeight;
+    }
 
+    // Function to hide the three dots typing indicator
+    function hideTypingIndicator() {
+        const typingIndicator = document.querySelector(".msg-image");
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+    
         // Attach event listeners to the widget button and chatbox close button
         document.getElementById("widget-button").addEventListener("click", openChatbot);
         document.getElementById("chatbox-close").addEventListener("click", closeChatbot);
-
+    
         document.getElementById("send-button").addEventListener("click", function() {
-            const userInput = document.getElementById("user-input").value;
-            if (!userInput) return;
+        const userInput = document.getElementById("user-input").value;
+        if (!userInput) return;
 
-            appendMessage("You", "right", userInput);
-            document.getElementById("user-input").value = "";
-            botResponse(userInput);
-        });
-
+        // Show the typing indicator when the user sends a message
+        appendMessage("You", "right", userInput);
+        showTypingIndicator(); // Show typing indicator before sending message
+        document.getElementById("user-input").value = "";
+        botResponse(userInput);
+    });
+    
         function appendMessage(name, side, text) {
             const chatboxBody = document.querySelector(".chatbox-body");
             const msgHTML = `
             <div class="msg ${side}-msg">
                 <div class="msg-info">
-                        <div class="msg-info-name">${name}</div>
-                    </div>
+                    <div class="msg-info-name">${name}</div>
                 </div>
-                <div class="msg ${side}-msg">
-                    <div class="msg-bubble">
-                        <div class="msg-text">${text}</div>
-                    </div>
+            </div>
+            <div class="msg ${side}-msg">
+                <div class="msg-bubble">
+                    <div class="msg-text">${text}</div>
                 </div>
-                
+            </div>
             `;
             chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
             chatboxBody.scrollTop = chatboxBody.scrollHeight;
         }
-
+    
         function botResponse(rawText) {
-            $.post("/chat", { message: rawText })
-            .done(function(data) {
-                appendMessage("Chatbot", "left", data.response);
-            })
-            .fail(function() {
-                appendMessage("Chatbot", "left", "An error occurred while processing your request");
-            });
-        }
+        $.post("/chat", { message: rawText })
+        .done(function(data) {
+            // Hide the typing indicator when the bot responds
+            hideTypingIndicator();
+
+            appendMessage("Chatbot", "left", data.response);
+        })
+        .fail(function() {
+            // Hide the typing indicator in case of an error
+            hideTypingIndicator();
+
+            appendMessage("Chatbot", "left", "An error occurred while processing your request");
+        });
+    }
     </script>
+    
 </body>
 </html>
