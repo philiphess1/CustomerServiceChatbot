@@ -205,7 +205,7 @@ def upload_file():
                     # Store the embeddings in Pinecone using 'upsert' method
                     index.upsert(upsert_data)
 
-    return redirect(url_for('admin'))
+    return jsonify({"status": "success", "message": "Files uploaded successfully!"})
 
 @app.route('/delete/<doc_id>', methods=['POST'])
 @login_required
