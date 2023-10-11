@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Chatbot Widget</title>
     <style>
@@ -98,17 +99,31 @@
             display: flex;
             align-items: center;
             padding: 10px;
-            border-top: 1px solid #ccc;
-            
+            background-color: #f5f5f5;
         }
 
-        .chatbox-input input[type="text"] {
+        .input-wrapper {
+            display: flex;
             flex-grow: 1;
-            padding: 5px;
-            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #user-input {
+            flex-grow: 1;
+            padding: 10px;
             border: none;
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-            font-family: Poppins, sans-serif;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        #send-button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #163fc6;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
         }
         .chatbox-title img {
             margin-right: 10px;
@@ -188,12 +203,29 @@
             width: 50px;
             height: 50px;
         }
+        .like-button {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .dislike-button {
+            background-color: transparent;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #999;
+        }
 
         .msg-image span {
             display: inline-block;
             width: 10px;
             height: 10px;
-            margin: 1px;
+            margin: 2px;
             border-radius: 50%;
             background-color: #e65b5b;
             animation: typing 1s ease-in-out infinite;
@@ -241,6 +273,33 @@
                 transform: translateY(100%);
             }
         }
+        .post {
+            width: 400px;
+            font-family: 'Lexend', sans-serif;
+        }
+        .post-image {
+            display: block;
+            width: 100%;
+        }
+
+        .post-ratings-container {
+            display: flex;
+            justify-content: end;
+            padding: 12px 0;
+        }
+
+        .post-rating {
+            display: flex;
+            align-items: center;
+            cursor: default;
+        }
+
+
+        .post-rating-button {
+            margin-right: 6px;
+            cursor: pointer;
+            color: #555555;
+        }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <meta charset="UTF-8">
@@ -265,122 +324,161 @@
                     <!-- Chat messages go here -->
                 </div>
                 <div class="chatbox-input">
-                    <input type="text" id="user-input" placeholder="Type a message...">
-                    <button id="send-button">Send</button>
+                    <div class="input-wrapper">
+                        <input type="text" id="user-input" placeholder="Type a message...">
+                        <button id="send-button">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <script>
         // JavaScript for the widget
-    
-        // Function to open the chatbot
-        function openChatbot() {
-            var widgetButton = document.getElementById("widget-button");
-            widgetButton.style.animation = "slide-down 0.5s ease-out";
-            setTimeout(function() {
-                widgetButton.style.display = "none";
-                document.getElementById("chatbot").style.display = "block";
-                document.addEventListener("click", closeChatbotOnClickOutside);
-            }, 300);
-        }
-    
-        // Function to close the chatbot
-        function closeChatbot() {
-            var widgetButton = document.getElementById("widget-button");
-            var chatbot = document.getElementById("chatbot");
-            chatbot.style.animation = "slide-down 0.5s ease-out";
-            setTimeout(function() {
-                chatbot.style.display = "none";
-                chatbot.style.animation = ""; // Remove animation property
-                document.removeEventListener("click", closeChatbotOnClickOutside);
-                setTimeout(function() {
-                    widgetButton.style.display = "block";
-                    widgetButton.style.animation = "slide-up 0.5s ease-out";
-                }, 100);
-            }, 300);
-        }
-    
-        // Function to close the chatbot when clicked outside
-        function closeChatbotOnClickOutside(event) {
-            var chatbot = document.getElementById("chatbot");
-            if (!chatbot.contains(event.target)) {
-                closeChatbot();
-            }
-        }
-    
-        // Function to show the three dots typing indicator
-        function showTypingIndicator() {
-        const chatboxBody = document.querySelector(".chatbox-body");
-        const typingIndicatorHTML = `
-            <div class="msg left-msg">
-                <div class="msg-image">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+// Function to open the chatbot
+function openChatbot() {
+    var widgetButton = document.getElementById("widget-button");
+    widgetButton.style.animation = "slide-down 0.5s ease-out";
+    setTimeout(function() {
+        widgetButton.style.display = "none";
+        document.getElementById("chatbot").style.display = "block";
+        document.addEventListener("click", closeChatbotOnClickOutside);
+    }, 300);
+}
+
+// Function to close the chatbot
+function closeChatbot() {
+    var widgetButton = document.getElementById("widget-button");
+    var chatbot = document.getElementById("chatbot");
+    chatbot.style.animation = "slide-down 0.5s ease-out";
+    setTimeout(function() {
+        chatbot.style.display = "none";
+        chatbot.style.animation = ""; // Remove animation property
+        document.removeEventListener("click", closeChatbotOnClickOutside);
+        setTimeout(function() {
+            widgetButton.style.display = "block";
+            widgetButton.style.animation = "slide-up 0.5s ease-out";
+        }, 100);
+    }, 300);
+}
+
+// Function to close the chatbot when clicked outside
+function closeChatbotOnClickOutside(event) {
+    var chatbot = document.getElementById("chatbot");
+    if (!chatbot.contains(event.target)) {
+        closeChatbot();
+    }
+}
+
+// Function to show the three dots typing indicator
+function showTypingIndicator() {
+    const chatboxBody = document.querySelector(".chatbox-body");
+    const typingIndicatorHTML = `
+        <div class="msg left-msg">
+            <div class="msg-image">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
-        `;
-        chatboxBody.insertAdjacentHTML("beforeend", typingIndicatorHTML);
-        chatboxBody.scrollTop = chatboxBody.scrollHeight;
-    }
+        </div>
+    `;
+    chatboxBody.insertAdjacentHTML("beforeend", typingIndicatorHTML);
+    chatboxBody.scrollTop = chatboxBody.scrollHeight;
+}
 
-    // Function to hide the three dots typing indicator
-    function hideTypingIndicator() {
-        const typingIndicator = document.querySelector(".msg-image");
-        if (typingIndicator) {
-            typingIndicator.remove();
-        }
+// Function to hide the three dots typing indicator
+function hideTypingIndicator() {
+    const typingIndicator = document.querySelector(".msg-image");
+    if (typingIndicator) {
+        typingIndicator.remove();
     }
-    
-        // Attach event listeners to the widget button and chatbox close button
-        document.getElementById("widget-button").addEventListener("click", openChatbot);
-        document.getElementById("chatbox-close").addEventListener("click", closeChatbot);
-    
-        document.getElementById("send-button").addEventListener("click", function() {
-        const userInput = document.getElementById("user-input").value;
-        if (!userInput) return;
+}
 
-        // Show the typing indicator when the user sends a message
-        appendMessage("You", "right", userInput);
+// Attach event listeners to the widget button and chatbox close button
+document.getElementById("widget-button").addEventListener("click", openChatbot);
+document.getElementById("chatbox-close").addEventListener("click", closeChatbot);
+
+// Add an event listener to the input element to listen for the "keydown" event
+var userInput = document.getElementById("user-input");
+userInput.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        // Call the function to send the user message
+        sendUserMessage();
+    }
+});
+
+// Add an event listener to the send button to listen for clicks
+var sendButton = document.getElementById("send-button");
+sendButton.addEventListener("click", sendUserMessage);
+
+// Function to send a message from the user
+function sendUserMessage() {
+    var userInput = document.getElementById("user-input");
+    var message = userInput.value.trim();
+    if (message !== "") {
+        appendMessage("You", "right", message);
         showTypingIndicator(); // Show typing indicator before sending message
-        document.getElementById("user-input").value = "";
-        botResponse(userInput);
-    });
-    
-        function appendMessage(name, side, text) {
-            const chatboxBody = document.querySelector(".chatbox-body");
-            const msgHTML = `
-            <div class="msg ${side}-msg">
-                <div class="msg-info">
-                    <div class="msg-info-name">${name}</div>
+        userInput.value = "";
+        botResponse(message);
+    }
+}
+
+function appendMessage(name, side, text) {
+    const chatboxBody = document.querySelector(".chatbox-body");
+    const msgHTML = `
+        <div class="msg ${side}-msg">
+            <div class="msg-info">
+                <div class="msg-info-name">${name}</div>
+            </div>
+        </div>
+        <div class="msg ${side}-msg">
+            <div class="msg-bubble">
+                <div class="msg-text">${text}</div>
+            </div>
+        </div>
+        <div class="msg ${side}-msg">
+            ${side === "left" ? `
+            <div class="post" data-post-id="7712">
+                <div class="post-ratings-container">
+                    <div class="post-rating">
+                        <span class="post-rating-button material-icons">thumb_up</span>
+                    </div>
+                    <div class="post-rating">
+                        <span class="post-rating-button material-icons">thumb_down</span>
+                    </div>
                 </div>
             </div>
-            <div class="msg ${side}-msg">
-                <div class="msg-bubble">
-                    <div class="msg-text">${text}</div>
-                </div>
-            </div>
-            `;
-            chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
-            chatboxBody.scrollTop = chatboxBody.scrollHeight;
-        }
-    
-        function botResponse(rawText) {
-        $.post("/chat", { message: rawText })
-        .done(function(data) {
-            // Hide the typing indicator when the bot responds
-            hideTypingIndicator();
-
-            appendMessage("Chatbot", "left", data.response);
-        })
-        .fail(function() {
-            // Hide the typing indicator in case of an error
-            hideTypingIndicator();
-
-            appendMessage("Chatbot", "left", "An error occurred while processing your request");
+                ` : ""}
+        </div>
+    `;
+    chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
+    chatboxBody.scrollTop = chatboxBody.scrollHeight;
+    if (side === "left") {
+        const likeButton = chatboxBody.querySelector(".like-button:last-of-type");
+        const dislikeButton = chatboxBody.querySelector(".dislike-button:last-of-type");
+        likeButton.addEventListener("click", function() {
+            sendFeedback("like", text);
+        });
+        dislikeButton.addEventListener("click", function() {
+            sendFeedback("dislike", text);
         });
     }
+}
+
+function botResponse(rawText) {
+    $.post("/chat", { message: rawText })
+    .done(function(data) {
+        // Hide the typing indicator when the bot responds
+        hideTypingIndicator();
+
+        appendMessage("Chatbot", "left", data.response);
+    })
+    .fail(function() {
+        // Hide the typing indicator in case of an error
+        hideTypingIndicator();
+
+        appendMessage("Chatbot", "left", "An error occurred while processing your request");
+    });
+}
     </script>
     
 </body>
