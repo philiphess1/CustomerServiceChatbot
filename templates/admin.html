@@ -105,6 +105,29 @@
             cursor: pointer;
         }
 
+        .loader {
+            margin-right: 10px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db; 
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        #loading {
+            display: none;
+            text-align: left;
+            padding: 20px 0;
+            align-items: center;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
     </style>
 </head>
 <body>
@@ -116,14 +139,21 @@
     <section>
         <h2>Upload Document</h2>
         <form class="form" action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
-            <div class="upload-area" id="upload-area">
-                <label for="file" class="upload-label">Drag and drop files here or click to choose a file:</label>
-                <input type="file" id="file" name="file" required multiple onchange="document.getElementById('file-label').innerHTML = this.files.length + ' file(s) selected';">
-            <label for="file" id="file-label">Choose file(s)</label>
+            <div id="form-content">
+                <div class="upload-area" id="upload-area">
+                    <label for="file" class="upload-label">Drag and drop files here or click to choose a file:</label>
+                    <input type="file" id="file" name="file" required multiple onchange="document.getElementById('file-label').innerHTML = this.files.length + ' file(s) selected';">
+                    <label for="file" id="file-label">Choose file(s)</label>
+                </div>
+                <div id="file-list"></div>
+                <input type="submit" value="Upload">
             </div>
-            <div id="file-list"></div>
-            <input type="submit" value="Upload">
-        </form>
+            
+            <div id="loading">
+                <div class="loader"></div>
+                <p>Uploading...</p>
+            </div>
+        </form>        
     </section>
 
     <section>
@@ -161,6 +191,8 @@
     });
 
     function uploadFiles() {
+        document.getElementById("form-content").style.display = "none";  // Hide form content
+        document.getElementById("loading").style.display = "block";  // Show loading icon
         let formData = new FormData();
 
         for (let i = 0; i < fileArray.length; i++) {
@@ -173,6 +205,8 @@
         })
         .then(response => response.json())
         .then(data => {
+            document.getElementById("loading").style.display = "none";  // Hide loading icon
+            document.getElementById("form-content").style.display = "block";  // Show form content
             if (data.status === "success") {
                 // Redirect to the admin page
                 window.location.href = '/admin';  
@@ -182,6 +216,8 @@
             }
         })
         .catch(error => {
+            document.getElementById("loading").style.display = "none";  // Hide loading icon
+            document.getElementById("form-content").style.display = "block";  // Show form content
             console.error('There was an error!', error);
         });
     }
