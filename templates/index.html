@@ -284,8 +284,8 @@
 
         .post-ratings-container {
             display: flex;
-            justify-content: end;
             padding: 12px 0;
+            justify-content: flex-start;
         }
 
         .post-rating {
@@ -296,10 +296,11 @@
 
 
         .post-rating-button {
-            margin-right: 6px;
+            margin-right: 4px;
             cursor: pointer;
             color: #555555;
         }
+
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <meta charset="UTF-8">
@@ -398,6 +399,7 @@ document.getElementById("widget-button").addEventListener("click", openChatbot);
 document.getElementById("chatbox-close").addEventListener("click", closeChatbot);
 
 // Add an event listener to the input element to listen for the "keydown" event
+// Add an event listener to the input element to listen for the "keydown" event
 var userInput = document.getElementById("user-input");
 userInput.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
@@ -416,7 +418,7 @@ function sendUserMessage() {
     var message = userInput.value.trim();
     if (message !== "") {
         appendMessage("You", "right", message);
-        showTypingIndicator(); // Show typing indicator before sending message
+        showTypingIndicator(); // Show typing indicator before sending the message
         userInput.value = "";
         botResponse(message);
     }
@@ -440,10 +442,10 @@ function appendMessage(name, side, text) {
             <div class="post" data-post-id="7712">
                 <div class="post-ratings-container">
                     <div class="post-rating">
-                        <span class="post-rating-button material-icons">thumb_up</span>
+                        <button class="post-rating-button material-icons like-button">thumb_up</button>
                     </div>
                     <div class="post-rating">
-                        <span class="post-rating-button material-icons">thumb_down</span>
+                        <button class="post-rating-button material-icons dislike-button">thumb_down</button>
                     </div>
                 </div>
             </div>
@@ -456,12 +458,37 @@ function appendMessage(name, side, text) {
         const likeButton = chatboxBody.querySelector(".like-button:last-of-type");
         const dislikeButton = chatboxBody.querySelector(".dislike-button:last-of-type");
         likeButton.addEventListener("click", function() {
-            sendFeedback("like", text);
+            if (likeButton.classList.contains("clicked")) {
+                likeButton.classList.remove("clicked");
+                likeButton.style.color = "#555555";
+                sendFeedback("unlike", text);
+            } else {
+                likeButton.classList.add("clicked");
+                likeButton.style.color = "green";
+                dislikeButton.classList.remove("clicked");
+                dislikeButton.style.color = "#555555";
+                sendFeedback("like", text);
+            }
         });
         dislikeButton.addEventListener("click", function() {
-            sendFeedback("dislike", text);
+            if (dislikeButton.classList.contains("clicked")) {
+                dislikeButton.classList.remove("clicked");
+                dislikeButton.style.color = "#555555";
+                sendFeedback("undislike", text);
+            } else {
+                dislikeButton.classList.add("clicked");
+                dislikeButton.style.color = "#e65b5b";
+                likeButton.classList.remove("clicked");
+                likeButton.style.color = "#555555";
+                sendFeedback("dislike", text);
+            }
         });
     }
+}
+
+function sendFeedback(type, text) {
+    console.log(`Feedback sent: ${type} - ${text}`);
+    // Your code to send feedback goes here
 }
 
 function botResponse(rawText) {
