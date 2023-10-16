@@ -158,8 +158,8 @@ def chat():
 @login_required
 def admin():
     # Query PostgreSQL to get the list of documents
-    cursor.execute("SELECT id, filename FROM document_mapping;")
-    documents = [{'id': row[0], 'name': row[1]} for row in cursor.fetchall()]
+    g.cursor.execute("SELECT id, filename FROM document_mapping;")  # Use g.cursor here
+    documents = [{'id': row[0], 'name': row[1]} for row in g.cursor.fetchall()]  # And here
 
     return render_template('admin.html', documents=documents)
 
