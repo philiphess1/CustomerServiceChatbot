@@ -457,37 +457,40 @@ function appendMessage(name, side, text) {
     chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
     chatboxBody.scrollTop = chatboxBody.scrollHeight;
     if (side === "left") {
-        const likeButton = chatboxBody.querySelector(".like-button:last-of-type");
-        const dislikeButton = chatboxBody.querySelector(".dislike-button:last-of-type");
-        likeButton.addEventListener("click", function() {
-            if (likeButton.classList.contains("clicked")) {
-                likeButton.classList.remove("clicked");
-                likeButton.style.color = "#555555";
-                sendFeedback("unlike", text);
-            } else {
-                likeButton.classList.add("clicked");
-                likeButton.style.color = "green";
-                dislikeButton.classList.remove("clicked");
-                dislikeButton.style.color = "#555555";
-                sendFeedback("like", text);
-            }
+        const likeButtons = chatboxBody.querySelectorAll(".like-button");
+        const dislikeButtons = chatboxBody.querySelectorAll(".dislike-button");
+        likeButtons.forEach(function(likeButton) {
+            likeButton.addEventListener("click", function() {
+                if (!likeButton.classList.contains("clicked")) {
+                    likeButton.classList.add("clicked");
+                    likeButton.style.color = "green";
+                    dislikeButtons.forEach(function(dislikeButton) {
+                        dislikeButton.classList.remove("clicked");
+                        dislikeButton.style.color = "#555555";
+                        dislikeButton.disabled = true; // Disable the dislike button
+                    });
+                    sendFeedback("like", text);
+                    likeButton.disabled = true; // Disable the like button
+                }
+            });
         });
-        dislikeButton.addEventListener("click", function() {
-            if (dislikeButton.classList.contains("clicked")) {
-                dislikeButton.classList.remove("clicked");
-                dislikeButton.style.color = "#555555";
-                sendFeedback("undislike", text);
-            } else {
-                dislikeButton.classList.add("clicked");
-                dislikeButton.style.color = "#e65b5b";
-                likeButton.classList.remove("clicked");
-                likeButton.style.color = "#555555";
-                sendFeedback("dislike", text);
-            }
+        dislikeButtons.forEach(function(dislikeButton) {
+            dislikeButton.addEventListener("click", function() {
+                if (!dislikeButton.classList.contains("clicked")) {
+                    dislikeButton.classList.add("clicked");
+                    dislikeButton.style.color = "#e65b5b";
+                    likeButtons.forEach(function(likeButton) {
+                        likeButton.classList.remove("clicked");
+                        likeButton.style.color = "#555555";
+                        likeButton.disabled = true; // Disable the like button
+                    });
+                    sendFeedback("dislike", text);
+                    dislikeButton.disabled = true; // Disable the dislike button
+                }
+            });
         });
     }
 }
-
 function sendFeedback(type, text) {
     console.log(`Feedback sent: ${type} - ${text}`);
     // Your code to send feedback goes here
