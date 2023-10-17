@@ -159,6 +159,25 @@ def chat():
     
     return jsonify(response=response)
 
+@app.route('/store_feedback', methods=['POST'])
+def store_feedback():
+    data = request.json
+    feedback_type = data.get('feedback_type')
+    bot_response = data.get('bot_response')
+    user_question = data.get('user_question')
+    
+    try:
+        g.cursor.execute(
+            "INSERT INTO feedback (user_question, bot_response, feedback_type) VALUES (%s, %s, %s)",
+            (user_question, bot_response, feedback_type)
+        )
+        g.db_conn.commit()
+        return jsonify({"message": "Feedback stored successfully!"})
+    except Exception as e:
+        print(f"Error storing feedback: {e}")
+        return jsonify({"message": "Error storing feedback"}), 500
+
+
 @app.route('/admin')
 @login_required
 def admin():
