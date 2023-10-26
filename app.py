@@ -164,7 +164,7 @@ def chat():
     # Update chat history in the session
     chat_history.append({'user': user_message, 'bot': response})
     session['chat_history'] = chat_history
-    
+    print("Session updated in /chat:", session)
     return jsonify(response=response)
 
 @app.route('/store_feedback', methods=['POST'])
