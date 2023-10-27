@@ -1,6 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user
-from flask_session import Session
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
@@ -27,13 +26,6 @@ pinecone_api_key = os.getenv("PINECONE_API_KEY")
 environment = os.getenv("PINECONE_ENVIRONMENT")
 openai_api_key = os.getenv("OPENAI_API_KEY")
 database_url = os.getenv('DATABASE_URL')
-
-app.config["SESSION_TYPE"] = "filesystem"
-app.config['SESSION_PERMANENT'] = False
-app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_KEY_PREFIX'] = 'user:'
-
-Session(app)
 
 pinecone.init(api_key=pinecone_api_key, environment=environment)
 index_name= os.getenv("PINECONE_INDEX")
@@ -155,16 +147,16 @@ def HR():
 def chat():
     user_message = request.form.get('message')
     
-    # Retrieve chat history from the session
-    chat_history = session.get('chat_history', [])
+    # Load the conversation history from memory
+    conversation_history = memory.load_memory_variables({})
+    print(conversation_history)  # This will print the conversation history
     
     # Handle the user input and get the response
-    response = conversation_chain.run({'question': user_message, 'chat_history': chat_history})
+    response = conversation_chain.run({'question': user_message})
     
-    # Update chat history in the session
-    chat_history.append({'user': user_message, 'bot': response})
-    session['chat_history'] = chat_history
-    print("Session updated in /chat:", session)
+    # Save the user message and bot response to memory
+    memory.save_context({"input": user_message}, {"output": response})
+    
     return jsonify(response=response)
 
 @app.route('/store_feedback', methods=['POST'])
