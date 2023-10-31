@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash
+from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -15,12 +15,16 @@ from PyPDF2 import PdfReader
 from werkzeug.utils import secure_filename
 import psycopg2
 import bcrypt
+from flask_session import Session
 
 
 
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SECRET_KEY'] = 'your_secret_key_here'
+Session(app)
 
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 environment = os.getenv("PINECONE_ENVIRONMENT")
@@ -44,7 +48,7 @@ llm = ChatOpenAI(
 )
 
 # Define the prompt template with placeholders for context and chat history
-prompt_template = """"You are an AI-powered HR assistant for Indiana University. Your primary function is to provide accurate, detailed, and comprehensive information about the university's HR policies, benefits, procedures, and any other related HR queries provided by the user's QUESTION. You have access to CONTEXT that contains HR information about Indiana University related to the user’s QUESTION. Please note that if there is no relevant information in the available context, you should not make up an answer and instead inform the user that you are unable to provide a response given their question.
+prompt_template = """"You are an AI-powered HR assistant for Indiana University. Your primary function is to provide accurate, detailed, and comprehensive information about the university's HR policies, benefits, procedures, and any other related HR queries provided by the user's QUESTION. You have access to CONTEXT that contains HR information about Indiana University related to the user's QUESTION. Please note that if there is no relevant information in the available context, you should not make up an answer and instead inform the user that you are unable to provide a response given their question. Never say "based on CONTEXT" or something similar to that.
     CONTEXT: {context}
 
     QUESTION: {question}"""
@@ -136,6 +140,9 @@ def logout():
 
 @app.route('/')
 def home():
+    session.clear()
+    print(f"session ID: {session.sid}")
+    print()
     return render_template('index.html')
 
 @app.route('/IU_HR')
@@ -147,15 +154,19 @@ def HR():
 def chat():
     user_message = request.form.get('message')
     
-    # Load the conversation history from memory
-    conversation_history = memory.load_memory_variables({})
-    print(conversation_history)  # This will print the conversation history
+    # Load the conversation history from session
+    conversation_history = session.get('conversation_history', [])
     
     # Handle the user input and get the response
     response = conversation_chain.run({'question': user_message})
     
-    # Save the user message and bot response to memory
-    memory.save_context({"input": user_message}, {"output": response})
+    # Save the user message and bot response to session
+    conversation_history.append({'input': user_message, 'output': response})
+    session['conversation_history'] = conversation_history
+    
+    # print(f"User: {user_message} | Bot:{response}")  # This will print the conversation history
+    print(conversation_history)
+    print("*"*100)
     
     return jsonify(response=response)
 
