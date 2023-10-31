@@ -2,7 +2,4 @@
 __pycache__/
 *.pyc
 venv/
-<<<<<<< HEAD
 flask_session/
-=======
->>>>>>> 001388afe80681d397032c8ec692ea3c39969385
