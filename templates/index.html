@@ -518,19 +518,38 @@
 
         function botResponse(rawText) {
             $.post("/chat", { message: rawText })
-            .done(function(data) {
-                // Hide the typing indicator when the bot responds
-                hideTypingIndicator();
+                .done(function(data) {
+                    hideTypingIndicator();
 
-                appendMessage("Chatbot", "left", data.response);
-            })
-            .fail(function() {
-                // Hide the typing indicator in case of an error
-                hideTypingIndicator();
+                    const responseText = data.response;
 
-                appendMessage("Chatbot", "left", "An error occurred while processing your request");
-            });
+                    const displayResponse = (text, index = 0, message = '') => {
+                        if (index < text.length) {
+                            message += text[index];
+                            index++;
+                            setTimeout(() => {
+                                appendMessage("Chatbot", "left", message);
+                                displayResponse(text, index, message);
+                            }, 30);
+                        }
+                        if (index === text.length-1) {
+                            message += text[index];
+                            index++;
+                            setTimeout(() => {
+                                appendMessage("Chatbot", "left", message);
+                                displayResponse(text, index, message);
+                            }, 30);
+                        }
+                    };
+
+                    displayResponse(responseText);
+                })
+                .fail(function() {
+                    hideTypingIndicator();
+                    appendMessage("Chatbot", "left", "An error occurred while processing your request");
+                });
         }
+
     </script>
     
 </body>
