@@ -455,11 +455,20 @@
                         <div class="msg-info-name">${name}</div>
                     </div>
                 </div>
+                ${side === "right" ? `
                 <div class="msg ${side}-msg">
                     <div class="msg-bubble">
-                        <div class="msg-text">${text}</div>
+                        <div class="msg-text-user">${text}</div>
                     </div>
                 </div>
+                ` : ""}
+                ${side === "left" ? `
+                <div class="msg ${side}-msg">
+                    <div class="msg-bubble">
+                        <div class="msg-text"></div>
+                    </div>
+                </div>
+                ` : ""}
                 <div class="msg ${side}-msg">
                     ${side === "left" ? `
                     <div class="post" data-post-id="7712">
@@ -477,7 +486,24 @@
             `;
             chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
             chatboxBody.scrollTop = chatboxBody.scrollHeight;
+
+            
+
             if (side === "left") {
+                const messageElements = document.querySelectorAll('.msg-text');
+            const messageElement = messageElements[messageElements.length - 1];
+                const displayMessage = (text, index = 0, message = '') => {
+                    if (index < text.length) {
+                        message += text[index];
+                        index++;
+                        setTimeout(() => {
+                            messageElement.textContent = message;
+                            displayMessage(text, index, message);
+                        }, 20);
+                    }
+                };
+
+                displayMessage(text);
                 const likeButtons = chatboxBody.querySelectorAll(".like-button");
                 const dislikeButtons = chatboxBody.querySelectorAll(".dislike-button");
                 likeButtons.forEach(function(likeButton) {
