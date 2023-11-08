@@ -64,8 +64,7 @@ conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
         memory=memory,
-        combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
-        verbose=True
+        combine_docs_chain_kwargs={"prompt": TEST_PROMPT}
     )
 
 # Connect to PostgreSQL database
