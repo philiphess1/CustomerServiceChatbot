@@ -321,6 +321,9 @@
                         </div>
                         <div class="chatbox-top">HR Assistant</div> 
                     </span>
+                    <div class="chatbox-close">
+                        <button id="refresh">refresh</button>
+                    </div>
                     <div class="chatbox-close" id="chatbox-close">X</div>
                 </div>
                 <div class="chatbox-body">
@@ -377,6 +380,12 @@
         // Function to show the three dots typing indicator
         function showTypingIndicator() {
             const chatboxBody = document.querySelector(".chatbox-body");
+            const userInput = document.getElementById("user-input");
+    
+            // Disable the input field
+            userInput.disabled = true;
+
+
             const typingIndicatorHTML = `
                 <div class="msg left-msg">
                     <div class="msg-image">
@@ -388,14 +397,23 @@
             `;
             chatboxBody.insertAdjacentHTML("beforeend", typingIndicatorHTML);
             chatboxBody.scrollTop = chatboxBody.scrollHeight;
+
         }
 
         // Function to hide the three dots typing indicator
         function hideTypingIndicator() {
             const typingIndicator = document.querySelector(".msg-image");
+            const userInput = document.getElementById("user-input");
+    
+            // Disable the input field
+            userInput.disabled = false;
+
             if (typingIndicator) {
                 typingIndicator.remove();
             }
+             // Enable the input field
+            // const inputField = document.querySelector("user-input");
+            // inputField.disabled = false;
         }
 
         // Attach event listeners to the widget button and chatbox close button
@@ -518,36 +536,18 @@
 
         function botResponse(rawText) {
             $.post("/chat", { message: rawText })
-                .done(function(data) {
-                    hideTypingIndicator();
+            .done(function(data) {
+                // Hide the typing indicator when the bot responds
+                hideTypingIndicator();
 
-                    const responseText = data.response;
+                appendMessage("Chatbot", "left", data.response);
+            })
+            .fail(function() {
+                // Hide the typing indicator in case of an error
+                hideTypingIndicator();
 
-                    const displayResponse = (text, index = 0, message = '') => {
-                        if (index < text.length) {
-                            message += text[index];
-                            index++;
-                            setTimeout(() => {
-                                appendMessage("Chatbot", "left", message);
-                                displayResponse(text, index, message);
-                            }, 30);
-                        }
-                        if (index === text.length-1) {
-                            message += text[index];
-                            index++;
-                            setTimeout(() => {
-                                appendMessage("Chatbot", "left", message);
-                                displayResponse(text, index, message);
-                            }, 30);
-                        }
-                    };
-
-                    displayResponse(responseText);
-                })
-                .fail(function() {
-                    hideTypingIndicator();
-                    appendMessage("Chatbot", "left", "An error occurred while processing your request");
-                });
+                appendMessage("Chatbot", "left", "An error occurred while processing your request");
+            });
         }
 
     </script>
