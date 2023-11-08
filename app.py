@@ -3,7 +3,7 @@ from flask_login import login_required, LoginManager, login_user, UserMixin, log
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
-from langchain.chains.conversation.memory import ConversationBufferMemory
+from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
 import pinecone
@@ -57,14 +57,15 @@ prompt_template = """"You are an AI-powered HR assistant for Indiana University.
 TEST_PROMPT = PromptTemplate(input_variables=["context", "question"], template=prompt_template)
 
 # Create a ConversationBufferMemory object to store the chat history
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True, k=8)
 
 # Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
 conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
         memory=memory,
-        combine_docs_chain_kwargs={"prompt": TEST_PROMPT}
+        combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
+        verbose=True
     )
 
 # Connect to PostgreSQL database
