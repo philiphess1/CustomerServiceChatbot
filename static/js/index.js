@@ -219,6 +219,20 @@
         }
 
 
+        document.getElementById('refresh').addEventListener('click', function() {
+            const chatboxBody = document.querySelector(".chatbox-body");
+            chatboxBody.innerHTML = ''; // This will remove all child elements in the chatbox body
+        
+            // Reset any other states or variables if necessary
+            lastUserMessage = '';
+            // ... reset other states if needed
+        
+            // Optionally, you could also reset the user input
+            const userInput = document.getElementById("user-input");
+            userInput.value = '';
+            userInput.disabled = false; // Enable the input if it was disabled
+        });
+
         function botResponse(rawText) {
             $.post("/chat", { message: rawText })
             .done(function(data) {
