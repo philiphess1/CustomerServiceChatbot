@@ -141,6 +141,7 @@ def logout():
 @app.route('/')
 def home():
     session.clear()
+    memory.clear()
     print(f"session ID: {session.sid}")
     print()
     return render_template('index.html')
