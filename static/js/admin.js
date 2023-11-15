@@ -53,18 +53,29 @@ function updateFileListDisplay() {
     const fileList = document.getElementById("file-list");
     fileList.innerHTML = ""; // clear current file list
     
+    let totalSize = 0; // Initialize total size
+
     // Update displayed file list
     for (let i = 0; i < fileArray.length; i++) {
+        const fileSize = (fileArray[i].size / 1024 / 1024).toFixed(2); // Convert to MB and round to 2 decimal places
+        totalSize += parseFloat(fileSize); // Add file size to total size
+
         const fileItem = document.createElement("div");
-        fileItem.innerText = fileArray[i].name;
+        fileItem.innerText = fileArray[i].name + ' - ' + fileSize + ' MB';
+        fileItem.draggable = true;
+        fileItem.id = 'file-' + i; // Set a unique id for the file item
+        fileItem.addEventListener('dragstart', function(event) {
+            event.dataTransfer.setData('text', this.id); // Set the id of the dragged file
+        });
 
         const removeBtn = document.createElement("button");
         removeBtn.innerText = "Remove";
         removeBtn.addEventListener("click", function() {
+            totalSize -= parseFloat(fileSize); // Subtract file size from total size
             fileArray.splice(i, 1);
             updateFileListDisplay();
             // update the file count display
-            document.getElementById('file-label').innerHTML = fileArray.length + ' file(s) selected';
+            document.getElementById('file-label').innerHTML = fileArray.length + ' file(s) selected, total size: ' + totalSize.toFixed(2) + ' MB';
         });
 
         fileItem.appendChild(removeBtn);
@@ -85,3 +96,42 @@ function handleDrop(event) {
 
 document.body.addEventListener("dragover", handleDragOver);
 document.body.addEventListener("drop", handleDrop);
+
+function updateFileSizeAndCount() {
+    var fileInput = document.getElementById('file');
+    var totalSize = 0;
+    for (var i = 0; i < fileInput.files.length; i++) {
+        totalSize += fileInput.files[i].size;
+    }
+    // Convert the total size to megabytes
+    totalSize = totalSize / 1024 / 1024;
+
+    document.getElementById('file-label').innerHTML = fileInput.files.length + ' file(s) selected, total size: ' + totalSize.toFixed(2) + ' MB';
+
+    if (totalSize > 10) {
+        alert('The total size of all files must be less than 10 MB.');
+        fileInput.value = '';
+    }
+}
+var trashCan = document.getElementById('trash-can');
+
+trashCan.addEventListener('dragover', function(event) {
+    event.preventDefault(); // Prevent default to allow drop
+});
+
+trashCan.addEventListener('drop', function(event) {
+    event.preventDefault();
+    var fileId = event.dataTransfer.getData('text');
+    removeFile(fileId);
+});
+function removeFile(fileId) {
+    // Find the file in the file list and remove it
+    for (var i = 0; i < fileArray.length; i++) {
+        if (fileArray[i].id === fileId) {
+            fileArray.splice(i, 1);
+            break;
+        }
+    }
+    // Update the file list display
+    updateFileListDisplay();
+}
