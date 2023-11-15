@@ -141,6 +141,7 @@ def logout():
 @app.route('/')
 def home():
     session.clear()
+    memory.clear()
     print(f"session ID: {session.sid}")
     print()
     return render_template('index.html')
@@ -148,7 +149,6 @@ def home():
 @app.route('/IU_HR')
 def HR():
     return render_template('IU_HR.html')
-
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -166,6 +166,7 @@ def chat():
     
     # print(f"User: {user_message} | Bot:{response}")  # This will print the conversation history
     print(conversation_history)
+    print(session)
     print("*"*100)
     
     return jsonify(response=response)
