@@ -1,17 +1,26 @@
         // JavaScript for the widget
         // Function to open the chatbot
         var lastUserMessage = "";
+        var greetingShown = false;
         function showGreetingMessage() {
+            // If the greeting has already been shown, don't show it again
+            if (greetingShown) {
+                return;
+            }
+
             // Check if there are any existing messages in the chatbox
             const chatboxBody = document.querySelector(".chatbox-body");
             const existingMessages = chatboxBody.children.length > 0;
-        
+
             // If there are no existing messages, show the greeting with a delay
             if (!existingMessages) {
                 const greetingMessage = "Hello! I'm, Ecco, your personal human resources assistant. How can I assist you today?";
                 setTimeout(() => {
                     appendMessage("Chatbot", "left", greetingMessage);
                 }, 1000); // Adjust the delay time as needed
+
+                // Set the flag to true so the greeting won't be shown again
+                greetingShown = true;
             }
         }
         function openChatbot() {
