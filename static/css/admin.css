@@ -143,6 +143,9 @@ section {
     justify-content: center;
     align-items: center;
 }
+#uploading {
+    display: none;
+}
 .loader-div {
     display: none;
     display: flex;

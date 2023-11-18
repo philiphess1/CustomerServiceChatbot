@@ -86,21 +86,21 @@ function updateFileListDisplay() {
         fileItem.appendChild(removeBtn);
         fileList.appendChild(fileItem);
     }
+    if (fileArray.length === 0) {
+        document.getElementById('uploading').style.display = 'none';
+    }
+    
 }
 
-// function handleDragOver(event) {
-//     event.preventDefault();
-//     event.dataTransfer.dropEffect = "copy";
-// }
+document.getElementById('file').addEventListener('change', function() {
+    if (this.files.length > 0) {
+        document.getElementById('uploading').style.display = 'block';
+    } else {
+        document.getElementById('uploading').style.display = 'none';
+    }
+});
 
-// function handleDrop(event) {
-//     event.preventDefault();
-//     var files = event.dataTransfer.files;
-//     document.getElementById("file").files = files;
-// }
-
-// document.body.addEventListener("dragover", handleDragOver);
-// document.body.addEventListener("drop", handleDrop);
+// After files are processed and removed from fileArray
 
 let uploadArea = document.getElementById('upload-area');
 
