@@ -5,6 +5,12 @@ document.getElementById("upload-form").addEventListener("submit", function(event
     uploadFiles();
 });
 
+document.getElementById('upload-area').addEventListener('click', function(e) {
+    if (e.target.id !== 'file') {
+        document.getElementById('file').click();
+    }
+});
+
 function uploadFiles() {
     document.getElementById("form-content").style.display = "none";  // Hide form content
     document.getElementById("loading").style.display = "block";  // Show loading icon
