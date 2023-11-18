@@ -62,7 +62,6 @@ function updateFileListDisplay() {
 
         const fileItem = document.createElement("div");
         fileItem.innerText = fileArray[i].name + ' - ' + fileSize + ' MB';
-        fileItem.draggable = true;
         fileItem.id = 'file-' + i; // Set a unique id for the file item
         fileItem.addEventListener('dragstart', function(event) {
             event.dataTransfer.setData('text', this.id); // Set the id of the dragged file
@@ -112,26 +111,4 @@ function updateFileSizeAndCount() {
         alert('The total size of all files must be less than 10 MB.');
         fileInput.value = '';
     }
-}
-var trashCan = document.getElementById('trash-can');
-
-trashCan.addEventListener('dragover', function(event) {
-    event.preventDefault(); // Prevent default to allow drop
-});
-
-trashCan.addEventListener('drop', function(event) {
-    event.preventDefault();
-    var fileId = event.dataTransfer.getData('text');
-    removeFile(fileId);
-});
-function removeFile(fileId) {
-    // Find the file in the file list and remove it
-    for (var i = 0; i < fileArray.length; i++) {
-        if (fileArray[i].id === fileId) {
-            fileArray.splice(i, 1);
-            break;
-        }
-    }
-    // Update the file list display
-    updateFileListDisplay();
 }
