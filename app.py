@@ -195,7 +195,7 @@ def store_feedback():
 def admin():
     # Query PostgreSQL to get the list of documents
     g.cursor.execute("SELECT id, filename FROM document_mapping;")  # Use g.cursor here
-    documents = [{'id': row[0], 'name': row[1]} for row in g.cursor.fetchall()]  # And here
+    documents = [{'id': row[0], 'name': row[1], 'size': 0.1, 'date_added': "12 Sep 2022",'admin': "Nick Frische"} for row in g.cursor.fetchall()]  # And here
 
     return render_template('admin.html', documents=documents)
 

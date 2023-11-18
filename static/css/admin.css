@@ -17,7 +17,7 @@ h1 {
 }
 h2 {
     text-align: center;
-    margin: 60px;
+    margin: 50px;
     font-size: 24px;
 }
 h3 {
@@ -36,14 +36,14 @@ h3 {
     font-family: Tahoma;
 }
 
-/* .uploading {
+.file-list {
     margin: 20px;
     padding: 20px;
     padding-top: 2px;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 5px;
-} */
+}
 .click-text {
     color: rgb(0, 132, 255);
     text-decoration: underline;
@@ -82,10 +82,9 @@ input[type=submit]:hover {
     background-color: #555555;
 }
 table {
-    margin: 20px;
+    margin: 2px;
     padding: 20px;
     background-color: #fff;
-    border: 1px solid #ccc;
     border-radius: 5px;
     width: 100%;
     border-collapse: collapse;
@@ -95,15 +94,17 @@ th, td {
     padding-top: 10px;
     padding-right: 5px;
     padding-left: 5px;
-    border: 1px solid #ccc;
     text-align: left;
 }
 th {
-    background-color: #333;
-    color: #fff;
+    color: #9d9d9d;
+    border-bottom: 2px solid #9d9d9d;
 }
 tr:hover {
     background-color: #e0e0e0;
+}
+.sub-column {
+    color: #9d9d9d;
 }
 section {
     margin: 20px auto;
