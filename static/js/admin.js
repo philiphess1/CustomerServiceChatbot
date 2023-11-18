@@ -88,20 +88,46 @@ function updateFileListDisplay() {
     }
 }
 
-function handleDragOver(event) {
+// function handleDragOver(event) {
+//     event.preventDefault();
+//     event.dataTransfer.dropEffect = "copy";
+// }
+
+// function handleDrop(event) {
+//     event.preventDefault();
+//     var files = event.dataTransfer.files;
+//     document.getElementById("file").files = files;
+// }
+
+// document.body.addEventListener("dragover", handleDragOver);
+// document.body.addEventListener("drop", handleDrop);
+
+let uploadArea = document.getElementById('upload-area');
+
+uploadArea.addEventListener('dragenter', function() {
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', function() {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('dragover', function(event) {
     event.preventDefault();
     event.dataTransfer.dropEffect = "copy";
-}
+});
 
-function handleDrop(event) {
+uploadArea.addEventListener('drop', function(event) {
     event.preventDefault();
-    var files = event.dataTransfer.files;
+    uploadArea.classList.remove('dragover');
+    let files = event.dataTransfer.files;
+    for (let i = 0; i < files.length; i++) {
+        fileArray.push(files[i]);
+    }
     document.getElementById("file").files = files;
-}
-
-document.body.addEventListener("dragover", handleDragOver);
-document.body.addEventListener("drop", handleDrop);
-
+    updateFileListDisplay();
+    updateFileSizeAndCount();
+});
 function updateFileSizeAndCount() {
     var fileInput = document.getElementById('file');
     var totalSize = 0;
