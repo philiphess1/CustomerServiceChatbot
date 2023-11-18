@@ -128,6 +128,8 @@ uploadArea.addEventListener('drop', function(event) {
     updateFileListDisplay();
     updateFileSizeAndCount();
 });
+
+
 function updateFileSizeAndCount() {
     var fileInput = document.getElementById('file');
     var totalSize = 0;
