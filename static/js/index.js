@@ -3,23 +3,6 @@
         var lastUserMessage = "";
         var greetingShown = false;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            var chatbotContainer = document.getElementById('chatbot-container');
-            var chatboxIcon = document.getElementById('chatbox-icon');
-        
-            chatboxIcon.addEventListener('click', function() {
-                var isOpen = chatbotContainer.style.width !== '0px';
-        
-                if (isOpen) {
-                    chatbotContainer.style.width = '400px';
-                    chatbotContainer.style.height = '700px';
-                } else {
-                    chatbotContainer.style.width = '110px'; // Set the width of the chatbot
-                    chatbotContainer.style.height = '110px'; // Set the height of the chatbot
-                }
-            });
-        });
-
         function showGreetingMessage() {
             // If the greeting has already been shown, don't show it again
             if (greetingShown) {

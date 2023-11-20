@@ -1,3 +1,29 @@
-<div id="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 110px; height: 110px; overflow: hidden;">
-  <iframe id="chatbot-iframe" src="https://hr-bot-beast-aa887886e420.herokuapp.com/" frameborder="0" scrolling="no" style="width: 100%; height: 100%;"></iframe>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IU HR</title>
+</head>
+<body>
+  <div id="chatbot-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; width: 110; height: 110; overflow: hidden;">
+    <iframe id="chatbot-iframe" src="https://hr-bot-beast-aa887886e420.herokuapp.com/" frameborder="0" scrolling="no" style="width: 100%; height: 100%;"></iframe>
+  </div>
+</body>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var chatbotContainer = document.getElementById('chatbot-container');
+            var chatboxIcon = document.getElementById('chatbox-icon');
+        
+            chatboxIcon.addEventListener('click', function() {
+                var isOpen = chatbotContainer.style.width !== '110px';
+        
+                if (isOpen) {
+                    chatbotContainer.style.width = '400px';
+                    chatbotContainer.style.height = '700px';
+                } else {
+                    chatbotContainer.style.width = '110px'; // Set the width of the chatbot
+                    chatbotContainer.style.height = '110px'; // Set the height of the chatbot
+                }
+            });
+        });
+</script>
+</html>
