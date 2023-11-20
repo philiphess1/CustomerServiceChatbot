@@ -82,6 +82,18 @@ class AuthenticatedUser(UserMixin):
     def __init__(self, id):
         self.id = id
 
+@app.route('/clear_memory_session', methods=['POST'])
+def clear_memory():
+    # Clear the memory
+    session.clear()
+    memory.clear()
+    conversation_history = session.get('conversation_history', [])
+    conversation_history.clear()
+    print(f"session ID: {session.sid}")
+    print()
+    return jsonify({"message": "Memory and session cleared successfully"})
+
+
 @app.before_request
 def before_request():
     g.db_conn = psycopg2.connect(database_url)

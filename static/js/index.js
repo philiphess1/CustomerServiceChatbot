@@ -242,19 +242,23 @@
         }
 
 
-        // document.getElementById('refresh').addEventListener('click', function() {
-        //     const chatboxBody = document.querySelector(".chatbox-body");
-        //     chatboxBody.innerHTML = ''; // This will remove all child elements in the chatbox body
+        document.getElementById('refresh').addEventListener('click', function() {
+            const chatboxBody = document.querySelector(".chatbox-body");
+            chatboxBody.innerHTML = ''; // This will remove all child elements in the chatbox body
         
-        //     // Reset any other states or variables if necessary
-        //     lastUserMessage = '';
-        //     // ... reset other states if needed
+            fetch('/clear_memory_session', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => console.log(data.message));
+
+            // Reset any other states or variables if necessary
+            lastUserMessage = '';
+            // ... reset other states if needed
         
-        //     // Optionally, you could also reset the user input
-        //     const userInput = document.getElementById("user-input");
-        //     userInput.value = '';
-        //     userInput.disabled = false; // Enable the input if it was disabled
-        // });
+            // Optionally, you could also reset the user input
+            const userInput = document.getElementById("user-input");
+            userInput.value = '';
+            userInput.disabled = false; // Enable the input if it was disabled
+        });
 
         function botResponse(rawText) {
             $.post("/chat", { message: rawText })
@@ -272,7 +276,7 @@
             });
         }
 
-        document.getElementById('refresh').addEventListener('click', function() {
-            // Refresh the page
-            location.reload();
-        });
+        // document.getElementById('refresh').addEventListener('click', function() {
+        //     // Refresh the page
+        //     location.reload();
+        // });
