@@ -200,6 +200,14 @@ section {
 .left{
     margin-left: 400px;
 }
+.file-list {
+    margin: 20px;
+    padding: 20px;
+    padding-top: 2px;
+    background-color: #fff;
+    border: 2px solid #c1c1c1;
+    border-radius: 5px;
+}
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
