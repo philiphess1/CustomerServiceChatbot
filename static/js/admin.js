@@ -56,9 +56,15 @@ document.getElementById("file").addEventListener("change", function() {
 });
 
 function updateFileListDisplay() {
-    const fileList = document.getElementById("file-list");
+    const fileList = document.getElementById("filelist");
     fileList.innerHTML = ""; // clear current file list
     
+    if (fileArray.length > 0) {
+        fileList.style.display = "block";
+    } else {
+        fileList.style.display = "none";
+    }
+
     let totalSize = 0; // Initialize total size
 
     // Update displayed file list
@@ -66,17 +72,24 @@ function updateFileListDisplay() {
         const fileSize = (fileArray[i].size / 1024 / 1024).toFixed(2); // Convert to MB and round to 2 decimal places
         totalSize += parseFloat(fileSize); // Add file size to total size
 
-        const fileItem = document.createElement("div");
-        fileItem.innerText = fileArray[i].name + ' - ' + fileSize + ' MB';
-        fileItem.id = 'file-' + i; // Set a unique id for the file item
-        fileItem.addEventListener('dragstart', function(event) {
-            event.dataTransfer.setData('text', this.id); // Set the id of the dragged file
-        });
+        const fileHtml = `
+            <div id="fileitem">
+                <div id="fileinfo">
+                    <img src="static/images/PDF icon.png" height="30" width="30" alt="PDF-icon">
+                    <div id="filename">${fileArray[i].name}</div>
+                    <div id="filesize">${fileSize} MB</div>
+                    <div class="left">
+                        <img src="static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button">
+                    </div>
+                </div>
+                <div id="fileprogress"></div>
+            </div>
+        `;
 
-        const removeBtn = document.createElement("img");
-        removeBtn.src = "static/images/X-icon.png";
-        removeBtn.alt = "Remove";
-        removeBtn.classList.add('remove-button');
+        // Insert the fileHtml into the DOM
+        fileList.insertAdjacentHTML('beforeend', fileHtml);
+
+        const removeBtn = fileList.querySelector('.remove-button:last-child');
         removeBtn.addEventListener("click", function() {
             totalSize -= parseFloat(fileSize); // Subtract file size from total size
             fileArray.splice(i, 1);
@@ -84,15 +97,13 @@ function updateFileListDisplay() {
             // update the file count display
             document.getElementById('file-label').innerHTML = fileArray.length + ' file(s) selected, total size: ' + totalSize.toFixed(2) + ' MB';
         });
-
-        fileItem.appendChild(removeBtn);
-        fileList.appendChild(fileItem);
     }
+
     if (fileArray.length === 0) {
         document.getElementById('uploading').style.display = 'none';
     }
-    
 }
+
 
 document.getElementById('file').addEventListener('change', function() {
     if (this.files.length > 0) {

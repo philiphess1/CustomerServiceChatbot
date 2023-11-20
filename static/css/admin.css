@@ -37,14 +37,6 @@ h3 {
     font-family: Tahoma;
 }
 
-.file-list {
-    margin: 20px;
-    padding: 20px;
-    padding-top: 2px;
-    background-color: #fff;
-    border: 2px solid #c1c1c1;
-    border-radius: 5px;
-}
 .click-text {
     color: rgb(0, 132, 255);
     text-decoration: underline;
@@ -194,6 +186,7 @@ section {
 }
 #filelist {
     margin-top: 20px;
+    display:none;
 }
 #fileitem{
     display: flex;

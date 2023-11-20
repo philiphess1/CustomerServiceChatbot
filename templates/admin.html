@@ -23,10 +23,23 @@
                 </div>
                 <div id="uploading">
                     <h3>Uploading</h3>
-                    <div id="file-list"></div>     
+                    <div id="file-list">
+
+                    </div>     
+                    
+                    <div id="filelist">
+                        <div id="fileitem">
+                            <div id="fileinfo">
+                                <img src="{{ url_for('static', filename='images/PDF icon.png') }}" height="30" width="30" alt="PDF-icon">
+                                <div id="filename"></div>
+                                <div id="filesize"></div>
+                                <div  class="left"><img src="{{ url_for('static', filename='images/X-icon.png') }}" height="20" width="20" alt="X-icon"></div>
+                            </div>
+                            <div id="fileprogress"></div>
+                        </div>
+                    </div>
                     <input type="submit" value="Upload">
                 </div>
-                
             </div>
             
             <div id="loading" class="loader-div">
