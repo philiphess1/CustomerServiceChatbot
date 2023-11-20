@@ -73,8 +73,10 @@ function updateFileListDisplay() {
             event.dataTransfer.setData('text', this.id); // Set the id of the dragged file
         });
 
-        const removeBtn = document.createElement("button");
-        removeBtn.innerText = "Remove";
+        const removeBtn = document.createElement("img");
+        removeBtn.src = "static/images/X-icon.png";
+        removeBtn.alt = "Remove";
+        removeBtn.classList.add('remove-button');
         removeBtn.addEventListener("click", function() {
             totalSize -= parseFloat(fileSize); // Subtract file size from total size
             fileArray.splice(i, 1);

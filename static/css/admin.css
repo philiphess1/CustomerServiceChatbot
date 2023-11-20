@@ -19,11 +19,12 @@ h2 {
     text-align: center;
     margin: 50px;
     font-size: 28px;
+    font-weight: normal;
 }
 h3 {
-    margin: 40px 0 20px 0;
-    font-size: 20px;
-    color: #555555;
+    margin: 40px 0 15px 0;
+    font-size: 16px;
+    color: #9d9d9d;
 }
 .form {
     margin: 20px;
@@ -175,6 +176,36 @@ section {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.remove-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    width: 16px;
+    height: 16px;
+    color: rgb(0, 132, 255);
+}
+#fileinfo {
+    display: flex;
+    margin: 5px;
+    align-items: center;
+    gap: 10px;
+}
+#filelist {
+    margin-top: 20px;
+}
+#fileitem{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+    padding: 3px;
+    border: 1px solid #a3a3a3;
+    border-radius: 5px;
+}
+.left{
+    margin-left: 400px;
 }
 
 @keyframes spin {
