@@ -22,7 +22,7 @@
                     <label id="file-label">Choose file(s)</label>
                 </div>
                 <div id="uploading">
-                    <h3>Uploading</h3>
+                    <h3>Uploading list</h3>
                     <div id="file-list">
 
                     </div>     
@@ -58,7 +58,7 @@
         <h2>Existing Documents</h2>
         <table>
             <thead>
-                <tr>
+                <tr class="final-row">
                     <th></th>
                     <th>Name</th>
                     <th>Size</th>
@@ -84,6 +84,20 @@
                         </td>
                     </tr>
                 {% endfor %}
+                <!-- <tr class="final-row">
+                    <td></td>
+                    <td></td>
+                    <td class="sub-column"></td>
+                    <td class="sub-column"></td>
+                    <td class="sub-column"></td>
+                    <td>
+                        <div class="bin-container">
+                        <form>
+                            <input class ="bin" type="image" src="{{ url_for('static', filename='images/bin.png') }}" alt="Submit">
+                        </form>
+                    </div>
+                    </td>
+                </tr> -->
             </tbody>
         </table>
     </div>

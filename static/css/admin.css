@@ -100,6 +100,9 @@ th {
 tr:hover {
     background-color: #e0e0e0;
 }
+.final-row:hover{
+    background-color: #ffffff;
+}
 .sub-column {
     color: #9d9d9d;
 }
@@ -223,6 +226,7 @@ section {
     background-color: #4dbbff;
     overflow: hidden;
     border-radius: 3px;
+    margin-top: 20px;
   }
   
   .button, .button__icon, .button__text {
