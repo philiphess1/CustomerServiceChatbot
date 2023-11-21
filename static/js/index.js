@@ -1,26 +1,29 @@
         // JavaScript for the widget
         // Function to open the chatbot
         var lastUserMessage = "";
+        var greetingShown = false;
 
-        // Function to show a greeting message
-        // Function to show a greeting message with a delay and only on the first visit
         function showGreetingMessage() {
+            // If the greeting has already been shown, don't show it again
+            if (greetingShown) {
+                return;
+            }
+
             // Check if there are any existing messages in the chatbox
             const chatboxBody = document.querySelector(".chatbox-body");
             const existingMessages = chatboxBody.children.length > 0;
-        
+
             // If there are no existing messages, show the greeting with a delay
             if (!existingMessages) {
-                const greetingMessage = "Hello! How can I assist you today?";
+                const greetingMessage = "Hello! I'm, Ecco, your personal human resources assistant. How can I assist you today?";
                 setTimeout(() => {
                     appendMessage("Chatbot", "left", greetingMessage);
                 }, 1000); // Adjust the delay time as needed
+
+                // Set the flag to true so the greeting won't be shown again
+                greetingShown = true;
             }
         }
-        
-
-
-        // Modify the openChatbot function to show the greeting message
         function openChatbot() {
             var widgetButton = document.getElementById("widget-button");
             widgetButton.style.animation = "slide-down 0.5s ease-out";
@@ -28,7 +31,7 @@
                 widgetButton.style.display = "none";
                 document.getElementById("chatbot").style.display = "block";
                 document.addEventListener("click", closeChatbotOnClickOutside);
-                showGreetingMessage(); // Show the greeting message
+                showGreetingMessage();
             }, 300);
         }
 
@@ -128,6 +131,8 @@
         }
 
         function appendMessage(name, side, text) {
+            text = text.replace(/\n/g, '<br>');
+            text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
             const chatboxBody = document.querySelector(".chatbox-body");
             const msgHTML = `
                 <div class="msg ${side}-msg">
@@ -170,14 +175,14 @@
             
 
             if (side === "left") {
-                const messageElements = document.querySelectorAll('.msg-text');
+            const messageElements = document.querySelectorAll('.msg-text');
             const messageElement = messageElements[messageElements.length - 1];
                 const displayMessage = (text, index = 0, message = '') => {
                     if (index < text.length) {
                         message += text[index];
                         index++;
                         setTimeout(() => {
-                            messageElement.textContent = message;
+                            messageElement.innerHTML = message;
                             displayMessage(text, index, message);
                         }, 20);
                     }
@@ -240,19 +245,23 @@
         }
 
 
-        // document.getElementById('refresh').addEventListener('click', function() {
-        //     const chatboxBody = document.querySelector(".chatbox-body");
-        //     chatboxBody.innerHTML = ''; // This will remove all child elements in the chatbox body
+        document.getElementById('refresh').addEventListener('click', function() {
+            const chatboxBody = document.querySelector(".chatbox-body");
+            chatboxBody.innerHTML = ''; // This will remove all child elements in the chatbox body
         
-        //     // Reset any other states or variables if necessary
-        //     lastUserMessage = '';
-        //     // ... reset other states if needed
+            fetch('/clear_memory_session', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => console.log(data.message));
+
+            // Reset any other states or variables if necessary
+            lastUserMessage = '';
+            // ... reset other states if needed
         
-        //     // Optionally, you could also reset the user input
-        //     const userInput = document.getElementById("user-input");
-        //     userInput.value = '';
-        //     userInput.disabled = false; // Enable the input if it was disabled
-        // });
+            // Optionally, you could also reset the user input
+            const userInput = document.getElementById("user-input");
+            userInput.value = '';
+            userInput.disabled = false; // Enable the input if it was disabled
+        });
 
         function botResponse(rawText) {
             $.post("/chat", { message: rawText })
@@ -270,8 +279,7 @@
             });
         }
 
-        document.getElementById('refresh').addEventListener('click', function() {
-            // Refresh the page
-            location.reload();
-        });
-        
+        // document.getElementById('refresh').addEventListener('click', function() {
+        //     // Refresh the page
+        //     location.reload();
+        // });
