@@ -18,6 +18,7 @@ function uploadFiles() {
 
     for (let i = 0; i < fileArray.length; i++) {
         formData.append("file", fileArray[i]);
+        formData.append("fileSize", fileArray[i].size);
     }
 
     fetch('/upload', {

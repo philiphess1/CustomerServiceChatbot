@@ -194,20 +194,26 @@ def store_feedback():
 @login_required
 def admin():
     # Query PostgreSQL to get the list of documents
-    g.cursor.execute("SELECT id, filename FROM document_mapping;")  # Use g.cursor here
-    documents = [{'id': row[0], 'name': row[1], 'size': 0.1, 'date_added': "12 Sep 2022",'admin': "Nick Frische"} for row in g.cursor.fetchall()]  # And here
+    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping;")  # Use g.cursor here
+    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3],'admin': "Nick Frische"} for row in g.cursor.fetchall()]  # And here
 
     return render_template('admin.html', documents=documents)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-
     uploaded_files = request.files.getlist('file')
+    
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
+            file_size = len(file.read())  # Read the content of the file once
+            
+            # Reset the file position to the beginning
+            file.seek(0)
 
-            g.cursor.execute("INSERT INTO document_mapping (filename) VALUES (%s) RETURNING id;", (filename,))
+            file_size = file_size/1000000
+
+            g.cursor.execute("INSERT INTO document_mapping (filename, file_size) VALUES (%s, %s) RETURNING id;", (filename, file_size))
             g.db_conn.commit()
 
             # Create a BytesIO stream from the uploaded file
