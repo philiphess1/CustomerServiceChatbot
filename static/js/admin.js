@@ -58,7 +58,7 @@ document.getElementById("file").addEventListener("change", function() {
 function updateFileListDisplay() {
     const fileList = document.getElementById("filelist");
     fileList.innerHTML = ""; // clear current file list
-    
+
     if (fileArray.length > 0) {
         fileList.style.display = "block";
     } else {
@@ -77,32 +77,36 @@ function updateFileListDisplay() {
                 <div id="fileinfo">
                     <img src="static/images/PDF icon.png" height="30" width="30" alt="PDF-icon">
                     <div id="filename">${fileArray[i].name}</div>
-                    <div id="filesize">${fileSize} MB</div>
-                    <div class="left">
-                        <img src="static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button">
+                    <div id="spacer"></div>
+                    <div class="x-icon">
+                        <img src="static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button" data-index="${i}">
                     </div>
                 </div>
-                <div id="fileprogress"></div>
             </div>
         `;
 
         // Insert the fileHtml into the DOM
         fileList.insertAdjacentHTML('beforeend', fileHtml);
+    }
 
-        const removeBtn = fileList.querySelector('.remove-button:last-child');
-        removeBtn.addEventListener("click", function() {
-            totalSize -= parseFloat(fileSize); // Subtract file size from total size
-            fileArray.splice(i, 1);
+    // Attach event listeners after all elements are added to the DOM
+    const removeButtons = document.querySelectorAll('.remove-button');
+    removeButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+            const index = this.getAttribute('data-index');
+            totalSize -= parseFloat(fileArray[index].size / 1024 / 1024);
+            fileArray.splice(index, 1);
             updateFileListDisplay();
             // update the file count display
             document.getElementById('file-label').innerHTML = fileArray.length + ' file(s) selected, total size: ' + totalSize.toFixed(2) + ' MB';
         });
-    }
+    });
 
     if (fileArray.length === 0) {
         document.getElementById('uploading').style.display = 'none';
     }
 }
+
 
 
 document.getElementById('file').addEventListener('change', function() {
