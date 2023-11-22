@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session
-from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user
+from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
@@ -91,7 +91,7 @@ class AuthenticatedUser(UserMixin):
 @app.route('/clear_memory_session', methods=['POST'])
 def clear_memory():
     # Clear the memory
-    session.clear()
+    # session.clear()
     memory.clear()
     conversation_history = session.get('conversation_history', [])
     conversation_history.clear()
@@ -121,6 +121,30 @@ def load_user(user_id):
     if user_data:
         return AuthenticatedUser(id=user_data[0])
     return None
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Check if user already exists
+        g.cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
+        if g.cursor.fetchone():
+            flash('Username already exists', 'error')
+            return redirect(url_for('signup'))
+
+        # Hash the password
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        # Insert new user into the database
+        g.cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+        g.db_conn.commit()
+
+        flash('Account created successfully!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -158,7 +182,7 @@ def logout():
 
 @app.route('/')
 def home():
-    session.clear()
+    # session.clear()
     memory.clear()
     print(f"session ID: {session.sid}")
     print()
@@ -212,15 +236,16 @@ def store_feedback():
 @login_required
 def admin():
     # Query PostgreSQL to get the list of documents
-    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping;")  # Use g.cursor here
-    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3],'admin': "Nick Frische"} for row in g.cursor.fetchall()]  # And here
+    user_id = current_user.id
+    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s;", (user_id,)) # Use g.cursor here
+    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3],'admin': "NaN"} for row in g.cursor.fetchall()]  # And here
 
     return render_template('admin.html', documents=documents)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     uploaded_files = request.files.getlist('file')
-    
+    user_id = current_user.id
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
@@ -231,7 +256,7 @@ def upload_file():
 
             file_size = file_size/1000000
 
-            g.cursor.execute("INSERT INTO document_mapping (filename, file_size) VALUES (%s, %s) RETURNING id;", (filename, file_size))
+            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id) VALUES (%s, %s, %s) RETURNING id;", (filename, file_size, user_id))
             g.db_conn.commit()
 
             # Create a BytesIO stream from the uploaded file
