@@ -86,7 +86,6 @@
                     <th>Name</th>
                     <th>Size</th>
                     <th>Date added</th>
-                    <th>Admin</th>
                     <th></th>
                 </tr>
             </thead>
@@ -97,7 +96,6 @@
                         <td>{{ document.name }}</td>
                         <td class="sub-column">{{ document.size }} Mb</td>
                         <td class="sub-column">{{ document.date_added }}</td>
-                        <td class="sub-column">{{ document.admin }}</td>
                         <td>
                             <div class="bin-container">
                             <form action="/delete/{{ document.id }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">

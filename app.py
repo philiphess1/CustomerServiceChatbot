@@ -239,7 +239,7 @@ def admin():
     # Query PostgreSQL to get the list of documents
     user_id = current_user.id
     g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s;", (user_id,)) # Use g.cursor here
-    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3],'admin': "NaN"} for row in g.cursor.fetchall()]  # And here
+    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]  # And here
 
     return render_template('admin.html', documents=documents)
 
