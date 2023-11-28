@@ -136,6 +136,7 @@ def signup():
 
         # Hash the password
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = hashed_password.decode('utf-8')
 
         # Insert new user into the database
         g.cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
