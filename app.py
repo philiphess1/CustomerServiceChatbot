@@ -16,12 +16,14 @@ from werkzeug.utils import secure_filename
 import psycopg2
 import bcrypt
 from flask_session import Session
+from flask_cors import CORS
 
 
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = 'your_secret_key_here'
 Session(app)
