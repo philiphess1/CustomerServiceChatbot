@@ -4,9 +4,32 @@
     <meta charset="UTF-8">
     <title>Admin Panel</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 </head>
 <body>
     <div>
+    <div class="sidenav">
+        <button class="openbtn" onclick="openNav()">&#9776;</button>
+        <button class="openbtn" onclick="openNav()"><img src="{{ url_for('static', filename='images/profile_icon.webp') }}" height="50" width="50" alt="profile"></button>
+        <button class="openbtn" onclick="openNav()"><img src="{{ url_for('static', filename='images/profile_icon.webp') }}" height="50" width="50" alt="profile"></button>
+        <button class="openbtn" onclick="openNav()"><img src="{{ url_for('static', filename='images/settings.png') }}" height="50" width="50" alt="settings"></button>
+        <button class="openbtn" onclick="openNav()"><img src="{{ url_for('static', filename='images/integration.png') }}" height="50" width="50" alt="integration"></button>
+        <button class="openbtn" onclick="openNav()"><img src="{{ url_for('static', filename='images/data-analytics.png') }}" height="50" width="50" alt="analytics"></button>
+        <button class="openbtn" onclick="openNav()"><img src="{{ url_for('static', filename='images/usage-based-price.png') }}" height="50" width="50" alt="usage"></button>
+    </div>
+    <section id="sidepanel">
+        <div id="mySidepanel" class="sidepanel">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#">Data</a>
+            <a href="#">Services</a>
+            <a href="#">Clients</a>
+            <a href="#">Contact</a>
+            <a href="#">About</a>
+            <a href="#">Services</a>
+        </div>
+            
+            
+    </section>
   
     <!-- Upload form -->
     <section>
@@ -41,7 +64,7 @@
                     <!-- <input type="submit" value="Upload"> -->
                     <button class="button" type="submit" value="Upload">
                         <span class="button__text">Upload</span>
-                        <span class="button__icon"><img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="X-icon"></span>
+                        <span class="button__icon"><img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="upload"></span>
                       </button>
                 </div>
             </div>
@@ -102,6 +125,8 @@
         </table>
     </div>
     </section>
+
+    
     
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
     </div>
