@@ -121,7 +121,8 @@
         </table>
     </div>
     </section>
-
+    
+    <button id="chatbot-button" style="position: fixed; bottom: 30px; right: 30px; z-index: 1000; padding: 10px 20px; background-image: url('https://ibb.co/12m2chL'); background-size: cover; transition: transform 0.2s ease-in-out; outline: none;"></button><iframe src="http://127.0.0.1:5000/" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:60px; right:0; z-index:9999;"></iframe><script>document.getElementById('chatbot-button').addEventListener('click',function(){var e=document.getElementById('chatbot-iframe');'none'===e.style.display?(e.style.display='block',document.addEventListener('click',closeChatbotOnClickOutside)):(e.style.display='none',document.removeEventListener('click',closeChatbotOnClickOutside))});function closeChatbotOnClickOutside(e){var t=document.getElementById("chatbot-iframe");e.target.id!=='chatbot-iframe'&&e.target.id!=='chatbot-button'&&closeChatbot()}function closeChatbot(){var e=document.getElementById('chatbot-iframe');e.style.display='none',document.removeEventListener('click',closeChatbotOnClickOutside)}</script>
     
     
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>

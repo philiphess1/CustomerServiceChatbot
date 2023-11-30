@@ -23,7 +23,7 @@
         }
 
         .chatbot {
-            display: none;
+            /* display: none; */
             position: fixed;
             bottom: 15px;
             right: 20px;
@@ -287,4 +287,7 @@
             margin-right: 4px;
             cursor: pointer;
             color: #555555;
+        }
+        html body {
+            border: none;
         }
