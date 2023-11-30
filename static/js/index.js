@@ -120,6 +120,7 @@
         function appendMessage(name, side, text) {
             text = text.replace(/\n/g, '<br>');
             text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            text = text.replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>');
             const chatboxBody = document.querySelector(".chatbox-body");
             const msgHTML = `
                 <div class="msg ${side}-msg">
