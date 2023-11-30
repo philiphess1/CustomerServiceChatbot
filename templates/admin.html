@@ -4,9 +4,30 @@
     <meta charset="UTF-8">
     <title>Admin Panel</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
 </head>
 <body>
     <div>
+    <div class="sidenav">
+        <button class="openbtn" onclick="openNav()">&#9776;</button>
+        <button class="btns" id="admin" title="Documents" onclick="openNav()"><img src="{{ url_for('static', filename='images/paper (1).png') }}" height="50" width="50" alt="Documents"></button>
+        <button class="btns" id="settings" title="Settings" onclick="openNav()"><img src="{{ url_for('static', filename='images/setting (1).png') }}" height="50" width="50" alt="settings"></button>
+        <button class="btns" id="integrations" title="Integrations" onclick="openNav()"><img src="{{ url_for('static', filename='images/integration (1).png') }}" height="50" width="50" alt="integration"></button>
+        <button class="btns" id="analytics" title="Analytics" onclick="openNav()"><img src="{{ url_for('static', filename='images/data-analytics (1).png') }}" height="50" width="50" alt="analytics"></button>
+        <button class="btns" id="usage" title="Usage" onclick="openNav()"><img src="{{ url_for('static', filename='images/usage-based-price (1).png') }}" height="50" width="50" alt="usage"></button>
+    </div>
+    <section id="sidepanel">
+        <div id="mySidepanel" class="sidepanel">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#" id="admin" class="mgn">Documents</a>
+            <a href="#" id="settings" >Settings</a>
+            <a href="#" id="integrations">Integrations</a>
+            <a href="#" id="analytics">Analytics</a>
+            <a href="#" id="usage">Usage</a>
+        </div>
+            
+            
+    </section>
   
     <!-- Upload form -->
     <section>
@@ -41,7 +62,7 @@
                     <!-- <input type="submit" value="Upload"> -->
                     <button class="button" type="submit" value="Upload">
                         <span class="button__text">Upload</span>
-                        <span class="button__icon"><img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="X-icon"></span>
+                        <span class="button__icon"><img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="upload"></span>
                       </button>
                 </div>
             </div>
@@ -50,7 +71,7 @@
                 <div class="loader"></div>
                 <p>Uploading...</p>
             </div>
-        </form>   
+        </form>
     </section>
 
     <section >
@@ -63,7 +84,6 @@
                     <th>Name</th>
                     <th>Size</th>
                     <th>Date added</th>
-                    <th>Admin</th>
                     <th></th>
                 </tr>
             </thead>
@@ -74,7 +94,6 @@
                         <td>{{ document.name }}</td>
                         <td class="sub-column">{{ document.size }} Mb</td>
                         <td class="sub-column">{{ document.date_added }}</td>
-                        <td class="sub-column">{{ document.admin }}</td>
                         <td>
                             <div class="bin-container">
                             <form action="/delete/{{ document.id }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">
@@ -102,6 +121,46 @@
         </table>
     </div>
     </section>
+    <img id="chatbot-button" src="{{ url_for('static', filename='images/chatboticon.png') }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
+
+<iframe src="https://hr-bot-beast-aa887886e420.herokuapp.com/" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
+<script>
+    var chatbotButton = document.getElementById('chatbot-button');
+    chatbotButton.addEventListener('mouseover', function() {
+        this.style.transform = 'scale(1.1)';
+    });
+    chatbotButton.addEventListener('mouseout', function() {
+        this.style.transform = 'scale(1)';
+    });
+    document.getElementById('chatbot-button').addEventListener('click', function() {
+        var iframe = document.getElementById('chatbot-iframe');
+        if (iframe.style.display === 'none') {
+            iframe.style.display = 'block';
+            // Add the event listener when the chatbot is opened
+            document.addEventListener('click', closeChatbotOnClickOutside);
+        } else {
+            iframe.style.display = 'none';
+            // Remove the event listener when the chatbot is closed
+            document.removeEventListener('click', closeChatbotOnClickOutside);
+        }
+    });
+
+    function closeChatbotOnClickOutside(event) {
+        var chatbot = document.getElementById("chatbot-iframe");
+        // Check if the click was outside the chatbot
+        if (event.target.id !== 'chatbot-iframe' && event.target.id !== 'chatbot-button') {
+            closeChatbot();
+        }
+    }
+
+    function closeChatbot() {
+        var iframe = document.getElementById('chatbot-iframe');
+        iframe.style.display = 'none';
+        // Remove the event listener when the chatbot is closed
+        document.removeEventListener('click', closeChatbotOnClickOutside);
+    }
+</script>
+    
     
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
     </div>

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session
-from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user
+from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
 from langchain.vectorstores import Pinecone
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
@@ -12,10 +12,16 @@ import tiktoken
 from dotenv import load_dotenv
 from io import BytesIO
 from PyPDF2 import PdfReader
+import docx2txt
+import pandas as pd
+import requests
+import re
+from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
 import psycopg2
 import bcrypt
 from flask_session import Session
+import pandas as pd
 
 
 
@@ -85,7 +91,7 @@ class AuthenticatedUser(UserMixin):
 @app.route('/clear_memory_session', methods=['POST'])
 def clear_memory():
     # Clear the memory
-    session.clear()
+    # session.clear()
     memory.clear()
     conversation_history = session.get('conversation_history', [])
     conversation_history.clear()
@@ -115,6 +121,31 @@ def load_user(user_id):
     if user_data:
         return AuthenticatedUser(id=user_data[0])
     return None
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Check if user already exists
+        g.cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
+        if g.cursor.fetchone():
+            flash('Username already exists', 'error')
+            return redirect(url_for('signup'))
+
+        # Hash the password
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = hashed_password.decode('utf-8')
+
+        # Insert new user into the database
+        g.cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+        g.db_conn.commit()
+
+        flash('Account created successfully!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('signup.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -152,7 +183,7 @@ def logout():
 
 @app.route('/')
 def home():
-    session.clear()
+    # session.clear()
     memory.clear()
     print(f"session ID: {session.sid}")
     print()
@@ -206,15 +237,16 @@ def store_feedback():
 @login_required
 def admin():
     # Query PostgreSQL to get the list of documents
-    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping;")  # Use g.cursor here
-    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3],'admin': "Nick Frische"} for row in g.cursor.fetchall()]  # And here
+    user_id = current_user.id
+    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s;", (user_id,)) # Use g.cursor here
+    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]  # And here
 
     return render_template('admin.html', documents=documents)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     uploaded_files = request.files.getlist('file')
-    
+    user_id = current_user.id
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
@@ -225,41 +257,106 @@ def upload_file():
 
             file_size = file_size/1000000
 
-            g.cursor.execute("INSERT INTO document_mapping (filename, file_size) VALUES (%s, %s) RETURNING id;", (filename, file_size))
+            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id) VALUES (%s, %s, %s) RETURNING id;", (filename, file_size, user_id))
             g.db_conn.commit()
 
             # Create a BytesIO stream from the uploaded file
             file_stream = BytesIO(file.read())
+            file_extension = filename.split(".")[-1].lower()
 
-            # Use PyPDF2 to read the PDF from the BytesIO stream
-            pdf_reader = PdfReader(file_stream)
-            num_pages = len(pdf_reader.pages)
+            if file_extension == "pdf":
+                pdf_reader = PdfReader(file_stream)
+                num_pages = len(pdf_reader.pages)
+                for page_num in range(num_pages):
+                    page = pdf_reader.pages[page_num]
+                    text = page.extract_text()
+                    process_text(text, filename, page_num)
 
-            # Loop through each page
-            for page_num in range(num_pages):
-                page = pdf_reader.pages[page_num]
-                text = page.extract_text()
+            elif file_extension == "docx":
+                doc = docx2txt.process(file_stream)
+                cleaned_doc = re.sub(r'\s+', ' ', doc.strip())
+                process_text(cleaned_doc, filename, 0)
 
-                # Process the text (i.e., break it into chunks and create embeddings)
-                chunk_size = 750
-                overlap = 100
-                for start in range(0, len(text), chunk_size - overlap):
-                    end = start + chunk_size
-                    text_chunk = text[start:end]
+            elif file_extension == "xlsx":
+                # use pandas to read the excel file from the bytesIO steam
+                df = pd.read_excel(file_stream)
+                headers = ' '.join(df.columns) + '\n'
+                full_text = df.to_string(index=False, header=False)
+                process_excel_text(full_text, headers, filename)
 
-                    # Generate embeddings
-                    embedding = embeddings.embed_query(text_chunk)
-
-                    # Create a chunk ID
-                    chunk_doc_id = f"{filename}_page{page_num}_start{start}:{end}"
-
-                    # Prepare data for Pinecone
-                    upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
-                    
-                    # Store the embeddings in Pinecone using 'upsert' method
-                    index.upsert(upsert_data)
-
+            elif file_extension == "csv":
+                # use pandas to read the excel file from the bytesIO steam
+                encodings = ['utf-8', 'latin1', 'iso-8859-1', 'cp1252']
+                for encoding in encodings:
+                    try:
+                        df = pd.read_csv(file_stream, encoding=encoding)
+                        headers = ' '.join(df.columns) + '\n'
+                        full_text = df.to_string(index=False, header=False)
+                        process_excel_text(full_text, headers, filename)
+                        break
+                    except UnicodeDecodeError:
+                        continue
+                    except pd.errors.EmptyDataError:
+                        return jsonify({"status": "error", "message": "File is empty or incorrectly formatted!"})
+            
     return jsonify({"status": "success", "message": "Files uploaded successfully!"})
+
+def process_text(text, filename, page_num):
+    # Process the text (i.e., break it into chunks and create embeddings)
+    chunk_size = 750
+    overlap = 100
+    for start in range(0, len(text), chunk_size - overlap):
+        end = start + chunk_size
+        text_chunk = text[start:end]
+        print(text_chunk)
+
+        # Generate embeddings
+        embedding = embeddings.embed_query(text_chunk)
+
+        # Create a chunk ID
+        chunk_doc_id = f"{filename}_page{page_num}_start{start}:{end}"
+
+        # Prepare data for Pinecone
+        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
+        
+        # Store the embeddings in Pinecone using 'upsert' method
+        index.upsert(upsert_data)
+
+def process_excel_text(full_text, headers, filename):
+    chunk_size = 750
+    overlap = 100
+    for start in range(0, len(full_text), chunk_size - overlap):
+        end = start + chunk_size
+        text_chunk = full_text[start:end]
+        text_chunk = headers + text_chunk
+        print(text_chunk)
+        # Generate embeddings
+        embedding = embeddings.embed_query(text_chunk)
+
+        # Create a chunk ID
+        chunk_doc_id = f"{filename}_start{start}:{end}"
+
+
+        # Prepare data for Pinecone
+        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
+        
+        # Store the embeddings in Pinecone using 'upsert' method
+        index.upsert(upsert_data)
+
+
+@app.route('/scrape', methods=['POST'])
+def scrape_url():
+    url = request.form['url']  # Get the URL from the form data
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, 'html.parser')
+        raw_text = soup.get_text()
+        text = re.sub(r'\s+', ' ', raw_text.strip())
+        process_text(text, url, 0)
+        return jsonify({"status": "success", "message": "URL scraped and processed successfully!"})
+    else:
+        return jsonify({"status": "error", "message": "Failed to scrape URL."})
 
 @app.route('/delete/<doc_id>', methods=['POST'])
 @login_required

@@ -15,7 +15,7 @@
 
             // If there are no existing messages, show the greeting with a delay
             if (!existingMessages) {
-                const greetingMessage = "Hello! I'm, Ecco, your personal human resources assistant. How can I assist you today?";
+                const greetingMessage = "Hello! I'm, Ecco, your personal Virtual Assitant. I am here to answer any question that you may have about Beber camp. How can I assist you today?";
                 setTimeout(() => {
                     appendMessage("Chatbot", "left", greetingMessage);
                 }, 1000); // Adjust the delay time as needed
@@ -24,41 +24,31 @@
                 greetingShown = true;
             }
         }
-        function openChatbot() {
-            var widgetButton = document.getElementById("widget-button");
-            widgetButton.style.animation = "slide-down 0.5s ease-out";
-            setTimeout(function() {
-                widgetButton.style.display = "none";
-                document.getElementById("chatbot").style.display = "block";
-                document.addEventListener("click", closeChatbotOnClickOutside);
-                showGreetingMessage();
-            }, 300);
-        }
+        showGreetingMessage();
 
+// Function to close the chatbot
+// function closeChatbot() {
+//     var widgetButton = document.getElementById("widget-button");
+//     var chatbot = document.getElementById("chatbot");
+//     chatbot.style.animation = "slide-down 0.5s ease-out";
+//     setTimeout(function() {
+//         chatbot.style.display = "none";
+//         chatbot.style.animation = ""; // Remove animation property
+//         document.removeEventListener("click", closeChatbotOnClickOutside);
+//         setTimeout(function() {
+//             widgetButton.style.display = "block";
+//             widgetButton.style.animation = "slide-up 0.5s ease-out";
+//         }, 100);
+//     }, 300);
+// }
 
-        // Function to close the chatbot
-        function closeChatbot() {
-            var widgetButton = document.getElementById("widget-button");
-            var chatbot = document.getElementById("chatbot");
-            chatbot.style.animation = "slide-down 0.5s ease-out";
-            setTimeout(function() {
-                chatbot.style.display = "none";
-                chatbot.style.animation = ""; // Remove animation property
-                document.removeEventListener("click", closeChatbotOnClickOutside);
-                setTimeout(function() {
-                    widgetButton.style.display = "block";
-                    widgetButton.style.animation = "slide-up 0.5s ease-out";
-                }, 100);
-            }, 300);
-        }
-
-        // Function to close the chatbot when clicked outside
-        function closeChatbotOnClickOutside(event) {
-            var chatbot = document.getElementById("chatbot");
-            if (!chatbot.contains(event.target)) {
-                closeChatbot();
-            }
-        }
+// Function to close the chatbot when clicked outside
+// function closeChatbotOnClickOutside(event) {
+//     var chatbot = document.getElementById("chatbot");
+//     if (!chatbot.contains(event.target)) {
+//         closeChatbot();
+//     }
+// }
 
         // Function to show the three dots typing indicator
         function showTypingIndicator() {
@@ -98,10 +88,7 @@
             // const inputField = document.querySelector("user-input");
             // inputField.disabled = false;
         }
-
-        // Attach event listeners to the widget button and chatbox close button
-        document.getElementById("widget-button").addEventListener("click", openChatbot);
-        document.getElementById("chatbox-close").addEventListener("click", closeChatbot);
+        // document.getElementById("chatbox-close").addEventListener("click", closeChatbot);
 
         // Add an event listener to the input element to listen for the "keydown" event
         // Add an event listener to the input element to listen for the "keydown" event
