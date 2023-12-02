@@ -189,7 +189,7 @@ def logout():
 
 @app.route('/')
 def home():
-    # session.clear()
+    session.clear()
     memory.clear()
     print(f"session ID: {session.sid}")
     print()
