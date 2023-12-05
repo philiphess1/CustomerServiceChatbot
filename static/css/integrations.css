@@ -115,3 +115,45 @@
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
   }
+
+.code-container {
+    position: relative;
+    padding: 10px;
+    margin: 15px 0;
+    overflow-x: auto;
+    margin-left: 100px;
+    margin-right: 15px;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 25px;
+    right: 15px;
+}
+
+.code-container pre {
+    background-color: #111; /* Change this to match your website's color scheme */
+    border: 1px solid #ccc; /* Change this to match your website's color scheme */
+    padding: 10px;
+    margin: 10px 0;
+    overflow-x: auto;
+}
+
+.code-container pre {
+    /* existing styles */
+    border-radius: 10px; /* rounded corners */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* shadow effect */
+    line-height: 1.5; /* space between lines */
+    font-size: 14px; /* size of the text */
+}
+
+.code-container code {
+    color: #fdfdfd; /* Change this to match your website's color scheme */
+    font-family: Verdana, Geneva, Tahoma, sans-serif; /* Change this to match your website's typography */
+
+}
+
+.instructions {
+    font-family: Verdana, Geneva, Tahoma, sans-serif; /* same font as the code */
+    margin-left: 100px; /* left margin of 100px */
+}

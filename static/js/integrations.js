@@ -54,3 +54,7 @@ for (var i = 0; i < btns.length; i++) {
         btns[i].style.backgroundColor = '#444';
     }
 }
+function copyCode() {
+    var code = document.getElementById('chatbot-code').innerText;
+    navigator.clipboard.writeText(code);
+}
