@@ -249,6 +249,11 @@ def admin():
 
     return render_template('admin.html', documents=documents)
 
+@app.route('/integrations')
+@login_required
+def integrations():
+    return render_template('integrations.html')
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     uploaded_files = request.files.getlist('file')

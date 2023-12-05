@@ -5,6 +5,19 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.main-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.left-container {
+    flex-basis: 68%;
+    margin-left: 80px;
+}
+.right-container {
+    flex-basis: 28%;
+}
 header {
     background-color: #333;
     color: #fff;
