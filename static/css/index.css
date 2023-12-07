@@ -87,8 +87,10 @@
             width: 330px;
             height: 460px;
             overflow-y: scroll;
-            background-color: #e0e9f4;
+            /* background-color: #e0e9f4; */
             font-family: Poppins, sans-serif;
+            background-color: var(--background-color);
+            /* background-color: #000e1f; */
         }
 
         .chatbox-input {

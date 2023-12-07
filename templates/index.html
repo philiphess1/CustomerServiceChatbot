@@ -28,7 +28,7 @@
                     </div>
                     <!-- <div class="chatbox-close" id="chatbox-close">X</div> -->
                 </div>
-                <div class="chatbox-body">
+                <div class="chatbox-body" >
                     <!-- Chat messages go here -->
                 </div>
                 <div class="chatbox-input">
@@ -42,4 +42,9 @@
     </div>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
+<style>
+    :root {
+      --background-color: {{ settings.background_color }};
+    }
+    </style>
 </html>

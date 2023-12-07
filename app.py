@@ -193,7 +193,32 @@ def home():
     memory.clear()
     print(f"session ID: {session.sid}")
     print()
-    return render_template('index.html')
+
+    # Query PostgreSQL to get the settings
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature FROM chatbot_settings WHERE id = 1;")  # Replace 'user_id' and 'current_user.id' with your actual user ID field and value
+    row = g.cursor.fetchone()
+    if row is None:
+        settings = {
+            'widget_icon': 'default_icon',  # Default values if no settings are found for the user
+            'background_color': '#000000',
+            'font_style': 'default_font',
+            'bot_temperature': 0.5
+        }
+    else:
+        settings = {
+            'widget_icon': row[0],
+            'background_color': row[1],
+            'font_style': row[2],
+            'bot_temperature': row[3]
+        }
+
+    return render_template('index.html', settings=settings)
+    # session.clear()
+    # memory.clear()
+    # print(f"session ID: {session.sid}")
+    # print()
+    # settings = {'background_color': '#000000'}  # Replace with your actual color
+    # return render_template('index.html', settings=settings)
 
 @app.route('/IU_HR')
 def HR():
@@ -388,6 +413,65 @@ def delete(doc_id):
         print(f"File not found for ID {doc_id}")
 
     return redirect(url_for('admin'))
+@app.route('/settings')
+@login_required
+def settings():
+    # Query PostgreSQL to get the settings for the user with id = 1
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature FROM chatbot_settings WHERE id = 1;")
+    row = g.cursor.fetchone()
+    if row is None:
+        settings = {
+            'widget_icon': 'default_icon',  # Default values if no settings are found for the user
+            'background_color': '#000000',
+            'font_style': 'default_font',
+            'bot_temperature': 0.5
+        }
+    else:
+        settings = {
+            'widget_icon': row[0],
+            'background_color': row[1],
+            'font_style': row[2],
+            'bot_temperature': row[3]
+        }
+    return render_template('settings.html', settings=settings)
+    # # Query PostgreSQL to get the background color
+    # g.cursor.execute("SELECT background_color FROM chatbot_settings;") 
+    # row = g.cursor.fetchone()
+    # if row is None:
+    #     background_color = '#000000'  # Default color if no settings are found for the user
+    # else:
+    #     background_color = row[0]
+    # settings = {'background_color': background_color}
+    # return render_template('settings.html', settings=settings)
+
+def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature):
+    # Prepare the SQL query
+    sql = """
+    UPDATE chatbot_settings
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s WHERE id = 1;
+    """
+
+    # Execute the SQL query
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature)) 
+
+    # Commit the changes
+    g.db_conn.commit()
+
+@app.route('/update_chatbot_settings', methods=['POST'])
+def update_chatbot_settings():
+    widget_icon = request.form.get('widget_icon')
+    background_color = request.form.get('background_color')
+    font_style = request.form.get('font_style')
+    bot_temperature = request.form.get('bot_temperature')
+
+    # Assuming a function 'update_chatbot_settings_in_db' to update or insert settings
+    update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature)
+
+    flash('Chatbot settings updated successfully!', 'success')
+    return redirect(url_for('settings'))
+
+
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Use PORT if it's there

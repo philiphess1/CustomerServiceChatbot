@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Chatbot Widget</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <h2>Chatbot Settings</h2>
+    <form id="settingsForm" action="/update_chatbot_settings" method="post">
+        <label for="widget_icon">Widget Icon URL:</label>
+        <input type="text" id="widget_icon" name="widget_icon" value="{{ settings['widget_icon'] }}"><br><br>
+
+        <label for="background_color">Background Color:</label>
+        <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}"><br><br>
+
+        <label for="font_style">Font Style:</label>
+        <select id="font_style" name="font_style">
+            <option value="Arial" {% if settings['font_style'] == 'Arial' %}selected{% endif %}>Arial</option>
+            <option value="Verdana" {% if settings['font_style'] == 'Verdana' %}selected{% endif %}>Verdana</option>
+            <option value="Times New Roman" {% if settings['font_style'] == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
+            <!-- Add more font options here -->
+        </select><br><br>
+
+        <label for="bot_temperature">Bot Temperature:</label>
+        <input type="number" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.01" value="{{ settings['bot_temperature'] }}"><br><br>
+
+        <input type="submit" value="Save Settings">
+    </form>
+
+    <div class="widget">
+    <!-- <h2>Chatbot Settings</h2>
+    <form id="settingsForm" action="/update_chatbot_settings" method="post">
+        <label for="widget_icon">Widget Icon URL:</label>
+        <input type="text" id="widget_icon" name="widget_icon"><br><br>
+
+        <label for="background_color">Background Color:</label>
+        <input type="color" id="background_color" name="background_color"><br><br>
+
+        <label for="font_style">Font Style:</label>
+        <select id="font_style" name="font_style">
+            <option value="Arial">Arial</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Times New Roman">Times New Roman</option> -->
+            <!-- Add more font options here -->
+        <!-- </select><br><br>
+
+        <label for="bot_temperature">Bot Temperature:</label>
+        <input type="number" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.01"><br><br>
+
+        <input type="submit" value="Save Settings">
+    </form>
+
+    <div class="widget"> -->
+        <!-- <div class="widget-button" id="widget-button"></div> -->
+        <div class="chatbot" id="chatbot">
+            <div class="chatbox">
+                <div class="chatbox-header">
+                    <span class="chatbox-title">
+                        <div class="chatbox-icon">
+                            <img src="{{ url_for('static', filename='images/beber camp.png') }}" alt="Virtual assistant" width="150" height="150">
+                        </div>
+                        <div class="chatbox-top">Virtual assistant</div> 
+                    </span>
+                    <div class="chatbox-close">
+                        <div id="refresh">
+                            <img src="{{ url_for('static', filename='images/refresh.png') }}" alt="Refresh" width="20" height="20">
+                        </div>
+                    </div>
+                    <!-- <div class="chatbox-close" id="chatbox-close">X</div> -->
+                </div>
+                <div class="chatbox-body" >
+                    <!-- Chat messages go here -->
+                </div>
+                <div class="chatbox-input">
+                    <div class="input-wrapper">
+                        <input type="text" id="user-input" placeholder="Ask a question...">
+                        <button id="send-button">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function validateInput(input) {
+          if (input.value < 0) input.value = 0;
+          if (input.value > 1) input.value = 1;
+        }
+        </script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <style>
+        :root {
+          --background-color: {{ settings.background_color }};
+        }
+        </style>
+</body>
+</html>
