@@ -1,3 +1,27 @@
+html, body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .top-ribbon {
+    background-color: #111;
+    height: 101px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 20px;
+    color: white;
+    font-size: 40px;
+  }
+  
+  .company-name {
+    margin-right: 10px;
+    font-family: Arial, sans-serif; /* Change this to your preferred font */
+    font-weight: bold;
+    font-style: italic;
+  }
+  
+
 .sidepanel {
     height: 100%; /* Specify a height */
     width: 0; /* 0 width - change this with JavaScript */
@@ -125,6 +149,34 @@
     background-color: lightcoral;
 }
 
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 100px;
+}
+
+.questions-container {
+    flex-basis: 70%;
+    margin: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container {
+    flex-basis: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 /* Table styling */
 .questions-container table {
     width: 100%;
@@ -135,4 +187,21 @@
     border: 1px solid black;
     padding: 8px;
     text-align: left;
+}
+
+.instructions {
+    font-family: Arial, sans-serif;
+    margin-left: 100px; /* left margin of 100px */
+}
+
+.bar-chart-container {
+    position: relative; 
+    height:40vh; 
+    width:80vw;
+    margin-left: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }

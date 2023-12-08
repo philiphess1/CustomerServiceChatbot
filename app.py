@@ -483,6 +483,20 @@ def analytics():
 
     return render_template('analytics.html', data=data)
 
+@app.route('/analytics/data')
+@login_required
+def analytics_data():
+    # Fetch the number of likes from the database
+    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type = 'Like';")
+    likes = g.cursor.fetchone()[0]
+
+    # Fetch the number of dislikes from the database
+    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type = 'Dislike';")
+    dislikes = g.cursor.fetchone()[0]
+
+    # Return the data as JSON
+    return jsonify({'likes': likes, 'dislikes': dislikes})
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Use PORT if it's there
