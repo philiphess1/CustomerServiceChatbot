@@ -72,3 +72,18 @@ window.onload = function() {
         });
     });
 };
+
+document.getElementById('settings-form').addEventListener('submit', function(event) {
+    var botTemperature = document.getElementById('bot_temperature').value;
+    var customPrompt = document.getElementById('custom_prompt').value;
+
+    if (botTemperature < 0 || botTemperature > 1) {
+        alert('Bot Temperature must be between 0 and 1.');
+        event.preventDefault();
+    }
+
+    if (customPrompt.length > 1000) {
+        alert('Custom Prompt cannot be more than 1000 characters.');
+        event.preventDefault();
+    }
+});

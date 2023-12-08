@@ -68,17 +68,21 @@ llm = ChatOpenAI(
     temperature=temperature_from_db
 )
 
+def get_custom_prompt():
+    with db_conn.cursor() as cursor:
+        cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE id = 1;")
+        row = cursor.fetchone()
+        return row[0] if row else "Default prompt part"
+
+prompt_message = get_custom_prompt()
+
 # Define the prompt template with placeholders for context and chat history
-prompt_template = """
-    You are an AI-powered assistant designed to provide precise and comprehensive information about Beber Summer Camp's policies, benefits, procedures, and related queries. 
-    Your main role is to assist users by addressing their specific questions related to Beber Summer Camp. You will offer me accurate answers based only on your knowledge about Beber Summer Camp. 
-    If you don't have relevant information in your context regarding a user's question, you should inform the user that you are unable to provide an answer to that specific query and suggest contacting info@bebercamp.com or (847) 677-7130. 
-    Do not fabricate responses. Decline to answer any question not related to Beber Summer Camp or its documents. Maintain your character consistently. Always reply in the language of the user's message. Use straightforward formatting. 
-    Respond as if you are a member of the Beber Summer Camp team, using 'we' and 'us' instead of 'they'. Provide hyperlinks when necessary.
+prompt_template = f"""
+    {prompt_message}
 
-    CONTEXT: {context}
+    CONTEXT: {{context}}
 
-    QUESTION: {question}"""
+    QUESTION: {{question}}"""
 
 # Create a PromptTemplate object with input variables for context and chat history
 TEST_PROMPT = PromptTemplate(input_variables=["context", "question"], template=prompt_template)
@@ -91,7 +95,7 @@ conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
         memory=memory,
-        combine_docs_chain_kwargs={"prompt": TEST_PROMPT}
+        combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
     )
 
 # Connect to PostgreSQL database
@@ -429,33 +433,37 @@ def delete(doc_id):
 @login_required
 def settings():
     # Query PostgreSQL to get the settings for the user with id = 1
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature FROM chatbot_settings WHERE id = 1;")
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = 1;")
     row = g.cursor.fetchone()
     if row is None:
         settings = {
             'widget_icon': 'default_icon',  # Default values if no settings are found for the user
             'background_color': '#000000',
             'font_style': 'default_font',
-            'bot_temperature': 0.0
+            'bot_temperature': 0.0,
+            'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
+            'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
         }
     else:
         settings = {
             'widget_icon': row[0],
             'background_color': row[1],
             'font_style': row[2],
-            'bot_temperature': row[3]
+            'bot_temperature': row[3],
+            'greeting_message': row[4],
+            'custom_prompt': row[5]
         }
     return render_template('settings.html', settings=settings)
 
-def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature):
+def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt):
     # Prepare the SQL query
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s WHERE id = 1;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s WHERE id = 1;
     """
 
     # Execute the SQL query
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt)) 
 
     # Commit the changes
     g.db_conn.commit()
@@ -466,12 +474,25 @@ def update_chatbot_settings():
     background_color = request.form.get('background_color')
     font_style = request.form.get('font_style')
     bot_temperature = request.form.get('bot_temperature')
+    greeting_message = request.form.get('greeting_message')
+    custom_prompt = request.form.get('custom_prompt')
 
     # Assuming a function 'update_chatbot_settings_in_db' to update or insert settings
-    update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature)
+    update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt)
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings'))
+
+@app.route('/greeting_message')
+def greeting_message():
+    # Query PostgreSQL to get the greeting message for the user with id = 1
+    g.cursor.execute("SELECT greeting_message FROM chatbot_settings WHERE id = 1;")
+    row = g.cursor.fetchone()
+    if row is None:
+        greeting_message = 'Your default greeting message here'  # Default value if no greeting message is found for the user
+    else:
+        greeting_message = row[0]
+    return jsonify(greeting_message=greeting_message)
 
 @app.route('/analytics')
 @login_required

@@ -8,20 +8,24 @@
             if (greetingShown) {
                 return;
             }
-
+        
             // Check if there are any existing messages in the chatbox
             const chatboxBody = document.querySelector(".chatbox-body");
             const existingMessages = chatboxBody.children.length > 0;
-
+        
             // If there are no existing messages, show the greeting with a delay
             if (!existingMessages) {
-                const greetingMessage = "Hello! I'm, Ecco, your personal Virtual Assitant. I am here to answer any question that you may have about Beber camp. How can I assist you today?";
-                setTimeout(() => {
-                    appendMessage("Chatbot", "left", greetingMessage);
-                }, 1000); // Adjust the delay time as needed
-
-                // Set the flag to true so the greeting won't be shown again
-                greetingShown = true;
+                fetch('/greeting_message')
+                    .then(response => response.json())
+                    .then(data => {
+                        const greetingMessage = data.greeting_message;
+                        setTimeout(() => {
+                            appendMessage("Chatbot", "left", greetingMessage);
+                        }, 1000); // Adjust the delay time as needed
+        
+                        // Set the flag to true so the greeting won't be shown again
+                        greetingShown = true;
+                    });
             }
         }
         showGreetingMessage();
