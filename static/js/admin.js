@@ -80,12 +80,15 @@ function updateFileListDisplay() {
         const fileExtension = fileArray[i].name.split('.').pop().toLowerCase();
         let fileIcon = 'default';
         if (fileExtension.includes('xls')) {
-            fileIcon = 'xls';
+            fileIcon = 'xlsx';
         } else if (fileExtension.includes('doc')) {
             fileIcon = 'docx';
         } else if (fileExtension === 'pdf') {
             fileIcon = 'pdf';
+        } else if (fileExtension === 'csv') {
+            fileIcon = 'csv';
         }
+
 
 
         const fileHtml = `

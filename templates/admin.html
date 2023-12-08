@@ -45,7 +45,7 @@
                             <div class="upload-area" id="upload-area">
                                 <img src="{{ url_for('static', filename='images/cloud-upload.png') }}" height="200" width="200" alt="Upload">
                                 <label class="upload-label">Drag and drop files here or <span class="click-text" id="click-text">click</span> to choose a file:</label>
-                                <input type="file" id="file" name="file" required multiple onchange="updateFileSizeAndCount();">
+                                <input type="file" id="file" name="file" required multiple onchange="updateFileSizeAndCount();" accept=".pdf, .xlsx, .docx, .csv">
                                 <label id="file-label">Choose file(s)</label>
                             </div>
                             <div id="uploading">
@@ -96,10 +96,12 @@
                         <tbody>
                             {% for document in documents %}
                                 {% set file_extension = document.name.split('.').pop().lower() %}
-                                {% if file_extension in ['pdf', 'xls', 'docx', 'xlsx'] %}
+                                {% if file_extension in ['pdf', 'csv', 'docx', 'xlsx'] %}
                                     {% set file_icon = file_extension %}
+                                {% elif 'csv' in file_extension %}
+                                    {% set file_icon = 'csv' %}
                                 {% elif 'xls' in file_extension %}
-                                    {% set file_icon = 'xls' %}
+                                    {% set file_icon = 'xlsx' %}
                                 {% elif 'doc' in file_extension %}
                                     {% set file_icon = 'docx' %}
                                 {% else %}
