@@ -77,11 +77,21 @@ function updateFileListDisplay() {
     for (let i = 0; i < fileArray.length; i++) {
         const fileSize = (fileArray[i].size / 1024 / 1024).toFixed(2); // Convert to MB and round to 2 decimal places
         totalSize += parseFloat(fileSize); // Add file size to total size
+        const fileExtension = fileArray[i].name.split('.').pop().toLowerCase();
+        let fileIcon = 'default';
+        if (fileExtension.includes('xls')) {
+            fileIcon = 'xls';
+        } else if (fileExtension.includes('doc')) {
+            fileIcon = 'docx';
+        } else if (fileExtension === 'pdf') {
+            fileIcon = 'pdf';
+        }
+
 
         const fileHtml = `
             <div id="fileitem">
                 <div id="fileinfo">
-                    <img src="static/images/PDF icon.png" height="30" width="30" alt="PDF-icon">
+                    <img src="static/images/${fileIcon}.png" height="30" width="30" alt="PDF-icon">
                     <div id="filename">${fileArray[i].name}</div>
                     <div id="spacer"></div>
                     <div class="x-icon">
