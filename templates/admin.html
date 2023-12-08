@@ -5,6 +5,7 @@
     <title>Admin Panel</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 <body>
     <div class="top-ribbon">
@@ -129,7 +130,35 @@
             </section>
         </div>
         <div class="right-container">
-            <img id="chatbot-button" src="{{ url_for('static', filename='images/chatboticon.png') }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
+            <div class="widget">
+                <div class="chatbot" id="chatbot">
+                    <div class="chatbox">
+                        <div class="chatbox-header">
+                            <span class="chatbox-title">
+                                <div class="chatbox-icon">
+                                    <img src="{{ url_for('static', filename='images/beber camp.png') }}" alt="Virtual assistant" width="150" height="150">
+                                </div>
+                                <div class="chatbox-top">Virtual assistant</div> 
+                            </span>
+                            <div class="chatbox-close">
+                                <div id="refresh">
+                                    <img src="{{ url_for('static', filename='images/refresh.png') }}" alt="Refresh" width="20" height="20">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chatbox-body" >
+                            <!-- Chat messages go here -->
+                        </div>
+                        <div class="chatbox-input">
+                            <div class="input-wrapper">
+                                <input type="text" id="user-input" placeholder="Ask a question...">
+                                <button id="send-button">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <img id="chatbot-button" src="{{ url_for('static', filename='images/chatboticon.png') }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
 
             <iframe src="https://hr-bot-beast-aa887886e420.herokuapp.com/" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
             <script>
@@ -167,12 +196,13 @@
                     // Remove the event listener when the chatbot is closed
                     document.removeEventListener('click', closeChatbotOnClickOutside);
                 }
-            </script>
+            </script> -->
         </div>
     </div>
     
     
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
     </div>
 </body>
 </html>
