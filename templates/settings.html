@@ -5,57 +5,61 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta charset="UTF-8">
     <title>Chatbot Widget</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/settings.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-    <h2>Chatbot Settings</h2>
+    <div class="sidenav">
+        <button class="openbtn" onclick="openNav()">&#9776;</button>
+        <button class="btns" id="admin" title="Documents" onclick="openNav()"><img src="{{ url_for('static', filename='images/paper (1).png') }}" height="50" width="50" alt="Documents"></button>
+        <button class="btns" id="settings" title="Settings" onclick="openNav()"><img src="{{ url_for('static', filename='images/setting (1).png') }}" height="50" width="50" alt="settings"></button>
+        <button class="btns" id="integrations" title="Integrations" onclick="openNav()"><img src="{{ url_for('static', filename='images/integration (1).png') }}" height="50" width="50" alt="integration"></button>
+        <button class="btns" id="analytics" title="Analytics" onclick="openNav()"><img src="{{ url_for('static', filename='images/data-analytics (1).png') }}" height="50" width="50" alt="analytics"></button>
+        <button class="btns" id="usage" title="Usage" onclick="openNav()"><img src="{{ url_for('static', filename='images/usage-based-price (1).png') }}" height="50" width="50" alt="usage"></button>
+    </div>
+    <section id="sidepanel">
+        <div id="mySidepanel" class="sidepanel">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="{{ url_for('admin') }}" id="admin" class="mgn">Documents</a>
+            <a href="{{ url_for('settings') }}" id="settings">Settings</a>
+            <a href="{{ url_for('integrations') }}" id="integrations">Integrations</a>
+            <a href="#" id="analytics">Analytics</a>
+            <a href="#" id="usage">Usage</a>
+        </div>
+            
+            
+    </section>
+    <h2 class="instructions">Chatbot Settings</h2>
+    <p class="instructions">Copy and paste this code before the &lt;/body&gt; tag on your website:</p>
     <form id="settingsForm" action="/update_chatbot_settings" method="post">
-        <label for="widget_icon">Widget Icon URL:</label>
-        <input type="text" id="widget_icon" name="widget_icon" value="{{ settings['widget_icon'] }}"><br><br>
+        <div class="settings-section">
+            <h3>Styling</h3>
+            <label for="widget_icon">Widget Icon URL:</label>
+            <input type="text" id="widget_icon" name="widget_icon" value="{{ settings['widget_icon'] }}"><br><br>
 
-        <label for="background_color">Background Color:</label>
-        <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}"><br><br>
+            <label for="background_color">Background Color:</label>
+            <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}"><br><br>
 
-        <label for="font_style">Font Style:</label>
-        <select id="font_style" name="font_style">
-            <option value="Arial" {% if settings['font_style'] == 'Arial' %}selected{% endif %}>Arial</option>
-            <option value="Verdana" {% if settings['font_style'] == 'Verdana' %}selected{% endif %}>Verdana</option>
-            <option value="Times New Roman" {% if settings['font_style'] == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
-            <!-- Add more font options here -->
-        </select><br><br>
+            <label for="font_style">Font Style:</label>
+            <select id="font_style" name="font_style">
+                <option value="Arial" {% if settings['font_style'] == 'Arial' %}selected{% endif %}>Arial</option>
+                <option value="Verdana" {% if settings['font_style'] == 'Verdana' %}selected{% endif %}>Verdana</option>
+                <option value="Times New Roman" {% if settings['font_style'] == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
+                <!-- Add more font options here -->
+            </select><br><br>
+        </div>
 
-        <label for="bot_temperature">Bot Temperature:</label>
-        <input type="number" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.01" value="{{ settings['bot_temperature'] }}"><br><br>
+        <div class="settings-section">
+            <h3>System Settings</h3>
+            <label for="bot_temperature">Bot Temperature:</label>
+            <input type="number" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.01" value="{{ settings['bot_temperature'] }}"><br><br>
+        </div>
 
         <input type="submit" value="Save Settings">
     </form>
 
     <div class="widget">
-    <!-- <h2>Chatbot Settings</h2>
-    <form id="settingsForm" action="/update_chatbot_settings" method="post">
-        <label for="widget_icon">Widget Icon URL:</label>
-        <input type="text" id="widget_icon" name="widget_icon"><br><br>
-
-        <label for="background_color">Background Color:</label>
-        <input type="color" id="background_color" name="background_color"><br><br>
-
-        <label for="font_style">Font Style:</label>
-        <select id="font_style" name="font_style">
-            <option value="Arial">Arial</option>
-            <option value="Verdana">Verdana</option>
-            <option value="Times New Roman">Times New Roman</option> -->
-            <!-- Add more font options here -->
-        <!-- </select><br><br>
-
-        <label for="bot_temperature">Bot Temperature:</label>
-        <input type="number" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.01"><br><br>
-
-        <input type="submit" value="Save Settings">
-    </form>
-
-    <div class="widget"> -->
-        <!-- <div class="widget-button" id="widget-button"></div> -->
         <div class="chatbot" id="chatbot">
             <div class="chatbox">
                 <div class="chatbox-header">
@@ -70,7 +74,6 @@
                             <img src="{{ url_for('static', filename='images/refresh.png') }}" alt="Refresh" width="20" height="20">
                         </div>
                     </div>
-                    <!-- <div class="chatbox-close" id="chatbox-close">X</div> -->
                 </div>
                 <div class="chatbox-body" >
                     <!-- Chat messages go here -->
@@ -91,9 +94,11 @@
         }
         </script>
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
     <style>
         :root {
           --background-color: {{ settings.background_color }};
+          --font-family: {{ settings.font_style }}, sans-serif;
         }
         </style>
 </body>

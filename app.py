@@ -43,14 +43,29 @@ index = pinecone.Index(index_name)
 text_field="text"
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
+db_conn = psycopg2.connect(database_url)
+cursor = db_conn.cursor()
+
 vectorstore = Pinecone(
     index, embeddings.embed_query, text_field
 )
 
+def get_bot_temperature():
+    with db_conn.cursor() as cursor:
+        cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE id = 1;")
+        row = cursor.fetchone()
+        if row:
+            return row[0]
+        else:
+            return 0.0
+
+# Fetch the temperature value from the database
+temperature_from_db = get_bot_temperature()
+
 llm = ChatOpenAI(
     openai_api_key=openai_api_key,
     model_name='gpt-3.5-turbo',
-    temperature=0.3
+    temperature=temperature_from_db
 )
 
 # Define the prompt template with placeholders for context and chat history
@@ -81,9 +96,6 @@ conversation_chain = ConversationalRetrievalChain.from_llm(
 
 # Connect to PostgreSQL database
 
-
-db_conn = psycopg2.connect(database_url)
-cursor = db_conn.cursor()
 
 # Initialize Flask-Login
 app.secret_key = os.getenv('SECRET_KEY')
@@ -202,7 +214,7 @@ def home():
             'widget_icon': 'default_icon',  # Default values if no settings are found for the user
             'background_color': '#000000',
             'font_style': 'default_font',
-            'bot_temperature': 0.5
+            'bot_temperature': 0.0
         }
     else:
         settings = {
@@ -213,12 +225,6 @@ def home():
         }
 
     return render_template('index.html', settings=settings)
-    # session.clear()
-    # memory.clear()
-    # print(f"session ID: {session.sid}")
-    # print()
-    # settings = {'background_color': '#000000'}  # Replace with your actual color
-    # return render_template('index.html', settings=settings)
 
 @app.route('/IU_HR')
 def HR():
@@ -424,7 +430,7 @@ def settings():
             'widget_icon': 'default_icon',  # Default values if no settings are found for the user
             'background_color': '#000000',
             'font_style': 'default_font',
-            'bot_temperature': 0.5
+            'bot_temperature': 0.0
         }
     else:
         settings = {
@@ -434,15 +440,6 @@ def settings():
             'bot_temperature': row[3]
         }
     return render_template('settings.html', settings=settings)
-    # # Query PostgreSQL to get the background color
-    # g.cursor.execute("SELECT background_color FROM chatbot_settings;") 
-    # row = g.cursor.fetchone()
-    # if row is None:
-    #     background_color = '#000000'  # Default color if no settings are found for the user
-    # else:
-    #     background_color = row[0]
-    # settings = {'background_color': background_color}
-    # return render_template('settings.html', settings=settings)
 
 def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature):
     # Prepare the SQL query
