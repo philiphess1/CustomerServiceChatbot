@@ -5,7 +5,10 @@
     <title>Admin Panel</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </head>
 <body>
     <div class="top-ribbon">
@@ -129,80 +132,49 @@
                 </section>
             </section>
         </div>
-        <div class="right-container">
-            <div class="widget">
-                <div class="chatbot" id="chatbot">
-                    <div class="chatbox">
-                        <div class="chatbox-header">
-                            <span class="chatbox-title">
-                                <div class="chatbox-icon">
-                                    <img src="{{ url_for('static', filename='images/beber camp.png') }}" alt="Virtual assistant" width="150" height="150">
-                                </div>
-                                <div class="chatbox-top">Virtual assistant</div> 
-                            </span>
-                            <div class="chatbox-close">
-                                <div id="refresh">
-                                    <img src="{{ url_for('static', filename='images/refresh.png') }}" alt="Refresh" width="20" height="20">
-                                </div>
+        <div class="widget">
+            <!-- <div class="widget-button" id="widget-button"></div> -->
+            <div class="chatbot" id="chatbot">
+                <div class="chatbox">
+                    <div class="chatbox-header">
+                        <span class="chatbox-title">
+                            <div class="chatbox-icon">
+                                <img src="{{ url_for('static', filename='images/beber camp.png') }}" alt="Virtual assistant" width="150" height="150">
+                            </div>
+                            <div class="chatbox-top">Virtual Assistant</div> 
+                        </span>
+                        <div class="chatbox-close">
+                            <div id="refresh">
+                                <img src="{{ url_for('static', filename='images/refresh.png') }}" alt="Refresh" width="20" height="20">
                             </div>
                         </div>
-                        <div class="chatbox-body" >
-                            <!-- Chat messages go here -->
-                        </div>
-                        <div class="chatbox-input">
-                            <div class="input-wrapper">
-                                <input type="text" id="user-input" placeholder="Ask a question...">
-                                <button id="send-button">Send</button>
-                            </div>
+                        <!-- <div class="chatbox-close" id="chatbox-close">X</div> -->
+                    </div>
+                    <div class="chatbox-body" >
+                        <!-- Chat messages go here -->
+                    </div>
+                    <div class="chatbox-input">
+                        <div class="input-wrapper">
+                            <input type="text" id="user-input" placeholder="Ask a question...">
+                            <button id="send-button">Send</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- <img id="chatbot-button" src="{{ url_for('static', filename='images/chatboticon.png') }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
-
-            <iframe src="https://hr-bot-beast-aa887886e420.herokuapp.com/" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
-            <script>
-                var chatbotButton = document.getElementById('chatbot-button');
-                chatbotButton.addEventListener('mouseover', function() {
-                    this.style.transform = 'scale(1.1)';
-                });
-                chatbotButton.addEventListener('mouseout', function() {
-                    this.style.transform = 'scale(1)';
-                });
-                document.getElementById('chatbot-button').addEventListener('click', function() {
-                    var iframe = document.getElementById('chatbot-iframe');
-                    if (iframe.style.display === 'none') {
-                        iframe.style.display = 'block';
-                        // Add the event listener when the chatbot is opened
-                        document.addEventListener('click', closeChatbotOnClickOutside);
-                    } else {
-                        iframe.style.display = 'none';
-                        // Remove the event listener when the chatbot is closed
-                        document.removeEventListener('click', closeChatbotOnClickOutside);
-                    }
-                });
-
-                function closeChatbotOnClickOutside(event) {
-                    var chatbot = document.getElementById("chatbot-iframe");
-                    // Check if the click was outside the chatbot
-                    if (event.target.id !== 'chatbot-iframe' && event.target.id !== 'chatbot-button') {
-                        closeChatbot();
-                    }
-                }
-
-                function closeChatbot() {
-                    var iframe = document.getElementById('chatbot-iframe');
-                    iframe.style.display = 'none';
-                    // Remove the event listener when the chatbot is closed
-                    document.removeEventListener('click', closeChatbotOnClickOutside);
-                }
-            </script> -->
+        </div>
+ 
+            
         </div>
     </div>
     
-    
-    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
     </div>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    <style>
+        :root {
+          --background-color: {{ settings.background_color }};
+          --font-family: {{ settings.font_style }}, sans-serif;
+        }
+        </style>
 </body>
 </html>

@@ -211,21 +211,25 @@ def home():
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature FROM chatbot_settings WHERE id = 1;")  # Replace 'user_id' and 'current_user.id' with your actual user ID field and value
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = 1;")
     row = g.cursor.fetchone()
     if row is None:
         settings = {
             'widget_icon': 'default_icon',  # Default values if no settings are found for the user
             'background_color': '#000000',
             'font_style': 'default_font',
-            'bot_temperature': 0.0
+            'bot_temperature': 0.0,
+            'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
+            'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
         }
     else:
         settings = {
             'widget_icon': row[0],
             'background_color': row[1],
             'font_style': row[2],
-            'bot_temperature': row[3]
+            'bot_temperature': row[3],
+            'greeting_message': row[4],
+            'custom_prompt': row[5]
         }
 
     return render_template('index.html', settings=settings)
@@ -276,20 +280,51 @@ def admin():
     # Query PostgreSQL to get the list of documents
     g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping;") # Use g.cursor here
     documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]  # And here
-    return render_template('admin.html', documents=documents)
+
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = 1;")
+    row = g.cursor.fetchone()
+    if row is None:
+        settings = {
+            'widget_icon': 'default_icon',  # Default values if no settings are found for the user
+            'background_color': '#000000',
+            'font_style': 'default_font',
+            'bot_temperature': 0.0,
+            'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
+            'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
+        }
+    else:
+        settings = {
+            'widget_icon': row[0],
+            'background_color': row[1],
+            'font_style': row[2],
+            'bot_temperature': row[3],
+            'greeting_message': row[4],
+            'custom_prompt': row[5]
+        }
+    return render_template('admin.html', documents=documents, settings=settings)
 
 @app.route('/integrations')
 @login_required
 def integrations():
-    g.cursor.execute("SELECT widget_icon_url FROM chatbot_settings WHERE id = 1;")
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = 1;")
     row = g.cursor.fetchone()
     if row is None:
         settings = {
-            'widget_icon': 'chatboticon', 
+            'widget_icon': 'default_icon',  # Default values if no settings are found for the user
+            'background_color': '#000000',
+            'font_style': 'default_font',
+            'bot_temperature': 0.0,
+            'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
+            'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
         }
     else:
         settings = {
-            'widget_icon': row[0]
+            'widget_icon': row[0],
+            'background_color': row[1],
+            'font_style': row[2],
+            'bot_temperature': row[3],
+            'greeting_message': row[4],
+            'custom_prompt': row[5]
         }
     return render_template('integrations.html', settings=settings)
 
