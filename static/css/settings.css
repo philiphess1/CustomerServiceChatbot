@@ -162,6 +162,7 @@ body {
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 40%;
+    border: 2px solid #c1c1c1;
 }
 
 .settings-section h3 {
@@ -192,4 +193,28 @@ select#font_style {
 
 input#background_color {
     cursor: pointer;
+}
+#widget_icon{
+  margin-top: 10px;
+}
+#widget_icon input[type="radio"] {
+  display: none;
+}
+#widget_icon label {
+  display: inline-block;
+  padding: 10px;
+  border: 1px solid rgb(211, 243, 255);
+  border-radius: 10px;
+  cursor: pointer;
+}
+#widget_icon input[type="radio"]:checked + label {
+  background-color: #ddd;
+}
+#widget_icon img {
+  width: 80px;
+  height: 80px;
+}
+.selected {
+  background-color: #ddd;
+  border: 1px solid #2e6eb6;
 }

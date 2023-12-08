@@ -54,3 +54,21 @@ for (var i = 0; i < btns.length; i++) {
         btns[i].style.backgroundColor = '#444';
     }
 }
+
+window.onload = function() {
+    var labels = document.querySelectorAll('#widget_icon label');
+    labels.forEach(function(label) {
+        var radio = label.querySelector('input');
+        if (radio.checked) {
+            label.classList.add('selected');
+        }
+        radio.addEventListener('change', function() {
+            labels.forEach(function(label) {
+                label.classList.remove('selected');
+            });
+            if (this.checked) {
+                this.parentElement.classList.add('selected');
+            }
+        });
+    });
+};

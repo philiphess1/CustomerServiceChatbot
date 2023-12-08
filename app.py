@@ -277,7 +277,17 @@ def admin():
 @app.route('/integrations')
 @login_required
 def integrations():
-    return render_template('integrations.html')
+    g.cursor.execute("SELECT widget_icon_url FROM chatbot_settings WHERE id = 1;")
+    row = g.cursor.fetchone()
+    if row is None:
+        settings = {
+            'widget_icon': 'chatboticon', 
+        }
+    else:
+        settings = {
+            'widget_icon': row[0]
+        }
+    return render_template('integrations.html', settings=settings)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
