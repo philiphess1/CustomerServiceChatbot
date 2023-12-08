@@ -189,7 +189,7 @@
                                 dislikeButton.style.color = "#555555";
                                 dislikeButton.disabled = true; // Disable the dislike button
                             });
-                            sendFeedback("like", text, lastUserMessage);
+                            sendFeedback("Like", text, lastUserMessage);
                             likeButton.disabled = true; // Disable the like button
                         }
                     });
@@ -204,7 +204,7 @@
                                 likeButton.style.color = "#555555";
                                 likeButton.disabled = true; // Disable the like button
                             });
-                            sendFeedback("dislike", text, lastUserMessage);
+                            sendFeedback("Dislike", text, lastUserMessage);
                             dislikeButton.disabled = true; // Disable the dislike button
                         }
                     });

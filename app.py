@@ -226,10 +226,6 @@ def home():
 
     return render_template('index.html', settings=settings)
 
-@app.route('/IU_HR')
-def HR():
-    return render_template('IU_HR.html')
-
 @app.route('/chat', methods=['POST'])
 def chat():
     user_message = request.form.get('message')
@@ -467,7 +463,25 @@ def update_chatbot_settings():
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings'))
 
+@app.route('/analytics')
+@login_required
+def analytics():
+    g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback;")
+    rows = g.cursor.fetchall()
 
+    data = []
+    if rows:
+        for row in rows:
+            data.append({
+                'user_question': row[0],
+                'bot_response': row[1],
+                'feedback_type': row[2]
+            })
+    else:
+        # Handle case where no data is returned
+        data = None
+
+    return render_template('analytics.html', data=data)
 
 
 if __name__ == '__main__':
