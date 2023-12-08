@@ -218,3 +218,9 @@ input#background_color {
   background-color: #ddd;
   border: 1px solid #2e6eb6;
 }
+#settings-box{
+  display: flex;
+  justify-content: space-between;
+  flex-basis: 68%;
+  margin-left: 120px;
+}

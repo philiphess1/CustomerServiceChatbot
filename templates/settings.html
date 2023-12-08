@@ -33,10 +33,11 @@
             
             
     </section>
-    <section id="settings-box">
-        <h2 class="instructions">Chatbot Settings</h2>
-        <p class="instructions">Change the settings and your system preferences below then click the save button:</p>
-        <form id="settingsForm" action="/update_chatbot_settings" method="post">
+    <div id="settings-box">
+        
+        <form id="settingsForm" action="/update_chatbot_settings" method="post" style="width: 2000px; height: 2000px;">
+            <h2 class="instructions">Chatbot Settings</h2>
+             <p class="instructions">Change the settings and your system preferences below then click the save button:</p>
             <div class="settings-section">
                 <h3>Styling</h3>
                 <label>Widget Icon:</label><br>
@@ -79,7 +80,7 @@
 
             <input type="submit" value="Save Settings">
         </form>
-    </section>
+    </div>
 
     <div class="widget">
         <div class="chatbot" id="chatbot">
