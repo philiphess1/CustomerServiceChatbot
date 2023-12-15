@@ -50,54 +50,18 @@ vectorstore = Pinecone(
     index, embeddings.embed_query, text_field
 )
 
-def get_bot_temperature():
+def get_bot_temperature(user_id):
     with db_conn.cursor() as cursor:
-        cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE id = 1;")
+        cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE id = %s;", (user_id,))
         row = cursor.fetchone()
-        if row:
-            return row[0]
-        else:
-            return 0.0
+        return row[0] if row else 0.0
+    
 
-# Fetch the temperature value from the database
-temperature_from_db = get_bot_temperature()
-
-llm = ChatOpenAI(
-    openai_api_key=openai_api_key,
-    model_name='gpt-3.5-turbo',
-    temperature=temperature_from_db
-)
-
-def get_custom_prompt():
+def get_custom_prompt(user_id):
     with db_conn.cursor() as cursor:
-        cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE id = 1;")
+        cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
         row = cursor.fetchone()
         return row[0] if row else "Default prompt part"
-
-prompt_message = get_custom_prompt()
-
-# Define the prompt template with placeholders for context and chat history
-prompt_template = f"""
-    {prompt_message}
-
-    CONTEXT: {{context}}
-
-    QUESTION: {{question}}"""
-
-# Create a PromptTemplate object with input variables for context and chat history
-TEST_PROMPT = PromptTemplate(input_variables=["context", "question"], template=prompt_template)
-
-# Create a ConversationBufferMemory object to store the chat history
-memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True, k=8)
-
-# Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
-conversation_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=vectorstore.as_retriever(),
-        memory=memory,
-        combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
-    )
-
 # Connect to PostgreSQL database
 
 
@@ -114,7 +78,7 @@ class AuthenticatedUser(UserMixin):
 def clear_memory():
     # Clear the memory
     # session.clear()
-    memory.clear()
+    # memory.clear()
     conversation_history = session.get('conversation_history', [])
     conversation_history.clear()
     print(f"session ID: {session.sid}")
@@ -203,15 +167,15 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-@app.route('/')
-def home():
+@app.route('/<int:user_id>')
+def home(user_id):
     session.clear()
-    memory.clear()
+    # memory.clear()
     print(f"session ID: {session.sid}")
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = 1;")
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;",(user_id,))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -234,13 +198,44 @@ def home():
 
     return render_template('index.html', settings=settings)
 
-@app.route('/chat', methods=['POST'])
-def chat():
+@app.route('/<int:user_id>/chat', methods=['POST'])
+def chat(user_id):
     user_message = request.form.get('message')
     
     # Load the conversation history from session
-    conversation_history = session.get('conversation_history', [])
+    conversation_history = session.get('conversation_history_{user_id}', [])
     
+    bot_temperature = get_bot_temperature(user_id)
+    custom_prompt = get_custom_prompt(user_id)
+
+    # Initialize the chatbot with the bot_temperature
+    llm = ChatOpenAI(
+        openai_api_key=openai_api_key,
+        model_name='gpt-3.5-turbo',
+        temperature=bot_temperature
+    )
+
+    # Define the prompt template with placeholders for context and chat history
+    prompt_template = f"""
+        {custom_prompt}
+
+        CONTEXT: {{context}}
+
+        QUESTION: {{question}}"""
+    
+        # Create a PromptTemplate object with input variables for context and chat history
+    TEST_PROMPT = PromptTemplate(input_variables=["context", "question"], template=prompt_template)
+
+    # Create a ConversationBufferMemory object to store the chat history
+    memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True, k=8)
+
+    # Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
+    conversation_chain = ConversationalRetrievalChain.from_llm(
+            llm=llm,
+            retriever=vectorstore.as_retriever(),
+            memory=memory,
+            combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
+        )
     # Handle the user input and get the response
     response = conversation_chain.run({'question': user_message})
     

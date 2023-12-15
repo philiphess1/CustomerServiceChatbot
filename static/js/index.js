@@ -256,7 +256,16 @@
         });
 
         function botResponse(rawText) {
-            $.post("/chat", { message: rawText })
+            // Get the current URL path
+            var path = window.location.pathname;
+
+            // Split the path into segments
+            var segments = path.split('/');
+
+            // The user ID should be the first segment after the leading empty segment
+            var userId = segments[1];
+
+            $.post("/" + userId + "/chat", { message: rawText })
             .done(function(data) {
                 // Hide the typing indicator when the bot responds
                 hideTypingIndicator();
