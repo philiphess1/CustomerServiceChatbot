@@ -229,6 +229,11 @@ def chat(user_id):
     # Create a ConversationBufferMemory object to store the chat history
     memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True, k=8)
 
+    #filtered vectorstore for user_id
+    # filteredvectorstore = vectorstore.filter({"user_id": {user_id}})
+    # print(filteredvectorstore)
+    # print('hello')
+
     # Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
     conversation_chain = ConversationalRetrievalChain.from_llm(
             llm=llm,
@@ -237,6 +242,7 @@ def chat(user_id):
             combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
         )
     # Handle the user input and get the response
+    #filter={"user_id": {"$eq": f"{user_id}"}}
     response = conversation_chain.run({'question': user_message})
     
     # Save the user message and bot response to session
