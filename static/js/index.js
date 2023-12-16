@@ -8,21 +8,30 @@
             if (greetingShown) {
                 return;
             }
-        
+
+            // Get the current URL path
+            var path = window.location.pathname;
+
+            // Split the path into segments
+            var segments = path.split('/');
+
+            // The user ID should be the first segment after the leading empty segment
+            var userId = segments[1];
+
             // Check if there are any existing messages in the chatbox
             const chatboxBody = document.querySelector(".chatbox-body");
             const existingMessages = chatboxBody.children.length > 0;
-        
+
             // If there are no existing messages, show the greeting with a delay
             if (!existingMessages) {
-                fetch('/greeting_message')
+                fetch('/' + userId + '/greeting_message')
                     .then(response => response.json())
                     .then(data => {
                         const greetingMessage = data.greeting_message;
                         setTimeout(() => {
                             appendMessage("Chatbot", "left", greetingMessage);
                         }, 1000); // Adjust the delay time as needed
-        
+
                         // Set the flag to true so the greeting won't be shown again
                         greetingShown = true;
                     });

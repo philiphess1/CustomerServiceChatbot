@@ -195,7 +195,7 @@ def home(user_id):
             'custom_prompt': row[5]
         }
 
-    return render_template('index.html', settings=settings)
+    return render_template('index.html', settings=settings, user_id=user_id)
 
 @app.route('/<int:user_id>/chat', methods=['POST'])
 def chat(user_id):
@@ -271,11 +271,17 @@ def store_feedback():
 @app.route('/admin')
 @login_required
 def admin():
+    if current_user.is_authenticated:
+        user_id = current_user.id
+    else:
+        # Redirect to the login page
+        return redirect(url_for('login'))
     # Query PostgreSQL to get the list of documents
-    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping;") # Use g.cursor here
+    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s;",(user_id,))
+    #  WHERE id = %s;",(user_id,))
     documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]  # And here
 
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = 1;")
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -300,7 +306,8 @@ def admin():
 @app.route('/integrations')
 @login_required
 def integrations():
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = 1;")
+    user_id = current_user.id
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -325,6 +332,7 @@ def integrations():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     uploaded_files = request.files.getlist('file')
+    user_id = current_user.id
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
@@ -335,7 +343,7 @@ def upload_file():
 
             file_size = file_size/1000000
 
-            g.cursor.execute("INSERT INTO document_mapping (filename, file_size) VALUES (%s, %s) RETURNING id;", (filename, file_size))
+            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id) VALUES (%s, %s, %s) RETURNING id;", (filename, file_size, user_id))
             g.db_conn.commit()
 
             # Create a BytesIO stream from the uploaded file
@@ -348,19 +356,19 @@ def upload_file():
                 for page_num in range(num_pages):
                     page = pdf_reader.pages[page_num]
                     text = page.extract_text()
-                    process_text(text, filename, page_num)
+                    process_text(text, filename, page_num,user_id)
 
             elif file_extension == "docx":
                 doc = docx2txt.process(file_stream)
                 cleaned_doc = re.sub(r'\s+', ' ', doc.strip())
-                process_text(cleaned_doc, filename, 0)
+                process_text(cleaned_doc, filename, 0,user_id)
 
             elif file_extension == "xlsx":
                 # use pandas to read the excel file from the bytesIO steam
                 df = pd.read_excel(file_stream)
                 headers = ' '.join(df.columns) + '\n'
                 full_text = df.to_string(index=False, header=False)
-                process_excel_text(full_text, headers, filename)
+                process_excel_text(full_text, headers, filename,user_id)
 
             elif file_extension == "csv":
                 # use pandas to read the excel file from the bytesIO steam
@@ -370,7 +378,7 @@ def upload_file():
                         df = pd.read_csv(file_stream, encoding=encoding)
                         headers = ' '.join(df.columns) + '\n'
                         full_text = df.to_string(index=False, header=False)
-                        process_excel_text(full_text, headers, filename)
+                        process_excel_text(full_text, headers, filename,user_id)
                         break
                     except UnicodeDecodeError:
                         continue
@@ -379,7 +387,7 @@ def upload_file():
             
     return jsonify({"status": "success", "message": "Files uploaded successfully!"})
 
-def process_text(text, filename, page_num):
+def process_text(text, filename, page_num, user_id):
     # Process the text (i.e., break it into chunks and create embeddings)
     chunk_size = 750
     overlap = 100
@@ -395,12 +403,12 @@ def process_text(text, filename, page_num):
         chunk_doc_id = f"{filename}_page{page_num}_start{start}:{end}"
 
         # Prepare data for Pinecone
-        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
+        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk, "user_id": user_id})]
         
         # Store the embeddings in Pinecone using 'upsert' method
         index.upsert(upsert_data)
 
-def process_excel_text(full_text, headers, filename):
+def process_excel_text(full_text, headers, filename,user_id):
     chunk_size = 750
     overlap = 100
     for start in range(0, len(full_text), chunk_size - overlap):
@@ -416,7 +424,7 @@ def process_excel_text(full_text, headers, filename):
 
 
         # Prepare data for Pinecone
-        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
+        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk, "user_id": user_id})]
         
         # Store the embeddings in Pinecone using 'upsert' method
         index.upsert(upsert_data)
@@ -462,7 +470,8 @@ def delete(doc_id):
 @login_required
 def settings():
     # Query PostgreSQL to get the settings for the user with id = 1
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = 1;")
+    user_id = current_user.id
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -486,13 +495,14 @@ def settings():
 
 def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt):
     # Prepare the SQL query
+    user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s WHERE id = 1;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s WHERE id = %s;
     """
 
     # Execute the SQL query
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, user_id)) 
 
     # Commit the changes
     g.db_conn.commit()
@@ -512,16 +522,18 @@ def update_chatbot_settings():
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings'))
 
-@app.route('/greeting_message')
-def greeting_message():
+@app.route('/<int:user_id>/greeting_message')
+def greeting_message(user_id):
     # Query PostgreSQL to get the greeting message for the user with id = 1
-    g.cursor.execute("SELECT greeting_message FROM chatbot_settings WHERE id = 1;")
+    g.cursor.execute("SELECT greeting_message FROM chatbot_settings WHERE id = %s;", (user_id,))
     row = g.cursor.fetchone()
     if row is None:
-        greeting_message = 'Your default greeting message here'  # Default value if no greeting message is found for the user
+        greeting_message = 'Hello, how can I help'  # Default value if no greeting message is found for the user
     else:
         greeting_message = row[0]
     return jsonify(greeting_message=greeting_message)
+
+
 
 @app.route('/analytics')
 @login_required
