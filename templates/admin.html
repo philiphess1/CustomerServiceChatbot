@@ -154,14 +154,6 @@
                 }
             });
 
-            function closeChatbotOnClickOutside(event) {
-                var chatbot = document.getElementById("chatbot-iframe");
-                // Check if the click was outside the chatbot
-                if (event.target.id !== 'chatbot-iframe' && event.target.id !== 'chatbot-button') {
-                    closeChatbot();
-                }
-            }
-
             function closeChatbot() {
                 var iframe = document.getElementById('chatbot-iframe');
                 iframe.style.display = 'none';
