@@ -1,5 +1,9 @@
-// sidebar JS
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Simulate a click on the chatbot button to open it when the page loads
+    document.getElementById('chatbot-button').click();
+});
 
+// sidebar JS
 /* Set the width of the sidebar to 250px (show it) */
 function openNav() {
     document.getElementById("mySidepanel").style.width = "250px";

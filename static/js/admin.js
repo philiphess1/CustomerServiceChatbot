@@ -1,8 +1,8 @@
 let fileArray = []; // this will hold the selected files
-// document.addEventListener('DOMContentLoaded', (event) => {
-//     // Simulate a click on the chatbot button to open it when the page loads
-//     document.getElementById('chatbot-button').click();
-// });
+document.addEventListener('DOMContentLoaded', (event) => {
+    // Simulate a click on the chatbot button to open it when the page loads
+    document.getElementById('chatbot-button').click();
+});
 
 
 document.getElementById("upload-form").addEventListener("submit", function(event) {

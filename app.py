@@ -268,22 +268,28 @@ def admin():
     else:
         # Redirect to the login page
         return redirect(url_for('login'))
-    # Query PostgreSQL to get the list of documents
-    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s;",(user_id,))
-    #  WHERE id = %s;",(user_id,))
-    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]  # And here
 
+    # Query PostgreSQL to get the list of documents
+    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s;", (user_id,))
+    documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]
+
+    # Query for chatbot settings
     g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
     row = g.cursor.fetchone()
+
     if row is None:
-        settings = {
-            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
-            'background_color': '#000000',
-            'font_style': 'Arial',
-            'bot_temperature': 0.0,
-            'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
-            'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
-        }
+        # Insert default settings for new user
+        default_settings = (
+            'chatboticon',  # Default widget icon URL
+            '#000000',      # Default background color
+            'Arial',        # Default font style
+            0.0,            # Default bot temperature
+            'Hello! I am an AI assistant. How can I help you today?',  # Default greeting message
+            'You are an AI assistant. You are here to help answer questions. You are not human. Refuse to answer questions that you do not have information on.'  # Default custom prompt
+        )
+        g.cursor.execute("INSERT INTO chatbot_settings (id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt) VALUES (%s, %s, %s, %s, %s, %s, %s);", (user_id,) + default_settings)
+        g.db_conn.commit()
+        settings = dict(zip(['widget_icon', 'background_color', 'font_style', 'bot_temperature', 'greeting_message', 'custom_prompt'], default_settings))
     else:
         settings = {
             'widget_icon': row[0],
@@ -293,7 +299,9 @@ def admin():
             'greeting_message': row[4],
             'custom_prompt': row[5]
         }
+
     return render_template('admin.html', documents=documents, settings=settings, user_id=user_id)
+
 
 @app.route('/integrations')
 @login_required
@@ -460,31 +468,24 @@ def delete(doc_id):
         print(f"File not found for ID {doc_id}")
 
     return redirect(url_for('admin'))
+
 @app.route('/settings')
 @login_required
 def settings():
-    # Query PostgreSQL to get the settings for the user with id = 1
     user_id = current_user.id
     g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
     row = g.cursor.fetchone()
-    if row is None:
-        settings = {
-            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
-            'background_color': '#000000',
-            'font_style': 'Arial',
-            'bot_temperature': 0.0,
-            'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
-            'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
-        }
-    else:
-        settings = {
-            'widget_icon': row[0],
-            'background_color': row[1],
-            'font_style': row[2],
-            'bot_temperature': row[3],
-            'greeting_message': row[4],
-            'custom_prompt': row[5]
-        }
+
+    # It is assumed that row will not be None, as default settings should have been set in the /admin route.
+    settings = {
+        'widget_icon': row[0],
+        'background_color': row[1],
+        'font_style': row[2],
+        'bot_temperature': row[3],
+        'greeting_message': row[4],
+        'custom_prompt': row[5]
+    }
+
     return render_template('settings.html', settings=settings, user_id=user_id)
 
 def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt):
