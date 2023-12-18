@@ -223,7 +223,7 @@ def chat(user_id):
     # Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
     conversation_chain = ConversationalRetrievalChain.from_llm(
             llm=llm,
-            retriever=vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f'{user_id}'}}),
+            retriever=vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}}),
             memory=memory,
             combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
         )
@@ -355,19 +355,19 @@ def upload_file():
                 for page_num in range(num_pages):
                     page = pdf_reader.pages[page_num]
                     text = page.extract_text()
-                    process_text(text, filename, page_num,user_id)
+                    process_text(text, filename, page_num,f"{user_id}")
 
             elif file_extension == "docx":
                 doc = docx2txt.process(file_stream)
                 cleaned_doc = re.sub(r'\s+', ' ', doc.strip())
-                process_text(cleaned_doc, filename, 0,user_id)
+                process_text(cleaned_doc, filename, 0,f"{user_id}")
 
             elif file_extension == "xlsx":
                 # use pandas to read the excel file from the bytesIO steam
                 df = pd.read_excel(file_stream)
                 headers = ' '.join(df.columns) + '\n'
                 full_text = df.to_string(index=False, header=False)
-                process_excel_text(full_text, headers, filename,user_id)
+                process_excel_text(full_text, headers, filename,f"{user_id}")
 
             elif file_extension == "csv":
                 # use pandas to read the excel file from the bytesIO steam
@@ -377,7 +377,7 @@ def upload_file():
                         df = pd.read_csv(file_stream, encoding=encoding)
                         headers = ' '.join(df.columns) + '\n'
                         full_text = df.to_string(index=False, header=False)
-                        process_excel_text(full_text, headers, filename,user_id)
+                        process_excel_text(full_text, headers, filename,f"{user_id}")
                         break
                     except UnicodeDecodeError:
                         continue
