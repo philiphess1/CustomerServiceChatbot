@@ -223,13 +223,12 @@ def chat(user_id):
     # Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
     conversation_chain = ConversationalRetrievalChain.from_llm(
             llm=llm,
-            retriever=vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}}),
+            retriever=vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f'{user_id}'}}),
             memory=memory,
             combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
         )
     # Handle the user input and get the response
     response = conversation_chain.run({'question': user_message})
-    
     # Save the user message and bot response to session
     conversation_history.append({'input': user_message, 'output': response})
     session['conversation_history'] = conversation_history
