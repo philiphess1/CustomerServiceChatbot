@@ -46,15 +46,15 @@
                         <img src="{{ url_for('static', filename='images/chatboticon.png') }}" alt="Icon 1">
                     </label>
                     <label for="icon2">
-                        <input type="radio" id="icon2" name="widget_icon" value="chatbot2" {% if settings['widget_icon'] == 'chatbot1' %}checked{% endif %}>
+                        <input type="radio" id="icon2" name="widget_icon" value="chatbot2" {% if settings['widget_icon'] == 'chatbot2' %}checked{% endif %}>
                         <img src="{{ url_for('static', filename='images/chatbot2.png') }}" alt="Icon 2">
                     </label>
                     <label for="icon3">
-                        <input type="radio" id="icon3" name="widget_icon" value="chatbot3" {% if settings['widget_icon'] == 'chatbot2' %}checked{% endif %}>
+                        <input type="radio" id="icon3" name="widget_icon" value="chatbot3" {% if settings['widget_icon'] == 'chatbot3' %}checked{% endif %}>
                         <img src="{{ url_for('static', filename='images/chatbot3.png') }}" alt="Icon 3">
                     </label>
                     <label for="icon4">
-                        <input type="radio" id="icon4" name="widget_icon" value="chatbot4" {% if settings['widget_icon'] == 'chatbot3' %}checked{% endif %}>
+                        <input type="radio" id="icon4" name="widget_icon" value="chatbot4" {% if settings['widget_icon'] == 'chatbot4' %}checked{% endif %}>
                         <img src="{{ url_for('static', filename='images/chatbot4.png') }}" alt="Icon 4">
                     </label>
                 </div><br><br>
@@ -110,14 +110,6 @@
                 document.removeEventListener('click', closeChatbotOnClickOutside);
             }
         });
-
-        function closeChatbotOnClickOutside(event) {
-            var chatbot = document.getElementById("chatbot-iframe");
-            // Check if the click was outside the chatbot
-            if (event.target.id !== 'chatbot-iframe' && event.target.id !== 'chatbot-button') {
-                closeChatbot();
-            }
-        }
 
         function closeChatbot() {
             var iframe = document.getElementById('chatbot-iframe');
