@@ -73,18 +73,6 @@ class AuthenticatedUser(UserMixin):
     def __init__(self, id):
         self.id = id
 
-@app.route('/clear_memory_session', methods=['POST'])
-def clear_memory():
-    # Clear the memory
-    # session.clear()
-    # memory.clear()
-    conversation_history = session.get('conversation_history', [])
-    conversation_history.clear()
-    print(f"session ID: {session.sid}")
-    print()
-    return jsonify({"message": "Memory and session cleared successfully"})
-
-
 @app.before_request
 def before_request():
     g.db_conn = psycopg2.connect(database_url)
@@ -132,6 +120,10 @@ def signup():
 
     return render_template('signup.html')
 
+@app.route('/indiana')
+def iu_hr():
+    return render_template('IU_HR.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -168,7 +160,7 @@ def logout():
 
 @app.route('/<int:user_id>')
 def home(user_id):
-    session.clear()
+    # session.clear()
     # memory.clear()
     print(f"session ID: {session.sid}")
     print()
@@ -249,8 +241,8 @@ def chat(user_id):
     
     return jsonify(response=response)
 
-@app.route('/store_feedback', methods=['POST'])
-def store_feedback():
+@app.route('/<int:user_id>/store_feedback', methods=['POST'])
+def store_feedback(user_id):
     data = request.json
     feedback_type = data.get('feedback_type')
     bot_response = data.get('bot_response')
@@ -258,8 +250,8 @@ def store_feedback():
     
     try:
         g.cursor.execute(
-            "INSERT INTO feedback (user_question, bot_response, feedback_type) VALUES (%s, %s, %s)",
-            (user_question, bot_response, feedback_type)
+            "INSERT INTO feedback (user_question, bot_response, feedback_type, user_id) VALUES (%s, %s, %s, %s)",
+            (user_question, bot_response, feedback_type, user_id)
         )
         g.db_conn.commit()
         return jsonify({"message": "Feedback stored successfully!"})
@@ -301,7 +293,7 @@ def admin():
             'greeting_message': row[4],
             'custom_prompt': row[5]
         }
-    return render_template('admin.html', documents=documents, settings=settings)
+    return render_template('admin.html', documents=documents, settings=settings, user_id=user_id)
 
 @app.route('/integrations')
 @login_required
@@ -327,7 +319,7 @@ def integrations():
             'greeting_message': row[4],
             'custom_prompt': row[5]
         }
-    return render_template('integrations.html', settings=settings)
+    return render_template('integrations.html', settings=settings, user_id=user_id)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -447,8 +439,9 @@ def scrape_url():
 @app.route('/delete/<doc_id>', methods=['POST'])
 @login_required
 def delete(doc_id):
+    user_id = current_user.id
     # Delete from PostgreSQL
-    g.cursor.execute("DELETE FROM document_mapping WHERE id = %s RETURNING filename;", (doc_id,))
+    g.cursor.execute("DELETE FROM document_mapping WHERE id = %s AND user_id = %s RETURNING filename;", (doc_id, user_id))
     result = g.cursor.fetchone()
     g.db_conn.commit()
     if result:
@@ -457,7 +450,8 @@ def delete(doc_id):
 
         # Delete from Pinecone
         delete_filter = {
-            "filename": {"$eq": filename}
+            "filename": {"$eq": filename},
+            "user_id": {"$eq": user_id}
         }
         index.delete(filter=delete_filter)
         print(f"Deleted vectors with filename {filename} from Pinecone")
@@ -491,7 +485,7 @@ def settings():
             'greeting_message': row[4],
             'custom_prompt': row[5]
         }
-    return render_template('settings.html', settings=settings)
+    return render_template('settings.html', settings=settings, user_id=user_id)
 
 def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt):
     # Prepare the SQL query
@@ -538,7 +532,8 @@ def greeting_message(user_id):
 @app.route('/analytics')
 @login_required
 def analytics():
-    g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback;")
+    user_id = current_user.id
+    g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback WHERE user_id = %s;", (user_id,))
     rows = g.cursor.fetchall()
 
     data = []
@@ -558,12 +553,13 @@ def analytics():
 @app.route('/analytics/data')
 @login_required
 def analytics_data():
+    user_id = current_user.id
     # Fetch the number of likes from the database
-    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type = 'Like';")
+    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type = 'Like' AND user_id = %s;", (user_id,))
     likes = g.cursor.fetchone()[0]
 
     # Fetch the number of dislikes from the database
-    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type = 'Dislike';")
+    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type = 'Dislike' AND user_id = %s;", (user_id,))
     dislikes = g.cursor.fetchone()[0]
 
     # Return the data as JSON

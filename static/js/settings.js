@@ -73,9 +73,10 @@ window.onload = function() {
     });
 };
 
-document.getElementById('settings-form').addEventListener('submit', function(event) {
+document.getElementById('settingsForm').addEventListener('submit', function(event) {
     var botTemperature = document.getElementById('bot_temperature').value;
     var customPrompt = document.getElementById('custom_prompt').value;
+    var greetingMessage = document.getElementById('greeting_message').value;
 
     if (botTemperature < 0 || botTemperature > 1) {
         alert('Bot Temperature must be between 0 and 1.');
@@ -84,6 +85,11 @@ document.getElementById('settings-form').addEventListener('submit', function(eve
 
     if (customPrompt.length > 1000) {
         alert('Custom Prompt cannot be more than 1000 characters.');
+        event.preventDefault();
+    }
+
+    if (greetingMessage.length > 250) {
+        alert('Greeting Message cannot be more than 250 characters.');
         event.preventDefault();
     }
 });

@@ -39,30 +39,6 @@
         }
         showGreetingMessage();
 
-// Function to close the chatbot
-// function closeChatbot() {
-//     var widgetButton = document.getElementById("widget-button");
-//     var chatbot = document.getElementById("chatbot");
-//     chatbot.style.animation = "slide-down 0.5s ease-out";
-//     setTimeout(function() {
-//         chatbot.style.display = "none";
-//         chatbot.style.animation = ""; // Remove animation property
-//         document.removeEventListener("click", closeChatbotOnClickOutside);
-//         setTimeout(function() {
-//             widgetButton.style.display = "block";
-//             widgetButton.style.animation = "slide-up 0.5s ease-out";
-//         }, 100);
-//     }, 300);
-// }
-
-// Function to close the chatbot when clicked outside
-// function closeChatbotOnClickOutside(event) {
-//     var chatbot = document.getElementById("chatbot");
-//     if (!chatbot.contains(event.target)) {
-//         closeChatbot();
-//     }
-// }
-
         // Function to show the three dots typing indicator
         function showTypingIndicator() {
             const chatboxBody = document.querySelector(".chatbox-body");
@@ -101,7 +77,6 @@
             // const inputField = document.querySelector("user-input");
             // inputField.disabled = false;
         }
-        // document.getElementById("chatbox-close").addEventListener("click", closeChatbot);
 
         // Add an event listener to the input element to listen for the "keydown" event
         // Add an event listener to the input element to listen for the "keydown" event
@@ -225,7 +200,16 @@
             }
         }
         function sendFeedback(type, botResponse, userQuestion) {
-            fetch('/store_feedback', {
+            // Get the current URL path
+            var path = window.location.pathname;
+
+            // Split the path into segments
+            var segments = path.split('/');
+
+            // The user ID should be the first segment after the leading empty segment
+            var userId = segments[1];
+
+            fetch('/' + userId + '/store_feedback', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -245,23 +229,8 @@
             });
         }
 
-
         document.getElementById('refresh').addEventListener('click', function() {
-            const chatboxBody = document.querySelector(".chatbox-body");
-            chatboxBody.innerHTML = ''; // This will remove all child elements in the chatbox body
-        
-            fetch('/clear_memory_session', { method: 'POST' })
-            .then(response => response.json())
-            .then(data => console.log(data.message));
-
-            // Reset any other states or variables if necessary
-            lastUserMessage = '';
-            // ... reset other states if needed
-        
-            // Optionally, you could also reset the user input
-            const userInput = document.getElementById("user-input");
-            userInput.value = '';
-            userInput.disabled = false; // Enable the input if it was disabled
+            location.reload();
         });
 
         function botResponse(rawText) {
@@ -288,8 +257,3 @@
                 appendMessage("Chatbot", "left", "An error occurred while processing your request");
             });
         }
-
-        // document.getElementById('refresh').addEventListener('click', function() {
-        //     // Refresh the page
-        //     location.reload();
-        // });
