@@ -170,9 +170,9 @@ def home(user_id):
     row = g.cursor.fetchone()
     if row is None:
         settings = {
-            'widget_icon': 'default_icon',  # Default values if no settings are found for the user
+            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
             'background_color': '#000000',
-            'font_style': 'default_font',
+            'font_style': 'Arial',
             'bot_temperature': 0.0,
             'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
             'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
@@ -277,9 +277,9 @@ def admin():
     row = g.cursor.fetchone()
     if row is None:
         settings = {
-            'widget_icon': 'default_icon',  # Default values if no settings are found for the user
+            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
             'background_color': '#000000',
-            'font_style': 'default_font',
+            'font_style': 'Arial',
             'bot_temperature': 0.0,
             'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
             'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
@@ -303,9 +303,9 @@ def integrations():
     row = g.cursor.fetchone()
     if row is None:
         settings = {
-            'widget_icon': 'default_icon',  # Default values if no settings are found for the user
+            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
             'background_color': '#000000',
-            'font_style': 'default_font',
+            'font_style': 'Arial',
             'bot_temperature': 0.0,
             'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
             'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
@@ -469,9 +469,9 @@ def settings():
     row = g.cursor.fetchone()
     if row is None:
         settings = {
-            'widget_icon': 'default_icon',  # Default values if no settings are found for the user
+            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
             'background_color': '#000000',
-            'font_style': 'default_font',
+            'font_style': 'Arial',
             'bot_temperature': 0.0,
             'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
             'custom_prompt': 'You are an AI assistant. You are here to help answers questions. You are not human. Refuse to answers questions that you do not have information on.'
