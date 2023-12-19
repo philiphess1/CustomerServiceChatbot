@@ -87,10 +87,8 @@
             width: 330px;
             height: 460px;
             overflow-y: scroll;
-            /* background-color: #e0e9f4; */
             font-family: var(--font-family);
             background-color: var(--background-color);
-            /* background-color: #000e1f; */
         }
 
         .chatbox-input {
@@ -240,9 +238,6 @@
                 transform: translateY(0);
             }
         }
-
-
-        /* Add more CSS styles as needed */
 
         /* Animation for sliding up the chatbot */
         @keyframes slide-up {
