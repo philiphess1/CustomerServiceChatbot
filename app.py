@@ -51,14 +51,14 @@ vectorstore = Pinecone(
 
 def get_bot_temperature(user_id):
     with db_conn.cursor() as cursor:
-        cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE id = %s;", (user_id,))
+        cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE user_id = %s;", (user_id,))
         row = cursor.fetchone()
         return row[0] if row else 0.0
     
 
 def get_custom_prompt(user_id):
     with db_conn.cursor() as cursor:
-        cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
+        cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE user_id = %s;", (user_id,))
         row = cursor.fetchone()
         return row[0] if row else "Default prompt part"
 # Connect to PostgreSQL database
@@ -166,12 +166,12 @@ def home(user_id):
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;",(user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE user_id = %s;",(user_id,))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
             'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
-            'background_color': '#000000',
+            'background_color': '#ffffff',
             'font_style': 'Arial',
             'bot_temperature': 0.0,
             'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
@@ -184,7 +184,12 @@ def home(user_id):
             'font_style': row[2],
             'bot_temperature': row[3],
             'greeting_message': row[4],
-            'custom_prompt': row[5]
+            'custom_prompt': row[5],
+            'dot_color': '#4CAF50',
+            'logo': 'https://upload.wikimedia.org/wikipedia/en/thumb/1/1b/Indiana_Pacers.svg/800px-Indiana_Pacers.svg.png',
+            'chatbot_title': 'Indiana Pacers Chatbot',
+            'title_color': '#163fc6',
+            'border_color': '#000000',
         }
 
     return render_template('index.html', settings=settings, user_id=user_id)
@@ -273,20 +278,20 @@ def admin():
     documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]
 
     # Query for chatbot settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE user_id = %s;", (user_id,))
     row = g.cursor.fetchone()
 
     if row is None:
         # Insert default settings for new user
         default_settings = (
             'chatboticon',  # Default widget icon URL
-            '#000000',      # Default background color
+            '#ffffff',      # Default background color
             'Arial',        # Default font style
             0.0,            # Default bot temperature
             'Hello! I am an AI assistant. How can I help you today?',  # Default greeting message
             'You are an AI assistant. You are here to help answer questions. You are not human. Refuse to answer questions that you do not have information on.'  # Default custom prompt
         )
-        g.cursor.execute("INSERT INTO chatbot_settings (id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt) VALUES (%s, %s, %s, %s, %s, %s, %s);", (user_id,) + default_settings)
+        g.cursor.execute("INSERT INTO chatbot_settings (user_id, id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt) VALUES (%s,%s, %s, %s, %s, %s, %s, %s);", (user_id,) +(user_id,) + default_settings)
         g.db_conn.commit()
         settings = dict(zip(['widget_icon', 'background_color', 'font_style', 'bot_temperature', 'greeting_message', 'custom_prompt'], default_settings))
     else:
@@ -306,12 +311,12 @@ def admin():
 @login_required
 def integrations():
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE user_id = %s;", (user_id,))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
             'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
-            'background_color': '#000000',
+            'background_color': '#ffffff',
             'font_style': 'Arial',
             'bot_temperature': 0.0,
             'greeting_message': 'Hello! I am an AI assistant. How can I help you today?',
@@ -472,7 +477,7 @@ def delete(doc_id):
 @login_required
 def settings():
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE id = %s;", (user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE user_id = %s;", (user_id,))
     row = g.cursor.fetchone()
 
     # It is assumed that row will not be None, as default settings should have been set in the /admin route.
@@ -482,7 +487,8 @@ def settings():
         'font_style': row[2],
         'bot_temperature': row[3],
         'greeting_message': row[4],
-        'custom_prompt': row[5]
+        'custom_prompt': row[5],
+        'dot_color': '#4CAF50'
     }
 
     return render_template('settings.html', settings=settings, user_id=user_id)
@@ -492,7 +498,7 @@ def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s WHERE id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s WHERE user_id = %s;
     """
 
     # Execute the SQL query
@@ -519,10 +525,10 @@ def update_chatbot_settings():
 @app.route('/<int:user_id>/greeting_message')
 def greeting_message(user_id):
     # Query PostgreSQL to get the greeting message for the user with id = 1
-    g.cursor.execute("SELECT greeting_message FROM chatbot_settings WHERE id = %s;", (user_id,))
+    g.cursor.execute("SELECT greeting_message FROM chatbot_settings WHERE user_id = %s;", (user_id,))
     row = g.cursor.fetchone()
     if row is None:
-        greeting_message = 'Hello, how can I help'  # Default value if no greeting message is found for the user
+        greeting_message = 'Hello, how can I help?'  # Default value if no greeting message is found for the user
     else:
         greeting_message = row[0]
     return jsonify(greeting_message=greeting_message)
