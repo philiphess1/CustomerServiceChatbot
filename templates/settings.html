@@ -62,6 +62,23 @@
                 <label for="background_color">Background Color:</label>
                 <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}"><br><br>
 
+                <label for="title_color">Title Color:</label>
+                <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}"><br><br>
+
+                <label for="border_color">Border Color:</label>
+                <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}"><br><br>
+
+                <label for="chatbot_title">Chatbot title:</label>
+                <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}"><br><br>
+
+                <label for="dot_color">Dot Color:</label>
+                <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}"><br><br>
+
+                <label for="logo">Logo:</label>
+                <input type="text" id="logo" name="logo" value="{{ settings['logo'] }}"><br><br>
+
+                
+                
                 <label for="font_style">Font Style:</label>
                 <select id="font_style" name="font_style">
                     <option value="Arial" {% if settings['font_style'] == 'Arial' %}selected{% endif %}>Arial</option>
