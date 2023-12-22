@@ -80,15 +80,16 @@
                         <label for="border_color">Border Color:</label>
                         <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}"><br><br>
         
-                        <label for="chatbot_title">Chatbot title:</label>
-                        <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}"><br><br>
-        
+                        <label for="chatbot_title">Chatbot Title:</label>
+                        <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}"><br>
+                        <em><small>Must be no more than 20 characters.</small></em><br><br>
+
                         <label for="dot_color">Dot Color:</label>
                         <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}"><br><br>
         
-                        <label for="logo">Logo:</label>
-                        <input type="text" id="logo" name="logo" value="{{ settings['logo'] }}"><br><br>
-        
+                        <label for="logo">Logo URL:</label>
+                        <input type="text" id="logo" name="logo" value="{{ settings['logo'] }}"><br>
+                        <em><small>Must be a valid URL. <a href="https://www.wikihow.com/Get-the-URL-for-Pictures#:~:text=Things%20You%20Should%20Know,%2C%20or%20%22Copy%20Link.%22" target="_blank">Need help?</a></small></em><br><br>
                         
                         
                         <label for="font_style">Font Style:</label>
@@ -114,13 +115,20 @@
                 <div class="settings-section1">
                     <h3>System Settings</h3>
                     <label for="bot_temperature">Bot Temperature:</label>
-                    <input type="number" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.01" value="{{ settings['bot_temperature'] }}"><br><br>
-    
+                    <span id="bot_temperature_value">{{ settings['bot_temperature'] }}</span> <!-- Add this line -->
+                    <div class="range-container"> <!-- Add this line -->
+                        <span>More Accurate</span>
+                        <input type="range" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.1" value="{{ settings['bot_temperature'] }}">
+                        <span>More Creative</span>
+                    </div><br>
+
                     <label for="greeting_message">Greeting Message:</label>
-                    <textarea id="greeting_message" name="greeting_message" rows="4" cols="50" maxlength="500">{{ settings['greeting_message'] }}</textarea><br><br>
-    
+                    <textarea id="greeting_message" name="greeting_message" rows="4" cols="50" maxlength="500">{{ settings['greeting_message'] }}</textarea>
+                    <em><small>Must be no more than 250 characters.</small></em><br><br>
+
                     <label for="custom_prompt">Custom Prompt:</label>
-                    <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000">{{ settings['custom_prompt'] }}</textarea><br><br>
+                    <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000">{{ settings['custom_prompt'] }}</textarea>
+                    <em><small>Must be no more than 1000 characters.</small></em><br><br>
                 </div>
 
                 <input type="submit" value="Save Settings">

@@ -81,6 +81,14 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
     var botTemperature = document.getElementById('bot_temperature').value;
     var customPrompt = document.getElementById('custom_prompt').value;
     var greetingMessage = document.getElementById('greeting_message').value;
+    var chatbotTitle = document.getElementById('chatbot_title').value;
+    var logoUrl = document.getElementById('logo_url').value;  // Add this line
+
+    // Add this block
+    if (!botTemperature || !customPrompt || !greetingMessage || !chatbotTitle || !logoUrl) {
+        alert('All fields must be filled out.');
+        event.preventDefault();
+    }
 
     if (botTemperature < 0 || botTemperature > 1) {
         alert('Bot Temperature must be between 0 and 1.');
@@ -96,6 +104,22 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
         alert('Greeting Message cannot be more than 250 characters.');
         event.preventDefault();
     }
+
+    if (chatbotTitle.length > 20) {
+        alert('Chatbot Title cannot be more than 20 characters.');
+        event.preventDefault();
+    }
+
+    // Add this block
+    var urlPattern = /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
+    if (!urlPattern.test(logoUrl)) {
+        alert('Logo URL must be a valid URL.');
+        event.preventDefault();
+    }
+});
+
+document.getElementById('bot_temperature').addEventListener('input', function() {
+    document.getElementById('bot_temperature_value').textContent = this.value;
 });
 
 function showPage(pageId) {

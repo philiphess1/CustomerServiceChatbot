@@ -381,3 +381,24 @@ textarea {
   justify-content: space-between;
   margin-top: 20px;
 }
+
+.range-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+#bot_temperature {
+  margin: 0 10px;
+  width: 50%;
+  background: transparent; /* Add this line */
+}
+
+#bot_temperature::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #4CAF50;
+  cursor: pointer;
+}
