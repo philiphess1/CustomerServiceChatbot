@@ -3,6 +3,22 @@ html, body {
   padding: 0;
 }
 
+h1 {
+  margin: 0;
+  font-size: 36px;
+}
+h2 {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 28px;
+  font-weight: normal;
+}
+h3 {
+  margin: 40px 0 15px 0;
+  font-size: 16px;
+  color: #9d9d9d;
+}
+
 .top-ribbon {
   background-color: #111;
   height: 101px;
@@ -190,7 +206,7 @@ body {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 40%;
+    max-width: 65%;
     border: 2px solid #c1c1c1;
 }
 
@@ -253,3 +269,48 @@ input#background_color {
   flex-basis: 68%;
   margin-left: 120px;
 }
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  /* bottom: 80%; Position the tooltip above the button */
+  top: 10%;
+  left: 50%;
+  margin-left: 20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  width: 200px;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.info-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  margin-top: 33px;
+  margin-left: 8px;
+}
+
+.info-bundle {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+}
+

@@ -97,3 +97,4 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
         event.preventDefault();
     }
 });
+
