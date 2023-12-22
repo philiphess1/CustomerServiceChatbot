@@ -22,6 +22,8 @@ import psycopg2
 import bcrypt
 from flask_session import Session
 import pandas as pd
+from itsdangerous import URLSafeTimedSerializer
+from flask_mail import Mail, Message
 
 
 load_dotenv()
@@ -30,6 +32,16 @@ app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SECRET_KEY'] = 'your_secret_key_here'
 Session(app)
+
+app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT')
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
+app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL') == 'True'
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
+mail = Mail(app)
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 environment = os.getenv("PINECONE_ENVIRONMENT")
@@ -100,11 +112,12 @@ def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        email = request.form['email']
 
         # Check if user already exists
-        g.cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
+        g.cursor.execute("SELECT id FROM users WHERE username = %s OR email = %s", (username, email))
         if g.cursor.fetchone():
-            flash('Username already exists', 'error')
+            flash('Username or email already exists', 'error')
             return redirect(url_for('signup'))
 
         # Hash the password
@@ -112,7 +125,7 @@ def signup():
         hashed_password = hashed_password.decode('utf-8')
 
         # Insert new user into the database
-        g.cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+        g.cursor.execute("INSERT INTO users (username, password, email) VALUES (%s, %s, %s)", (username, hashed_password, email))
         g.db_conn.commit()
 
         flash('Account created successfully!', 'success')
@@ -120,17 +133,65 @@ def signup():
 
     return render_template('signup.html')
 
-@app.route('/indiana')
-def iu_hr():
-    return render_template('IU_HR.html')
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+
+        # Check if email exists in the database
+        g.cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        if not g.cursor.fetchone():
+            flash('No account associated with that email address', 'error')
+            return redirect(url_for('forgot_password'))
+
+        # Generate a password reset token
+        token = s.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
+
+        # Create a password reset link with the token
+        reset_link = url_for('reset_password', token=token, _external=True)
+
+        # Send an email to the user with the reset link
+        msg = Message('Password Reset Requested', recipients=[email])
+        msg.body = f'Here is your password reset link: {reset_link}'
+        mail.send(msg)
+
+        flash('Password reset link sent to your email address', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('forgot_password.html')
+
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        # Validate the password reset token
+        email = s.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=3600)
+    except:
+        flash('The password reset link is invalid or has expired', 'error')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        password = request.form['password']
+
+        # Hash the new password
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = hashed_password.decode('utf-8')
+
+        # Update the user's password in the database
+        g.cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hashed_password, email))
+        g.db_conn.commit()
+
+        flash('Your password has been updated!', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('reset_password.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']  # Change this line
         password = request.form['password']
         
-        g.cursor.execute("SELECT id, password FROM users WHERE username = %s", (username,))
+        g.cursor.execute("SELECT id, password FROM users WHERE email = %s", (email,))  # And this line
         user_data = g.cursor.fetchone()
         
         if user_data:
@@ -148,7 +209,7 @@ def login():
             else:  
                 flash('Invalid password', 'error')  # Stored Password is None
         else:
-            flash('Invalid username', 'error')  # User Data is None
+            flash('Invalid email', 'error')  # Change this line
             
     return render_template('login.html')
 
@@ -160,8 +221,6 @@ def logout():
 
 @app.route('/<int:user_id>')
 def home(user_id):
-    # session.clear()
-    # memory.clear()
     print(f"session ID: {session.sid}")
     print()
 
