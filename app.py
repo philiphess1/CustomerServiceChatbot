@@ -166,7 +166,7 @@ def home(user_id):
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt FROM chatbot_settings WHERE user_id = %s;",(user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s;",(user_id,))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -301,7 +301,7 @@ def admin():
             '#000000', #'title_color'
             '#ffffff' #'border_color'
         )
-        g.cursor.execute("INSERT INTO chatbot_settings (user_id, id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (user_id,) +(user_id,) + default_settings)
+        g.cursor.execute("INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (user_id,) + default_settings)
         g.db_conn.commit()
         settings = dict(zip(['widget_icon', 'background_color', 'font_style', 'bot_temperature', 'greeting_message', 'custom_prompt', 'dot_color', 'logo', 'chatbot_title', 'title_color', 'border_color'], default_settings))
     else:
