@@ -113,6 +113,13 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
+        code = request.form['code']
+
+        # Check if the invitation exists
+        g.cursor.execute("SELECT email FROM invitations WHERE email = %s AND code = %s", (email, code))
+        if not g.cursor.fetchone():
+            flash('Invalid email or code', 'error')
+            return redirect(url_for('signup'))
 
         # Check if user already exists
         g.cursor.execute("SELECT id FROM users WHERE username = %s OR email = %s", (username, email))
@@ -126,6 +133,10 @@ def signup():
 
         # Insert new user into the database
         g.cursor.execute("INSERT INTO users (username, password, email) VALUES (%s, %s, %s)", (username, hashed_password, email))
+        g.db_conn.commit()
+
+        # Delete the used invitation
+        g.cursor.execute("DELETE FROM invitations WHERE email = %s", (email,))
         g.db_conn.commit()
 
         flash('Account created successfully!', 'success')
