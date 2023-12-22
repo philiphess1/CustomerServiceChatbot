@@ -146,10 +146,8 @@
 
 
 
-    <!-- change the url to https://app.eccoai.org/static/images/{{ settings.widget_icon }}.png before pushing to main -->
-    <img id="chatbot-button" src="http://127.0.0.1:5000/static/images/{{ settings.widget_icon }}.png" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
-    <!-- change the url to https://app.eccoai.org/{{ user_id }} before pushing to main -->
-    <iframe src="http://127.0.0.1:5000/{{ user_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
+    <img id="chatbot-button" src="https://app.eccoai.org/static/images/{{ settings.widget_icon }}.png" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
+    <iframe src="https://app.eccoai.org/{{ user_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
     <script>
         var chatbotButton = document.getElementById('chatbot-button');
         chatbotButton.addEventListener('mouseover', function() {
