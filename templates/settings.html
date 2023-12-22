@@ -33,81 +33,111 @@
             
     </section>
     <div id="settings-box">
+
+        <div id="settings-page">
+            <div class="button-holder">
+            <button class="button-35 selected" onclick="showPage('styling-settings')">Styling Settings</button>
+            <button class="button-35" onclick="showPage('system-settings')">System Settings</button>
+        </div>
+            
+            <div id="styling-settings" class="subpage">
+                <form id="settingsForm" action="/update_chatbot_settings" method="post" style="width: 2000px; height: 2000px;">
+                    <div class="info-bundle">
+                        <h2 class="instructions"><b>Chatbot Settings</b></h2>
+                        <div class="tooltip-container">
+                            <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
+                            <div class="tooltip-text">Change the settings and your system preferences below then click the save button:</div>
+                        </div>   
+                    </div>         
+                    <div class="settings-section">
+                        <h3>Styling</h3>
+                        <label>Widget Icon:</label><br>
+                        <div id="widget_icon">
+                            <label for="icon1">
+                                <input type="radio" id="icon1" name="widget_icon" value="chatboticon" {% if settings['widget_icon'] == 'chatboticon' %}checked{% endif %}>
+                                <img src="{{ url_for('static', filename='images/chatboticon.png') }}" alt="Icon 1">
+                            </label>
+                            <label for="icon2">
+                                <input type="radio" id="icon2" name="widget_icon" value="chatbot2" {% if settings['widget_icon'] == 'chatbot2' %}checked{% endif %}>
+                                <img src="{{ url_for('static', filename='images/chatbot2.png') }}" alt="Icon 2">
+                            </label>
+                            <label for="icon3">
+                                <input type="radio" id="icon3" name="widget_icon" value="chatbot3" {% if settings['widget_icon'] == 'chatbot3' %}checked{% endif %}>
+                                <img src="{{ url_for('static', filename='images/chatbot3.png') }}" alt="Icon 3">
+                            </label>
+                            <label for="icon4">
+                                <input type="radio" id="icon4" name="widget_icon" value="chatbot4" {% if settings['widget_icon'] == 'chatbot4' %}checked{% endif %}>
+                                <img src="{{ url_for('static', filename='images/chatbot4.png') }}" alt="Icon 4">
+                            </label>
+                        </div><br><br>
         
-        <form id="settingsForm" action="/update_chatbot_settings" method="post" style="width: 2000px; height: 2000px;">
-            <div class="info-bundle">
-                <h2 class="instructions"><b>Chatbot Settings</b></h2>
-                <div class="tooltip-container">
-                    <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
-                    <div class="tooltip-text">Change the settings and your system preferences below then click the save button:</div>
-                </div>   
-            </div>         
-            <div class="settings-section">
-                <h3>Styling</h3>
-                <label>Widget Icon:</label><br>
-                <div id="widget_icon">
-                    <label for="icon1">
-                        <input type="radio" id="icon1" name="widget_icon" value="chatboticon" {% if settings['widget_icon'] == 'chatboticon' %}checked{% endif %}>
-                        <img src="{{ url_for('static', filename='images/chatboticon.png') }}" alt="Icon 1">
-                    </label>
-                    <label for="icon2">
-                        <input type="radio" id="icon2" name="widget_icon" value="chatbot2" {% if settings['widget_icon'] == 'chatbot2' %}checked{% endif %}>
-                        <img src="{{ url_for('static', filename='images/chatbot2.png') }}" alt="Icon 2">
-                    </label>
-                    <label for="icon3">
-                        <input type="radio" id="icon3" name="widget_icon" value="chatbot3" {% if settings['widget_icon'] == 'chatbot3' %}checked{% endif %}>
-                        <img src="{{ url_for('static', filename='images/chatbot3.png') }}" alt="Icon 3">
-                    </label>
-                    <label for="icon4">
-                        <input type="radio" id="icon4" name="widget_icon" value="chatbot4" {% if settings['widget_icon'] == 'chatbot4' %}checked{% endif %}>
-                        <img src="{{ url_for('static', filename='images/chatbot4.png') }}" alt="Icon 4">
-                    </label>
-                </div><br><br>
-
-                <label for="background_color">Background Color:</label>
-                <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}"><br><br>
-
-                <label for="title_color">Title Color:</label>
-                <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}"><br><br>
-
-                <label for="border_color">Border Color:</label>
-                <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}"><br><br>
-
-                <label for="chatbot_title">Chatbot title:</label>
-                <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}"><br><br>
-
-                <label for="dot_color">Dot Color:</label>
-                <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}"><br><br>
-
-                <label for="logo">Logo:</label>
-                <input type="text" id="logo" name="logo" value="{{ settings['logo'] }}"><br><br>
-
-                
-                
-                <label for="font_style">Font Style:</label>
-                <select id="font_style" name="font_style">
-                    <option value="Arial" {% if settings['font_style'] == 'Arial' %}selected{% endif %}>Arial</option>
-                    <option value="Verdana" {% if settings['font_style'] == 'Verdana' %}selected{% endif %}>Verdana</option>
-                    <option value="Times New Roman" {% if settings['font_style'] == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
-                    <!-- Add more font options here -->
-                </select><br><br>
+                        <label for="background_color">Background Color:</label>
+                        <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}"><br><br>
+        
+                        <label for="title_color">Title Color:</label>
+                        <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}"><br><br>
+        
+                        <label for="border_color">Border Color:</label>
+                        <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}"><br><br>
+        
+                        <label for="chatbot_title">Chatbot title:</label>
+                        <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}"><br><br>
+        
+                        <label for="dot_color">Dot Color:</label>
+                        <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}"><br><br>
+        
+                        <label for="logo">Logo:</label>
+                        <input type="text" id="logo" name="logo" value="{{ settings['logo'] }}"><br><br>
+        
+                        
+                        
+                        <label for="font_style">Font Style:</label>
+                        <select id="font_style" name="font_style">
+                            <option value="Arial" {% if settings['font_style'] == 'Arial' %}selected{% endif %}>Arial</option>
+                            <option value="Verdana" {% if settings['font_style'] == 'Verdana' %}selected{% endif %}>Verdana</option>
+                            <option value="Times New Roman" {% if settings['font_style'] == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
+                            <!-- Add more font options here -->
+                        </select><br><br>
+                        
+                    </div>
+                    <input type="submit" value="Save Settings">
             </div>
 
-            <div class="settings-section">
-                <h3>System Settings</h3>
-                <label for="bot_temperature">Bot Temperature:</label>
-                <input type="number" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.01" value="{{ settings['bot_temperature'] }}"><br><br>
+            <div id="system-settings" class="subpage">
+                <div class="info-bundle">
+                    <h2 class="instructions"><b>Chatbot Settings</b></h2>
+                    <div class="tooltip-container">
+                        <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
+                        <div class="tooltip-text">Change the settings and your system preferences below then click the save button:</div>
+                    </div>   
+                </div>  
+                <div class="settings-section1">
+                    <h3>System Settings</h3>
+                    <label for="bot_temperature">Bot Temperature:</label>
+                    <input type="number" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.01" value="{{ settings['bot_temperature'] }}"><br><br>
+    
+                    <label for="greeting_message">Greeting Message:</label>
+                    <textarea id="greeting_message" name="greeting_message" rows="4" cols="50" maxlength="500">{{ settings['greeting_message'] }}</textarea><br><br>
+    
+                    <label for="custom_prompt">Custom Prompt:</label>
+                    <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000">{{ settings['custom_prompt'] }}</textarea><br><br>
+                </div>
 
-                <label for="greeting_message">Greeting Message:</label>
-                <textarea id="greeting_message" name="greeting_message" rows="4" cols="50" maxlength="500">{{ settings['greeting_message'] }}</textarea><br><br>
-
-                <label for="custom_prompt">Custom Prompt:</label>
-                <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000">{{ settings['custom_prompt'] }}</textarea><br><br>
+                <input type="submit" value="Save Settings">
+    
+                
             </div>
+            
+            </form>
+        </div>
+        
+        
 
-            <input type="submit" value="Save Settings">
-        </form>
+            
     </div>
+
+
+
     <!-- change the url to https://app.eccoai.org/static/images/{{ settings.widget_icon }}.png before pushing to main -->
     <img id="chatbot-button" src="http://127.0.0.1:5000/static/images/{{ settings.widget_icon }}.png" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
     <!-- change the url to https://app.eccoai.org/{{ user_id }} before pushing to main -->

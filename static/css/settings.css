@@ -206,8 +206,20 @@ body {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 65%;
+    max-width: 45%;
     border: 2px solid #c1c1c1;
+}
+
+.settings-section1 {
+  margin-left: 100px;
+  margin-bottom: 50px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 1000px;
+  min-width: 800px;
+  border: 2px solid #c1c1c1;
 }
 
 .settings-section h3 {
@@ -314,3 +326,58 @@ input#background_color {
   align-items: center;
 }
 
+.subpage {
+  display: none;
+}
+
+#styling-settings{
+  display: flex;
+}
+
+textarea {
+  resize: both;
+}
+
+.button-35 {
+  align-items: center;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: transparent 0 0 0 3px, rgba(18, 18, 18, .1) 0 6px 20px;
+  box-sizing: border-box;
+  color: #121212;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 1 1 auto;
+  font-family: Inter,sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1;
+  margin: 0;
+  outline: none;
+  padding: 1rem 1.2rem;
+  text-align: center;
+  text-decoration: none;
+  transition: box-shadow .2s,-webkit-box-shadow .2s;
+  white-space: nowrap;
+  border: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  border: 4px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.button-35:hover {
+  box-shadow: transparent 0 0 0 3px, rgba(18, 18, 18, .2) 0 6px 20px;
+  border: 4px solid #121212;
+}
+
+.button-35.selected {
+  border: 4px solid #121212;
+}
+
+.button-holder {
+  justify-content: space-between;
+  margin-top: 20px;
+}

@@ -98,3 +98,28 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
     }
 });
 
+function showPage(pageId) {
+    // Hide all subpages
+    var subpages = document.getElementsByClassName('subpage');
+    for (var i = 0; i < subpages.length; i++) {
+        subpages[i].style.display = 'none';
+    }
+
+    // Show the selected subpage
+    document.getElementById(pageId).style.display = 'block';
+
+    // Remove the 'selected' class from all buttons
+    var buttons = document.getElementsByClassName('button-35');
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('selected');
+    }
+
+    // Add the 'selected' class to the clicked button
+    if (pageId === 'styling-settings') {
+        document.querySelector('button[onclick="showPage(\'styling-settings\')"]').classList.add('selected');
+    } else if (pageId === 'system-settings') {
+        document.querySelector('button[onclick="showPage(\'system-settings\')"]').classList.add('selected');
+    }
+}
+
+showPage('styling-settings');
