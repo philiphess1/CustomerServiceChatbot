@@ -1,20 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
     <title>Sign Up</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/signup.css') }}">
+    <style>
+        .flash-message {
+            color: #FF0000; /* Change color as needed */
+            font-size: 1em; /* Change font size as needed */
+            transition: opacity 0.5s; /* Change transition speed as needed */
+            text-align: center; /* Center the text */
+            margin-top: 20px; /* Add some space above the message */
+        }
+    </style>
+    <script>
+        setTimeout(function() {
+            var msg = document.getElementById('flash-msg');
+            msg.style.opacity = "0";
+        }, 12000); /* Change time as needed */
+    </script>
 </head>
 <body>
-    <h2>Sign Up</h2>
-    <form method="POST">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" required><br>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br>
-        <label for="code">Verification Code:</label><br>
-        <input type="text" id="code" name="code" required><br>
-        <input type="submit" value="Sign Up">
-    </form>
+    <div class="main-content">
+        <div class="form-container">
+            <img class="company-logo" src="{{ url_for('static', filename='images/logo.png') }}" alt="EccoAI">
+            <form method="post">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="code">Verification Code</label>
+                <input type="text" id="code" name="code" required>
+
+                <button type="submit">Sign Up</button>
+            </form>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div id="flash-msg" class="flash-message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='images/zebrastripes.png') }}">
+        </div>
+    </div>
 </body>
 </html>

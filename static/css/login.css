@@ -17,12 +17,14 @@ html, body {
 }
 
 .company-logo {
-  height: 150px; /* Adjust as needed */
-  width: 50%; /* Keep the aspect ratio */
-  margin-bottom: 20px; /* Space between the logo and the form */
-  padding-left: 20%;
-  padding-right: 20%;
+  max-height: 150px; /* Maximum height, but can be smaller to maintain aspect ratio */
+  width: auto; /* Adjust width automatically to maintain aspect ratio */
+  margin-bottom: 20px;
+  display: block; /* Ensures the image is centered in its container */
+  margin-left: auto;
+  margin-right: auto;
 }
+
 
 .image-container {
   display: flex;
@@ -46,11 +48,6 @@ html, body {
   padding-right: 20px;
   color: white;
   font-size: 40px;
-}
-
-.company-logo {
-  height: 80px; /* Adjust as needed */
-  width: auto; /* Keep the aspect ratio */
 }
 
 body {
@@ -89,7 +86,7 @@ input[type="text"], input[type="password"] {
 
 button[type="submit"] {
   width: 40%; /* Set the width */
-  background-color: #4CAF50;
+  background-color: rgb(178, 226, 75);
   border: none;
   border-radius: 5px;
   color: #fff;
