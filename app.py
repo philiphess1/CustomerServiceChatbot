@@ -657,7 +657,7 @@ def analytics():
             })
     else:
         # Handle case where no data is returned
-        data = None
+        data = []
 
     return render_template('analytics.html', data=data)
 

@@ -193,15 +193,3 @@ html, body {
     font-family: Arial, sans-serif;
     margin-left: 100px; /* left margin of 100px */
 }
-
-.bar-chart-container {
-    position: relative; 
-    height:40vh; 
-    width:80vw;
-    margin-left: 110px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
