@@ -6,8 +6,8 @@
 </head>
 <body>
   <div class="main-content">
+    <img class="company-logo" src="{{ url_for('static', filename='images/Ecco_logo.jpeg') }}" alt="EccoAI">
     <div class="form-container">
-      <img class="company-logo" src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="EccoAI">
       <form method="post">
         <label for="email">Email</label>
         <input type="text" id="email" name="email">
