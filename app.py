@@ -558,7 +558,7 @@ def delete(doc_id):
         # Delete from Pinecone
         delete_filter = {
             "filename": {"$eq": filename},
-            "user_id": {"$eq": user_id}
+            "user_id": {"$eq": f"{user_id}"}
         }
         index.delete(filter=delete_filter)
         print(f"Deleted vectors with filename {filename} from Pinecone")
