@@ -150,13 +150,18 @@ def forgot_password():
         email = request.form['email']
 
         # Check if email exists in the database
-        g.cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
-        if not g.cursor.fetchone():
+        g.cursor.execute("SELECT id FROM public.users WHERE email = %s", (email,))
+        user_data = g.cursor.fetchone()
+        if not user_data:
             flash('No account associated with that email address', 'error')
             return redirect(url_for('forgot_password'))
 
         # Generate a password reset token
         token = s.dumps(email, salt=app.config['SECURITY_PASSWORD_SALT'])
+
+        # Save the token in the database
+        g.cursor.execute("INSERT INTO public.password_resets (user_id, token) VALUES (%s, %s)", (user_data[0], token))
+        g.db_conn.commit()
 
         # Create a password reset link with the token
         reset_link = url_for('reset_password', token=token, _external=True)
@@ -180,6 +185,13 @@ def reset_password(token):
         flash('The password reset link is invalid or has expired', 'error')
         return redirect(url_for('login'))
 
+    # Check if the token exists in the database
+    g.cursor.execute("SELECT user_id FROM public.password_resets WHERE token = %s", (token,))
+    user_data = g.cursor.fetchone()
+    if not user_data:
+        flash('The password reset link is invalid or has expired', 'error')
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         password = request.form['password']
 
@@ -188,7 +200,11 @@ def reset_password(token):
         hashed_password = hashed_password.decode('utf-8')
 
         # Update the user's password in the database
-        g.cursor.execute("UPDATE users SET password = %s WHERE email = %s", (hashed_password, email))
+        g.cursor.execute("UPDATE public.users SET password = %s WHERE id = %s", (hashed_password, user_data[0]))
+        g.db_conn.commit()
+
+        # Delete the token from the database
+        g.cursor.execute("DELETE FROM public.password_resets WHERE token = %s", (token,))
         g.db_conn.commit()
 
         flash('Your password has been updated!', 'success')
