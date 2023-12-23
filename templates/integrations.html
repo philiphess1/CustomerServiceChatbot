@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/integrations.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="top-ribbon">
@@ -39,7 +40,7 @@
         <li>To learn more about embedding this code onto your Wordpress site, click the link <a href="https://wordpress.com/support/code/" target="_blank">here</a>.</li>
     </ul>
     <div class="code-container">
-        <pre><code id="chatbot-code">
+        <pre><code id="chatbot-code" class="language-javascript">
         &lt;img id="chatbot-button" src="https://app.eccoai.org/{{ url_for('static', filename='images/' + settings['widget_icon'] + '.png') }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;"&gt;
 
         &lt;iframe src="https://app.eccoai.org/{{ user_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"&gt;&lt;/iframe&gt;
@@ -82,7 +83,8 @@
         </code></pre>
         <button class="copy-btn" onclick="copyCode()" style="cursor: pointer;">Copy Code</button>
     </div>
-
     <script src="{{ url_for('static', filename='js/integrations.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js"></script>
 </body>
 </html>
