@@ -9,7 +9,11 @@
 </head>
 <body>
     <div class="top-ribbon">
-        <span class="company-name">EccoAI</span>
+        <span class="company-name">
+            <a href="https://www.eccoai.org/">
+                <img src="{{ url_for('static', filename='images/logoword2.png') }}" alt="Company Logo">
+            </a>
+        </span>
     </div>
     <div>
     <div class="sidenav">
@@ -143,20 +147,14 @@
                 var iframe = document.getElementById('chatbot-iframe');
                 if (iframe.style.display === 'none') {
                     iframe.style.display = 'block';
-                    // Add the event listener when the chatbot is opened
-                    document.addEventListener('click', closeChatbotOnClickOutside);
                 } else {
                     iframe.style.display = 'none';
-                    // Remove the event listener when the chatbot is closed
-                    document.removeEventListener('click', closeChatbotOnClickOutside);
                 }
             });
 
             function closeChatbot() {
                 var iframe = document.getElementById('chatbot-iframe');
                 iframe.style.display = 'none';
-                // Remove the event listener when the chatbot is closed
-                document.removeEventListener('click', closeChatbotOnClickOutside);
             }
         </script>       
         <script src="{{ url_for('static', filename='js/admin.js') }}"></script>

@@ -32,10 +32,16 @@ h3 {
 
 .company-name {
   margin-right: 10px;
-  font-family: Arial, sans-serif; /* Change this to your preferred font */
+  font-family: Arial, sans-serif; 
   font-weight: bold;
   font-style: italic;
 }
+
+.company-name img {
+  height: 101px; /* Adjust as needed */
+  width: auto;
+}
+
 
 label[for="custom_prompt"] {
   display: block;
