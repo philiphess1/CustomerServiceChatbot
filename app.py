@@ -567,16 +567,20 @@ def process_excel_text(full_text, headers, filename,user_id):
 def scrape_url():
     user_id = current_user.id
     url = request.form['url']
+    print(url)
 
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
 
-        soup = BeautifulSoup(response.content, 'html.parser')
+        soup = BeautifulSoup(response.text, 'html.parser')
         raw_text = soup.get_text()
+        print(f"raw text:{raw_text}")
         text = re.sub(r'\s+', ' ', raw_text.strip())
-        print(text)
+        print(f"URL: {url}")
+        print(f"Text: {text}")
         process_text(text, url, 0, user_id)
+        print("process_text function completed")
         file_size = len(response.content) / 1000000
 
         
