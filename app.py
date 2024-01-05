@@ -565,17 +565,32 @@ def process_excel_text(full_text, headers, filename,user_id):
 
 @app.route('/scrape', methods=['POST'])
 def scrape_url():
-    url = request.form['url']  # Get the URL from the form data
-    response = requests.get(url)
+    user_id = current_user.id
+    url = request.form['url']
 
-    if response.status_code == 200:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+
         soup = BeautifulSoup(response.content, 'html.parser')
         raw_text = soup.get_text()
         text = re.sub(r'\s+', ' ', raw_text.strip())
-        process_text(text, url, 0)
+        print(text)
+        process_text(text, url, 0, user_id)
+        file_size = len(response.content) / 1000000
+
+        
+
+        g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id) VALUES (%s, %s, %s) RETURNING id;", (url, file_size, user_id))
+        g.db_conn.commit()
+
         return jsonify({"status": "success", "message": "URL scraped and processed successfully!"})
-    else:
-        return jsonify({"status": "error", "message": "Failed to scrape URL."})
+
+    except requests.RequestException as e:
+        return jsonify({"status": "error", "message": f"Error processing URL: {str(e)}"})
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Unexpected error: {str(e)}"})
+
 
 @app.route('/delete/<doc_id>', methods=['POST'])
 @login_required
