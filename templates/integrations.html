@@ -56,18 +56,15 @@
                 var iframe = document.getElementById('chatbot-iframe');
                 if (iframe.style.display === 'none') {
                     iframe.style.display = 'block';
-                    // Add the event listener when the chatbot is opened
                     document.addEventListener('click', closeChatbotOnClickOutside);
                 } else {
                     iframe.style.display = 'none';
-                    // Remove the event listener when the chatbot is closed
                     document.removeEventListener('click', closeChatbotOnClickOutside);
                 }
             });
 
             function closeChatbotOnClickOutside(event) {
                 var chatbot = document.getElementById("chatbot-iframe");
-                // Check if the click was outside the chatbot
                 if (event.target.id !== 'chatbot-iframe' && event.target.id !== 'chatbot-button') {
                     closeChatbot();
                 }
@@ -76,7 +73,6 @@
             function closeChatbot() {
                 var iframe = document.getElementById('chatbot-iframe');
                 iframe.style.display = 'none';
-                // Remove the event listener when the chatbot is closed
                 document.removeEventListener('click', closeChatbotOnClickOutside);
             }
         &lt;/script&gt;
