@@ -7,6 +7,8 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/settings.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 </head>
 <body>
     <div class="top-ribbon">
@@ -57,6 +59,10 @@
                         <h3>Styling</h3>
                         <label>Widget Icon:</label><br>
                         <div id="widget_icon">
+                            <label for="icon4">
+                                <input type="radio" id="icon4" name="widget_icon" value="ecco_icon" {% if settings['widget_icon'] == 'ecco_icon' %}checked{% endif %}>
+                                <img src="{{ url_for('static', filename='images/ecco_icon.png') }}" alt="Icon 4">
+                            </label>
                             <label for="icon1">
                                 <input type="radio" id="icon1" name="widget_icon" value="chatboticon" {% if settings['widget_icon'] == 'chatboticon' %}checked{% endif %}>
                                 <img src="{{ url_for('static', filename='images/chatboticon.png') }}" alt="Icon 1">
@@ -68,10 +74,6 @@
                             <label for="icon3">
                                 <input type="radio" id="icon3" name="widget_icon" value="chatbot3" {% if settings['widget_icon'] == 'chatbot3' %}checked{% endif %}>
                                 <img src="{{ url_for('static', filename='images/chatbot3.png') }}" alt="Icon 3">
-                            </label>
-                            <label for="icon4">
-                                <input type="radio" id="icon4" name="widget_icon" value="ecco_icon" {% if settings['widget_icon'] == 'ecco_icon' %}checked{% endif %}>
-                                <img src="{{ url_for('static', filename='images/ecco_icon.png') }}" alt="Icon 4">
                             </label>
                         </div><br><br>
         
@@ -98,11 +100,12 @@
                         
                         <label for="font_style">Font Style:</label>
                         <select id="font_style" name="font_style">
-                            <option value="Arial" {% if settings['font_style'] == 'Arial' %}selected{% endif %}>Arial</option>
-                            <option value="Verdana" {% if settings['font_style'] == 'Verdana' %}selected{% endif %}>Verdana</option>
-                            <option value="Times New Roman" {% if settings['font_style'] == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
-                            <!-- Add more font options here -->
+                            {% set font_options = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Trebuchet MS', 'Comic Sans MS', 'Palatino Linotype', 'Arial Black', 'Book Antiqua', 'Garamond', 'Courier', 'Franklin Gothic Medium', 'Copperplate', 'Century Gothic', 'Rockwell', 'Baskerville', 'Californian FB', 'Candara', 'Consolas', 'Ebrima', 'Cambria', 'MS Gothic', 'MS Mincho'] %}
+                            {% for font in font_options %}
+                                <option value="{{ font }}" style="font-family: '{{ font }}';" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
+                            {% endfor %}
                         </select><br><br>
+
                         
                     </div>
                     <input type="submit" value="Save Settings">

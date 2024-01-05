@@ -147,3 +147,7 @@ function showPage(pageId) {
 }
 
 showPage('styling-settings');
+
+$(document).ready(function() {
+    $('#font_style').select2();
+});
