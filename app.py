@@ -584,7 +584,7 @@ def scrape_url():
         g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id) VALUES (%s, %s, %s) RETURNING id;", (url, file_size, user_id))
         g.db_conn.commit()
 
-        return jsonify({"status": "success", "message": "URL scraped and processed successfully!"})
+        return redirect(url_for('admin'))
 
     except requests.RequestException as e:
         return jsonify({"status": "error", "message": f"Error processing URL: {str(e)}"})
