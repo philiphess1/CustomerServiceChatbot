@@ -234,6 +234,12 @@ body {
     color: #333;
 }
 
+.settings-section1 h3 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
 .settings-section form label {
     font-weight: bold;
     color: #333;
