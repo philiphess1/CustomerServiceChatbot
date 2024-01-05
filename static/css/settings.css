@@ -420,3 +420,7 @@ textarea {
   cursor: pointer;
 }
 
+body {
+  overflow-x: hidden;
+}
+
