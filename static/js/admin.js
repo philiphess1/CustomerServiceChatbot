@@ -202,7 +202,7 @@ if (page.endsWith('.html')) {
 }
 
 // Get all links
-var links = document.getElementsByClassName('mgn');
+var links = document.getElementsByClassName('mgn-top');
 
 // Get all buttons
 var btns = document.getElementsByClassName('btns');
