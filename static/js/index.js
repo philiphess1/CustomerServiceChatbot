@@ -148,8 +148,9 @@
             chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
             chatboxBody.scrollTop = chatboxBody.scrollHeight;
 
-            
-
+            if (side === "left" && lastUserMessage.trim() !== "") {
+                storeQuestionAnswer(lastUserMessage, text);
+            }
             if (side === "left") {
             const messageElements = document.querySelectorAll('.msg-text');
             const messageElement = messageElements[messageElements.length - 1];
@@ -229,6 +230,35 @@
             });
         }
 
+        function storeQuestionAnswer(question, answer) {
+            // Get the current URL path
+            var path = window.location.pathname;
+
+            // Split the path into segments
+            var segments = path.split('/');
+
+            // The user ID should be the first segment after the leading empty segment
+            var userId = segments[1];
+
+            fetch('/' + userId + '/store_qa', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    question: question,
+                    answer: answer
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
         document.getElementById('refresh').addEventListener('click', function() {
             location.reload();
         });
@@ -242,6 +272,7 @@
 
             // The user ID should be the first segment after the leading empty segment
             var userId = segments[1];
+
 
             $.post("/" + userId + "/chat", { message: rawText })
             .done(function(data) {

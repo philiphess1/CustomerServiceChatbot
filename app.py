@@ -360,6 +360,22 @@ def store_feedback(user_id):
         print(f"Error storing feedback: {e}")
         return jsonify({"message": "Error storing feedback"}), 500
 
+@app.route('/<int:user_id>/store_qa', methods=['POST'])
+def store_qa(user_id):
+    data = request.json
+    question = data.get('question')
+    answer = data.get('answer')
+    
+    try:
+        g.cursor.execute(
+            "INSERT INTO qa (question, answer, user_id) VALUES (%s, %s, %s)",
+            (question, answer, user_id)
+        )
+        g.db_conn.commit()
+        return jsonify({"message": "Question and answer stored successfully!"})
+    except Exception as e:
+        print(f"Error storing question and answer: {e}")
+        return jsonify({"message": "Error storing question and answer"}), 500
 
 @app.route('/admin')
 @login_required
