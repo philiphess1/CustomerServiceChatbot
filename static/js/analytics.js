@@ -59,23 +59,25 @@ var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'pie',
     data: {
-        labels: ['Likes', 'Dislikes'],
+        labels: ['Likes', 'Dislikes', 'None'],
         datasets: [{
-            data: [0, 0], // Initialize with 0, will be updated with fetched data
+            data: [0, 0, 0], // Initialize with 0, will be updated with fetched data
             backgroundColor: [
                 'rgba(75, 192, 192, 0.2)',
-                'rgba(255, 99, 132, 0.2)'
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(128, 128, 128, 0.2)' // Add a color for 'None' feedback
             ],
             borderColor: [
                 'rgba(75, 192, 192, 1)',
-                'rgba(255, 99, 132, 1)'
+                'rgba(255, 99, 132, 1)',
+                'rgba(128, 128, 128, 1)' // Add a color for 'None' feedback
             ],
             borderWidth: 1
         }]
     },
     options: {
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
     }
 });
 
@@ -83,7 +85,7 @@ fetch('/analytics/data')
     .then(response => response.json())
     .then(data => {
         // Update the chart data
-        myChart.data.datasets[0].data = [data.likes, data.dislikes];
+        myChart.data.datasets[0].data = [data.likes, data.dislikes, data.none];
 
         // Update the chart
         myChart.update();

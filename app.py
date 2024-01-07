@@ -348,11 +348,12 @@ def store_feedback(user_id):
     feedback_type = data.get('feedback_type')
     bot_response = data.get('bot_response')
     user_question = data.get('user_question')
+    record_id = data.get('id')  
     
     try:
         g.cursor.execute(
-            "INSERT INTO feedback (user_question, bot_response, feedback_type, user_id) VALUES (%s, %s, %s, %s)",
-            (user_question, bot_response, feedback_type, user_id)
+            "UPDATE feedback SET user_question = %s, bot_response = %s, feedback_type = %s, user_id = %s WHERE id = %s",
+            (user_question, bot_response, feedback_type, user_id, record_id)
         )
         g.db_conn.commit()
         return jsonify({"message": "Feedback stored successfully!"})
@@ -368,11 +369,12 @@ def store_qa(user_id):
     
     try:
         g.cursor.execute(
-            "INSERT INTO qa (question, answer, user_id) VALUES (%s, %s, %s)",
-            (question, answer, user_id)
+            "INSERT INTO feedback (user_question, bot_response, user_id, feedback_type) VALUES (%s, %s, %s, %s) RETURNING id",
+            (question, answer, user_id, None)
         )
+        record_id = g.cursor.fetchone()[0]
         g.db_conn.commit()
-        return jsonify({"message": "Question and answer stored successfully!"})
+        return jsonify({"message": "Question and answer stored successfully!", "id": record_id})
     except Exception as e:
         print(f"Error storing question and answer: {e}")
         return jsonify({"message": "Error storing question and answer"}), 500
@@ -742,8 +744,12 @@ def analytics_data():
     g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type = 'Dislike' AND user_id = %s;", (user_id,))
     dislikes = g.cursor.fetchone()[0]
 
+    # Fetch the number of none feedback from the database
+    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type IS NULL AND user_id = %s;", (user_id,))
+    none = g.cursor.fetchone()[0]
+
     # Return the data as JSON
-    return jsonify({'likes': likes, 'dislikes': dislikes})
+    return jsonify({'likes': likes, 'dislikes': dislikes, 'none': none})
 
 
 if __name__ == '__main__':

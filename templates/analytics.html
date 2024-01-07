@@ -43,7 +43,7 @@
                     <th>Feedback</th>
                 </tr>
                 {% for item in data %}
-                    <tr class="{{ 'like' if item['feedback_type'] == 'Like' else 'dislike' }}">
+                    <tr class="{% if item['feedback_type'] == 'Like' %}like{% elif item['feedback_type'] == 'Dislike' %}dislike{% else %}none{% endif %}">
                         <td>{{ item['user_question'] }}</td>
                         <td>{{ item['bot_response'] }}</td>
                         <td>{{ item['feedback_type'] }}</td>
