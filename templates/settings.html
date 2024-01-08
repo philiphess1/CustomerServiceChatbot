@@ -100,7 +100,7 @@
                         
                         <label for="font_style">Font Style:</label>
                         <select id="font_style" name="font_style">
-                            {% set font_options = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Trebuchet MS', 'Comic Sans MS', 'Palatino Linotype', 'Arial Black', 'Book Antiqua', 'Garamond', 'Courier', 'Franklin Gothic Medium', 'Copperplate', 'Century Gothic', 'Rockwell', 'Baskerville', 'Californian FB', 'Candara', 'Consolas', 'Ebrima', 'Cambria', 'MS Gothic', 'MS Mincho'] %}
+                            {% set font_options = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Georgia', 'Impact', 'Lucida Grande', 'Tahoma', 'Trebuchet MS', 'Comic Sans MS', 'papyrus', 'Arial Black', 'Courier', 'Copperplate', 'Rockwell', 'Baskerville', 'MS Mincho'] %}
                             {% for font in font_options %}
                                 <option value="{{ font }}" style="font-family: '{{ font }}';" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
                             {% endfor %}

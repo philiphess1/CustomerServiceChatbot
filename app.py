@@ -256,10 +256,10 @@ def home(user_id):
     row = g.cursor.fetchone()
     if row is None:
         settings = {
-            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
+            'widget_icon': 'ecco_icon',  # Default values if no settings are found for the user
             'background_color': '#ffffff',
             'font_style': 'Arial',
-            'bot_temperature': 0.0,
+            'bot_temperature': 0.3,
             'greeting_message': 'Hello! I am Ecco, your AI assistant. How can I help you today?',
             'custom_prompt': """
 I want you to act as a funny and friendly customer support AI from my company. Your name is “Assistant AI". You limit your knowledge to the context provided. You will provide me with accurate answers related to my company only from your context. You will be as detailed as possible. Do not make up answers. Refuse to answer any question not about the documents or my company. Never break character. Always answer in the language of my message. Please use simple formatting. Answer like you are part of the team using we/us and not they. Give hyperlinks when needed.
@@ -269,7 +269,7 @@ Do NOT say "Based on the given information.
 Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
 """,
             'dot_color': '#555555',
-            'logo': 'https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fmeta-q.cdn.bubble.io%2Ff1672952221146x417310664985390140%2FChatbot.png?w=&h=&auto=compress&dpr=1&fit=max',
+            'logo': 'https://assets-global.website-files.com/6583611b6e576281beecda05/6585db46847188e8ca2adf92_FullLogo_Transparent_NoBuffer-p-500.png',
             'chatbot_title': 'Ecco',
             'title_color': '#000000',
             'border_color': '#ffffff',
@@ -399,10 +399,10 @@ def admin():
     if row is None:
         # Insert default settings for new user
         default_settings = (
-            'chatboticon',  # Default widget icon URL
+            'ecco_icon',  # Default widget icon URL
             '#ffffff',      # Default background color
             'Arial',        # Default font style
-            0.0,            # Default bot temperature
+            0.3,            # Default bot temperature
             'Hello! I am Ecco, your AI assistant. How can I help you today?',  # Default greeting message
             """
 I want you to act as a funny and friendly customer support AI from my company. Your name is “Assistant AI". You limit your knowledge to the context provided. You will provide me with accurate answers related to my company only from your context. You will be as detailed as possible. Do not make up answers. Refuse to answer any question not about the documents or my company. Never break character. Always answer in the language of my message. Please use simple formatting. Answer like you are part of the team using we/us and not they. Give hyperlinks when needed.
@@ -412,7 +412,7 @@ Do NOT say "Based on the given information.
 Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
 """,
             '#555555', #'dot_color'
-            'https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fmeta-q.cdn.bubble.io%2Ff1672952221146x417310664985390140%2FChatbot.png?w=&h=&auto=compress&dpr=1&fit=max', #'logo'
+            'https://app.eccoai.org/static/images/ecco_icon.png', #'logo'
             'Ecco', #'chatbot_title'
             '#000000', #'title_color'
             '#ffffff' #'border_color'
@@ -459,8 +459,8 @@ def integrations():
             Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
             """,
             'dot_color': '#555555',
-            'logo': 'https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fmeta-q.cdn.bubble.io%2Ff1672952221146x417310664985390140%2FChatbot.png?w=&h=&auto=compress&dpr=1&fit=max',
-            'chatbot_title': 'Ecco',
+            'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
+            'chatbot_title': 'Virtual Assistant',
             'title_color': '#000000',
             'border_color': '#ffffff',
         }
