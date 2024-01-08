@@ -269,8 +269,8 @@ Do NOT say "Based on the given information.
 Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
 """,
             'dot_color': '#555555',
-            'logo': 'https://assets-global.website-files.com/6583611b6e576281beecda05/6585db46847188e8ca2adf92_FullLogo_Transparent_NoBuffer-p-500.png',
-            'chatbot_title': 'Ecco',
+            'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
+            'chatbot_title': 'EccoAI',
             'title_color': '#000000',
             'border_color': '#ffffff',
         }
@@ -413,7 +413,7 @@ Do not makeup answers if you are not sure about the answer. If you don't know th
 """,
             '#555555', #'dot_color'
             'https://app.eccoai.org/static/images/ecco_icon.png', #'logo'
-            'Ecco', #'chatbot_title'
+            'EccoAI', #'chatbot_title'
             '#000000', #'title_color'
             '#ffffff' #'border_color'
         )
@@ -460,7 +460,7 @@ def integrations():
             """,
             'dot_color': '#555555',
             'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
-            'chatbot_title': 'Virtual Assistant',
+            'chatbot_title': 'EccoAI',
             'title_color': '#000000',
             'border_color': '#ffffff',
         }
