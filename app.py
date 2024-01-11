@@ -707,7 +707,11 @@ def greeting_message(user_id):
         greeting_message = row[0]
     return jsonify(greeting_message=greeting_message)
 
-
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import Normalizer
+from sklearn.cluster import KMeans
 
 @app.route('/analytics')
 @login_required
@@ -716,6 +720,42 @@ def analytics():
     g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback WHERE user_id = %s;", (user_id,))
     rows = g.cursor.fetchall()
 
+    if not rows:
+        return render_template('analytics.html', data=[], common_topics=None)
+
+    questions = [row[0] for row in rows]
+
+    # Use TfidfVectorizer to convert text data to a matrix of TF-IDF features
+    vectorizer = TfidfVectorizer(stop_words='english')
+    X = vectorizer.fit_transform(questions)
+
+    # Use TruncatedSVD for dimensionality reduction
+    svd = TruncatedSVD(n_components=3)
+    normalizer = Normalizer(copy=False)
+    lsa = make_pipeline(svd, normalizer)
+
+    X_lsa = lsa.fit_transform(X)
+
+    # Apply KMeans clustering to find topics
+    num_clusters = 3
+    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+    kmeans.fit(X_lsa)
+
+    # Get the top terms for each cluster
+    terms = vectorizer.get_feature_names_out()
+    original_space_centroids = svd.inverse_transform(kmeans.cluster_centers_)
+    order_centroids = original_space_centroids.argsort()[:, ::-1]
+
+    common_topics = []
+    seen = set()
+
+    for i in range(num_clusters):
+        for ind in order_centroids[i, :5]:  # Choose top 5 terms per cluster
+            term = terms[ind]
+            if term not in seen:
+                common_topics.append(term)
+                seen.add(term)
+    print(common_topics)
     data = []
     if rows:
         for row in rows:
@@ -725,10 +765,24 @@ def analytics():
                 'feedback_type': row[2]
             })
     else:
-        # Handle case where no data is returned
         data = []
 
-    return render_template('analytics.html', data=data)
+    return render_template('analytics.html', data=data, common_topics=common_topics)
+
+    
+@app.route('/delete_feedback', methods=['POST'])
+@login_required
+def delete_feedback():
+    user_id = current_user.id
+    user_question = request.form.get('user_question')
+    bot_response = request.form.get('bot_response')
+
+    g.cursor.execute("DELETE FROM feedback WHERE user_id = %s AND user_question = %s AND bot_response = %s;", (user_id, user_question, bot_response))
+    g.conn.commit()
+
+    flash('Feedback successfully deleted', 'success')
+
+    return redirect(url_for('analytics'))
 
 @app.route('/analytics/data')
 @login_required
@@ -744,6 +798,28 @@ def analytics_data():
 
     # Return the data as JSON
     return jsonify({'likes': likes, 'dislikes': dislikes})
+
+from flask import jsonify, request
+
+@app.route('/filter_data', methods=['POST'])
+@login_required
+def filter_data():
+    user_id = current_user.id
+    topic = request.form.get('topic')
+
+    # Perform database query with the selected topic
+    g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback WHERE user_id = %s AND feedback_type = %s;", (user_id, topic))
+    rows = g.cursor.fetchall()
+
+    filtered_data = []
+    for row in rows:
+        filtered_data.append({
+            'user_question': row[0],
+            'bot_response': row[1],
+            'feedback_type': row[2]
+        })
+
+    return jsonify(filtered_data)
 
 
 if __name__ == '__main__':

@@ -185,17 +185,53 @@ html, body {
 }
 /* Table styling */
 .questions-container table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif; /* Use a clean, simple font */
 }
 
-.questions-container th, .questions-container td {
-    border: 1px solid black;
-    padding: 8px;
-    text-align: left;
+.questions-container th {
+  border: 1px solid #ddd; /* Lighter border color for headers */
+  padding: 12px 8px;
+  text-align: left;
+  background-color: #f2f2f2; /* Light grey background for headers */
+  color: #333; /* Dark grey text for headers */
 }
+
+.questions-container td {
+  border: 1px solid #ddd; /* Lighter border color for data cells */
+  padding: 8px;
+  text-align: left;
+}
+
+/* Add a hover effect for rows */
+.questions-container tr:hover {background-color: #ddd;}
+
 
 .instructions {
     font-family: Arial, sans-serif;
     margin-left: 100px; /* left margin of 100px */
+}
+
+.topics-container button {
+  margin-right: 10px;  /* Adjust as needed */
+  background-color: rgb(120, 120, 120);
+  transition: all 0.3s ease;
+  color: white;
+  border: none;
+  border-radius: 10%;
+  height: 20px;
+  width: 70px;
+}
+
+.topics-container button:hover,
+.topics-container button:focus {
+  background-color: black;
+  color: white;
+  transform: scale(1.1);
+}
+
+.topics-container {
+    margin-bottom: 10px; /* left margin of 100px */
+    justify-content: center;
 }

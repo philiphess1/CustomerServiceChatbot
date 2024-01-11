@@ -88,3 +88,34 @@ fetch('/analytics/data')
         // Update the chart
         myChart.update();
     });
+    
+    function filterByTopic(topic) {
+        // Send an AJAX request to fetch filtered data
+        $.ajax({
+            type: 'POST',
+            url: '/filter_data',  // Update the endpoint to match your server route
+            data: { topic: topic },
+            success: function(filteredData) {
+                // Clear current table rows
+                $('table tr:not(:first)').remove();
+    
+                // Add new rows based on filtered data
+                filteredData.forEach(function (item) {
+                    $('table').append(`
+                        <tr class="${item.feedback_type === 'Like' ? 'like' : (item.feedback_type === 'Dislike' ? 'dislike' : 'none')}">
+                            <td>${item.user_question}</td>
+                            <td>${item.bot_response}</td>
+                            <td>${item.feedback_type}</td>
+                            <td>
+                                <!-- Add form for delete action -->
+                            </td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function(error) {
+                console.error('Error fetching filtered data:', error);
+            }
+        });
+    }
+    
