@@ -176,6 +176,7 @@ html, body {
     margin: 10px;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 600px;
 }
 
 .chart-container {
@@ -210,18 +211,20 @@ html, body {
 
 .instructions {
     font-family: Arial, sans-serif;
-    margin-left: 100px; /* left margin of 100px */
+    margin-left: 100px;
 }
 
 .topics-container button {
-  margin-right: 10px;  /* Adjust as needed */
+  margin-right: 10px;
+  margin-bottom: 6px;
   background-color: rgb(120, 120, 120);
   transition: all 0.3s ease;
   color: white;
   border: none;
   border-radius: 10%;
   height: 20px;
-  width: 70px;
+  width: auto;
+  
 }
 
 .topics-container button:hover,
@@ -232,6 +235,6 @@ html, body {
 }
 
 .topics-container {
-    margin-bottom: 10px; /* left margin of 100px */
+    margin-bottom: 10px;
     justify-content: center;
 }

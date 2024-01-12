@@ -753,7 +753,10 @@ def analytics():
         for ind in order_centroids[i, :5]:  # Choose top 5 terms per cluster
             term = terms[ind]
             if term not in seen:
-                common_topics.append(term)
+                # Count how many questions contain the term
+                term_count = sum(1 for question in questions if term in question)
+                if term_count >= 2:
+                    common_topics.append(term)
                 seen.add(term)
     print(common_topics)
     data = []
