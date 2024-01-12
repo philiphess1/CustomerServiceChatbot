@@ -799,28 +799,6 @@ def analytics_data():
     # Return the data as JSON
     return jsonify({'likes': likes, 'dislikes': dislikes})
 
-from flask import jsonify, request
-
-@app.route('/filter_data', methods=['POST'])
-@login_required
-def filter_data():
-    user_id = current_user.id
-    topic = request.form.get('topic')
-
-    # Perform database query with the selected topic
-    g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback WHERE user_id = %s AND feedback_type = %s;", (user_id, topic))
-    rows = g.cursor.fetchall()
-
-    filtered_data = []
-    for row in rows:
-        filtered_data.append({
-            'user_question': row[0],
-            'bot_response': row[1],
-            'feedback_type': row[2]
-        })
-
-    return jsonify(filtered_data)
-
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Use PORT if it's there

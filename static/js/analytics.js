@@ -55,6 +55,7 @@ for (var i = 0; i < btns.length; i++) {
     }
 }
 
+// Define the chart
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'pie',
@@ -79,43 +80,68 @@ var myChart = new Chart(ctx, {
     }
 });
 
-fetch('/analytics/data')
-    .then(response => response.json())
-    .then(data => {
-        // Update the chart data
-        myChart.data.datasets[0].data = [data.likes, data.dislikes];
+// Initialize the likes and dislikes counts
+var likesCount = 0;
+var dislikesCount = 0;
 
-        // Update the chart
-        myChart.update();
+// Function to calculate the initial likes and dislikes counts
+function calculateInitialCounts() {
+    var questions = document.querySelectorAll('.question-row');
+
+    questions.forEach(function(question) {
+        var feedbackType = question.classList.contains('like') ? 'Like' : (question.classList.contains('dislike') ? 'Dislike' : 'none');
+
+        // Update likes and dislikes counts based on feedback type
+        if (feedbackType === 'Like') {
+            likesCount++;
+        } else if (feedbackType === 'Dislike') {
+            dislikesCount++;
+        }
     });
+}
+
+// Function to update the chart data
+function updateChartData() {
+    // Update the dataset with new data
+    myChart.data.datasets[0].data = [likesCount, dislikesCount];
+
+    // Update the chart
+    myChart.update();
+}
+
+// Function to handle topic selection
+function sendTopic(topic) {
+    var questions = document.querySelectorAll('.question-row');
     
-    function filterByTopic(topic) {
-        // Send an AJAX request to fetch filtered data
-        $.ajax({
-            type: 'POST',
-            url: '/filter_data',  // Update the endpoint to match your server route
-            data: { topic: topic },
-            success: function(filteredData) {
-                // Clear current table rows
-                $('table tr:not(:first)').remove();
-    
-                // Add new rows based on filtered data
-                filteredData.forEach(function (item) {
-                    $('table').append(`
-                        <tr class="${item.feedback_type === 'Like' ? 'like' : (item.feedback_type === 'Dislike' ? 'dislike' : 'none')}">
-                            <td>${item.user_question}</td>
-                            <td>${item.bot_response}</td>
-                            <td>${item.feedback_type}</td>
-                            <td>
-                                <!-- Add form for delete action -->
-                            </td>
-                        </tr>
-                    `);
-                });
-            },
-            error: function(error) {
-                console.error('Error fetching filtered data:', error);
+    // Reset likes and dislikes counts when a new topic is selected
+    likesCount = 0;
+    dislikesCount = 0;
+
+    questions.forEach(function(question) {
+        var userQuestion = question.querySelector('.user-question').innerText;
+        var feedbackType = question.classList.contains('like') ? 'Like' : (question.classList.contains('dislike') ? 'Dislike' : 'none');
+        
+        // Check if the topic is present in the user's question
+        if (userQuestion.includes(topic)) {
+            question.style.display = '';  // Show the question
+
+            // Update likes and dislikes counts based on feedback type
+            if (feedbackType === 'Like') {
+                likesCount++;
+            } else if (feedbackType === 'Dislike') {
+                dislikesCount++;
             }
-        });
-    }
-    
+        } else {
+            question.style.display = 'none';  // Hide the question
+        }
+    });
+
+    // Update the chart with the new likes and dislikes counts
+    updateChartData();
+}
+
+// Calculate the initial likes and dislikes counts when the page loads
+calculateInitialCounts();
+
+// Update the chart with the initial likes and dislikes counts when the page loads
+updateChartData();
