@@ -145,3 +145,21 @@ calculateInitialCounts();
 
 // Update the chart with the initial likes and dislikes counts when the page loads
 updateChartData();
+
+// Function to reset the list
+function resetList() {
+    var questions = document.querySelectorAll('.question-row');
+
+    questions.forEach(function(question) {
+        question.style.display = '';  // Show the question
+    });
+
+    likesCount = 0;
+    dislikesCount = 0;
+
+    // Calculate the initial likes and dislikes counts
+    calculateInitialCounts();
+
+    // Update the chart with the initial likes and dislikes counts
+    updateChartData();
+}

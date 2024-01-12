@@ -43,6 +43,10 @@
                 {% if common_topics is none %}
                     <p>No topics available.</p>
                 {% else %}
+                <!-- Add a reset button -->
+                <button type="button" onclick="resetList()">
+                    Reset
+                </button>
                     {% for topic_cluster in common_topics %}
                         <button type="button" onclick="sendTopic('{{ topic_cluster }}')">
                             {{ topic_cluster }}
