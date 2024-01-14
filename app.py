@@ -580,29 +580,43 @@ def process_excel_text(full_text, headers, filename,user_id):
 
 
 @app.route('/scrape', methods=['POST'])
+@login_required
 def scrape_url():
-    user_id = current_user.id
     url = request.form['url']
-    print(url)
-
+    user_id = current_user.id
     try:
         response = requests.get(url)
-        response.raise_for_status()  # Raises an HTTPError if the HTTP request returned an unsuccessful status code
+        raw_html = response.text
+        print(f"Raw HTML: {raw_html}")  # Print raw HTML
 
-        soup = BeautifulSoup(response.text, 'html.parser')
-        raw_text = soup.get_text()
-        print(f"raw text:{raw_text}")
-        text = re.sub(r'\s+', ' ', raw_text.strip())
-        print(f"URL: {url}")
-        print(f"Text: {text}")
-        process_text(text, url, 0, user_id)
-        print("process_text function completed")
-        file_size = len(response.content) / 1000000
+        soup = BeautifulSoup(raw_html, 'html.parser')
 
-        
+        # Remove script and style elements
+        for script in soup(["script", "style"]):
+            script.extract()
 
+        # Get text
+        text = soup.get_text()
+        print(f"Text after removing script and style elements: {text}")  # Print text after removing script and style elements
+
+        # Break into lines and remove leading and trailing space on each
+        lines = (line.strip() for line in text.splitlines())
+        # Break multi-headlines into a line each
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        # Drop blank lines
+        text = '\n'.join(chunk for chunk in chunks if chunk)
+        print(f"Final text: {text}")  # Print final text
+
+        # Calculate file size
+        file_size = len(text.encode('utf-8'))/1000000
+        print(f"File size: {file_size}")  # Print file size
+
+        # Insert into database
         g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id) VALUES (%s, %s, %s) RETURNING id;", (url, file_size, user_id))
         g.db_conn.commit()
+
+        # Process the text and put it in the vector database
+        process_text(text, url, 0, user_id)
 
         return redirect(url_for('admin'))
 
