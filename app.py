@@ -616,7 +616,7 @@ def scrape_url():
         g.db_conn.commit()
 
         # Process the text and put it in the vector database
-        process_text(text, url, 0, user_id)
+        process_text(text, url, 0, f"{user_id}")
 
         return redirect(url_for('admin'))
 
