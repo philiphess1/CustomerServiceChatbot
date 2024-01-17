@@ -368,11 +368,12 @@ def store_qa(user_id):
     
     try:
         g.cursor.execute(
-            "INSERT INTO qa (question, answer, user_id) VALUES (%s, %s, %s)",
-            (question, answer, user_id)
+            "INSERT INTO feedback (user_question, bot_response, user_id, feedback_type) VALUES (%s, %s, %s, %s) RETURNING id",
+            (question, answer, user_id, None)
         )
+        record_id = g.cursor.fetchone()[0]
         g.db_conn.commit()
-        return jsonify({"message": "Question and answer stored successfully!"})
+        return jsonify({"message": "Question and answer stored successfully!", "id": record_id})
     except Exception as e:
         print(f"Error storing question and answer: {e}")
         return jsonify({"message": "Error storing question and answer"}), 500
