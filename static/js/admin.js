@@ -12,6 +12,8 @@ document.getElementById("upload-form").addEventListener("submit", function(event
 
 function uploadFiles() {
     document.getElementById("form-content").style.display = "none";  // Hide form content
+    document.getElementById("url-form").style.display = "none";  // Hide URL form
+    document.getElementById("filelist").style.display = "none";  // Hide URL form
     document.getElementById("loading").style.display = "block";  // Show loading icon
     let formData = new FormData();
 
@@ -42,6 +44,13 @@ function uploadFiles() {
         console.error('There was an error!', error);
     });
 }
+
+document.getElementById('url-form').addEventListener('submit', function () {
+    // Show loader_1 and hide url-area when form is submitted
+    document.getElementById('url-area').style.display = 'none';
+    document.getElementById('upload-form').style.display = 'none';
+    document.getElementById('loading_1').style.display = 'flex';
+});
 
 document.getElementById("file").addEventListener("change", function() {
     const fileList = document.getElementById("file-list");
