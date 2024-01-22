@@ -744,36 +744,37 @@ def analytics():
     vectorizer = TfidfVectorizer(stop_words='english')
     X = vectorizer.fit_transform(questions)
 
-    # Use TruncatedSVD for dimensionality reduction
-    svd = TruncatedSVD(n_components=3)
-    normalizer = Normalizer(copy=False)
-    lsa = make_pipeline(svd, normalizer)
-
-    X_lsa = lsa.fit_transform(X)
-
-    # Apply KMeans clustering to find topics
-    num_clusters = 3
-    kmeans = KMeans(n_clusters=num_clusters, random_state=42)
-    kmeans.fit(X_lsa)
-
-    # Get the top terms for each cluster
-    terms = vectorizer.get_feature_names_out()
-    original_space_centroids = svd.inverse_transform(kmeans.cluster_centers_)
-    order_centroids = original_space_centroids.argsort()[:, ::-1]
-
     common_topics = []
-    seen = set()
+    if X.shape[1] > 3:  # Check if there are more than 3 features
+        # Use TruncatedSVD for dimensionality reduction
+        svd = TruncatedSVD(n_components=3)
+        normalizer = Normalizer(copy=False)
+        lsa = make_pipeline(svd, normalizer)
 
-    for i in range(num_clusters):
-        for ind in order_centroids[i, :5]:  # Choose top 5 terms per cluster
-            term = terms[ind]
-            if term not in seen:
-                # Count how many questions contain the term
-                term_count = sum(1 for question in questions if term in question)
-                if term_count >= 2:
-                    common_topics.append(term)
-                seen.add(term)
-    print(common_topics)
+        X_lsa = lsa.fit_transform(X)
+
+        # Apply KMeans clustering to find topics
+        num_clusters = 3
+        kmeans = KMeans(n_clusters=num_clusters, random_state=42)
+        kmeans.fit(X_lsa)
+
+        # Get the top terms for each cluster
+        terms = vectorizer.get_feature_names_out()
+        original_space_centroids = svd.inverse_transform(kmeans.cluster_centers_)
+        order_centroids = original_space_centroids.argsort()[:, ::-1]
+
+        seen = set()
+
+        for i in range(num_clusters):
+            for ind in order_centroids[i, :5]:  # Choose top 5 terms per cluster
+                term = terms[ind]
+                if term not in seen:
+                    # Count how many questions contain the term
+                    term_count = sum(1 for question in questions if term in question)
+                    if term_count >= 2:
+                        common_topics.append(term)
+                    seen.add(term)
+
     data = []
     if rows:
         for row in rows:
