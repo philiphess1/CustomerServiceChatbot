@@ -54,26 +54,22 @@ index = pinecone.Index(index_name)
 text_field="text"
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
-db_conn = psycopg2.connect(database_url)
-cursor = db_conn.cursor()
-
 vectorstore = Pinecone(
     index, embeddings.embed_query, text_field
 )
 
 def get_bot_temperature(user_id):
-    with db_conn.cursor() as cursor:
+    with g.db_conn.cursor() as cursor:
         cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE user_id = %s;", (user_id,))
         row = cursor.fetchone()
         return row[0] if row else 0.0
     
 
 def get_custom_prompt(user_id):
-    with db_conn.cursor() as cursor:
+    with g.db_conn.cursor() as cursor:
         cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE user_id = %s;", (user_id,))
         row = cursor.fetchone()
         return row[0] if row else "Default prompt part"
-# Connect to PostgreSQL database
 
 
 # Initialize Flask-Login
