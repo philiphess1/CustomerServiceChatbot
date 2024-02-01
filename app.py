@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
-from langchain.vectorstores import Pinecone
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.chat_models import ChatOpenAI
+from langchain_community.vectorstores import Pinecone
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.chat_models import ChatOpenAI
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain
@@ -486,9 +486,6 @@ def upload_file():
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
-            if len(filename) > 50:
-                filename = filename[:50]
-            file_size = len(file.read())  # Read the content of the file once
             
             # Reset the file position to the beginning
             file.seek(0)
