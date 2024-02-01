@@ -486,6 +486,7 @@ def upload_file():
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
+            file_size = len(file.read())
             
             # Reset the file position to the beginning
             file.seek(0)
