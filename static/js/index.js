@@ -218,7 +218,8 @@
                 body: JSON.stringify({
                     feedback_type: type,
                     bot_response: botResponse,
-                    user_question: userQuestion
+                    user_question: userQuestion,
+                    id: lastRecordId
                 })
             })
             .then(response => response.json())
@@ -253,6 +254,7 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data.message);
+                lastRecordId = data.id;
             })
             .catch(error => {
                 console.error('Error:', error);

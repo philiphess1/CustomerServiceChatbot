@@ -54,26 +54,22 @@ index = pinecone.Index(index_name)
 text_field="text"
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
-db_conn = psycopg2.connect(database_url)
-cursor = db_conn.cursor()
-
 vectorstore = Pinecone(
     index, embeddings.embed_query, text_field
 )
 
 def get_bot_temperature(user_id):
-    with db_conn.cursor() as cursor:
+    with g.db_conn.cursor() as cursor:
         cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE user_id = %s;", (user_id,))
         row = cursor.fetchone()
         return row[0] if row else 0.0
     
 
 def get_custom_prompt(user_id):
-    with db_conn.cursor() as cursor:
+    with g.db_conn.cursor() as cursor:
         cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE user_id = %s;", (user_id,))
         row = cursor.fetchone()
         return row[0] if row else "Default prompt part"
-# Connect to PostgreSQL database
 
 
 # Initialize Flask-Login
@@ -256,10 +252,10 @@ def home(user_id):
     row = g.cursor.fetchone()
     if row is None:
         settings = {
-            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
+            'widget_icon': 'ecco_icon',  # Default values if no settings are found for the user
             'background_color': '#ffffff',
             'font_style': 'Arial',
-            'bot_temperature': 0.0,
+            'bot_temperature': 0.3,
             'greeting_message': 'Hello! I am Ecco, your AI assistant. How can I help you today?',
             'custom_prompt': """
 I want you to act as a funny and friendly customer support AI from my company. Your name is “Assistant AI". You limit your knowledge to the context provided. You will provide me with accurate answers related to my company only from your context. You will be as detailed as possible. Do not make up answers. Refuse to answer any question not about the documents or my company. Never break character. Always answer in the language of my message. Please use simple formatting. Answer like you are part of the team using we/us and not they. Give hyperlinks when needed.
@@ -269,8 +265,8 @@ Do NOT say "Based on the given information.
 Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
 """,
             'dot_color': '#555555',
-            'logo': 'https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fmeta-q.cdn.bubble.io%2Ff1672952221146x417310664985390140%2FChatbot.png?w=&h=&auto=compress&dpr=1&fit=max',
-            'chatbot_title': 'Ecco',
+            'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
+            'chatbot_title': 'EccoAI',
             'title_color': '#000000',
             'border_color': '#ffffff',
         }
@@ -348,11 +344,12 @@ def store_feedback(user_id):
     feedback_type = data.get('feedback_type')
     bot_response = data.get('bot_response')
     user_question = data.get('user_question')
+    record_id = data.get('id')  
     
     try:
         g.cursor.execute(
-            "INSERT INTO feedback (user_question, bot_response, feedback_type, user_id) VALUES (%s, %s, %s, %s)",
-            (user_question, bot_response, feedback_type, user_id)
+            "UPDATE feedback SET user_question = %s, bot_response = %s, feedback_type = %s, user_id = %s WHERE id = %s",
+            (user_question, bot_response, feedback_type, user_id, record_id)
         )
         g.db_conn.commit()
         return jsonify({"message": "Feedback stored successfully!"})
@@ -398,10 +395,10 @@ def admin():
     if row is None:
         # Insert default settings for new user
         default_settings = (
-            'chatboticon',  # Default widget icon URL
+            'ecco_icon',  # Default widget icon URL
             '#ffffff',      # Default background color
             'Arial',        # Default font style
-            0.0,            # Default bot temperature
+            0.3,            # Default bot temperature
             'Hello! I am Ecco, your AI assistant. How can I help you today?',  # Default greeting message
             """
 I want you to act as a funny and friendly customer support AI from my company. Your name is “Assistant AI". You limit your knowledge to the context provided. You will provide me with accurate answers related to my company only from your context. You will be as detailed as possible. Do not make up answers. Refuse to answer any question not about the documents or my company. Never break character. Always answer in the language of my message. Please use simple formatting. Answer like you are part of the team using we/us and not they. Give hyperlinks when needed.
@@ -411,8 +408,8 @@ Do NOT say "Based on the given information.
 Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
 """,
             '#555555', #'dot_color'
-            'https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fmeta-q.cdn.bubble.io%2Ff1672952221146x417310664985390140%2FChatbot.png?w=&h=&auto=compress&dpr=1&fit=max', #'logo'
-            'Ecco', #'chatbot_title'
+            'https://app.eccoai.org/static/images/ecco_icon.png', #'logo'
+            'EccoAI', #'chatbot_title'
             '#000000', #'title_color'
             '#ffffff' #'border_color'
         )
@@ -458,8 +455,8 @@ def integrations():
             Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
             """,
             'dot_color': '#555555',
-            'logo': 'https://d1muf25xaso8hp.cloudfront.net/https%3A%2F%2Fmeta-q.cdn.bubble.io%2Ff1672952221146x417310664985390140%2FChatbot.png?w=&h=&auto=compress&dpr=1&fit=max',
-            'chatbot_title': 'Ecco',
+            'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
+            'chatbot_title': 'EccoAI',
             'title_color': '#000000',
             'border_color': '#ffffff',
         }
@@ -815,8 +812,12 @@ def analytics_data():
     g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type = 'Dislike' AND user_id = %s;", (user_id,))
     dislikes = g.cursor.fetchone()[0]
 
+    # Fetch the number of none feedback from the database
+    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE feedback_type IS NULL AND user_id = %s;", (user_id,))
+    none = g.cursor.fetchone()[0]
+
     # Return the data as JSON
-    return jsonify({'likes': likes, 'dislikes': dislikes})
+    return jsonify({'likes': likes, 'dislikes': dislikes, 'none': none})
 
 
 if __name__ == '__main__':

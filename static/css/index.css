@@ -128,10 +128,8 @@
             border-radius: 50%;
         }
         .chatbox-top {
-            flex-grow: 1;
-            width: 20;
-            height: 20;
             overflow-y: scroll;
+            width: 190px;
             background-color: var(--border-color);
             font-family: var(--font-family);
             align-items: center;
