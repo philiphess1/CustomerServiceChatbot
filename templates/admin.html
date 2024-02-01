@@ -90,11 +90,10 @@
                     <form class="form form_1" action="/scrape" method="post" enctype="multipart/form-data" id="url-form">
                         <div id="url-area">
                             <div id="url-input">
-                                <label for="url">Or enter a URL:</label>
+                                <label class="url-label" for="url">Or enter a URL:</label>
                                 <input type="url" id="url" name="url" required>
                             </div>
-                            <button  type="submit" value="Upload">
-                                <span class="button__text">Upload</span>
+                            <button  type="submit" value="Upload" class="url-button">
                                 <span class="button__icon"><img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="upload"></span>
                             </button>
                         </div>
