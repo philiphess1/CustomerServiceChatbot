@@ -80,30 +80,32 @@ var myChart = new Chart(ctx, {
     }
 });
 
-// Initialize the likes and dislikes counts
+// Initialize the likes, dislikes, and none counts
 var likesCount = 0;
 var dislikesCount = 0;
+var noneCount = 0;
 
-// Function to calculate the initial likes and dislikes counts
+// Function to calculate the initial likes, dislikes, and none counts
 function calculateInitialCounts() {
     var questions = document.querySelectorAll('.question-row');
 
     questions.forEach(function(question) {
-        var feedbackType = question.classList.contains('like') ? 'Like' : (question.classList.contains('dislike') ? 'Dislike' : 'none');
+        var feedbackType = question.classList.contains('like') ? 'Like' : (question.classList.contains('dislike') ? 'Dislike' : 'None');
 
-        // Update likes and dislikes counts based on feedback type
+        // Update likes, dislikes, and none counts based on feedback type
         if (feedbackType === 'Like') {
             likesCount++;
         } else if (feedbackType === 'Dislike') {
             dislikesCount++;
+        } else if (feedbackType === 'None') {
+            noneCount++;
         }
     });
 }
-
 // Function to update the chart data
 function updateChartData() {
     // Update the dataset with new data
-    myChart.data.datasets[0].data = [likesCount, dislikesCount];
+    myChart.data.datasets[0].data = [likesCount, dislikesCount, noneCount];
 
     // Update the chart
     myChart.update();
@@ -113,30 +115,33 @@ function updateChartData() {
 function sendTopic(topic) {
     var questions = document.querySelectorAll('.question-row');
     
-    // Reset likes and dislikes counts when a new topic is selected
+    // Reset likes, dislikes, and none counts when a new topic is selected
     likesCount = 0;
     dislikesCount = 0;
+    noneCount = 0;
 
     questions.forEach(function(question) {
         var userQuestion = question.querySelector('.user-question').innerText;
-        var feedbackType = question.classList.contains('like') ? 'Like' : (question.classList.contains('dislike') ? 'Dislike' : 'none');
+        var feedbackType = question.classList.contains('like') ? 'Like' : (question.classList.contains('dislike') ? 'Dislike' : 'None');
         
         // Check if the topic is present in the user's question
         if (userQuestion.includes(topic)) {
             question.style.display = '';  // Show the question
 
-            // Update likes and dislikes counts based on feedback type
+            // Update likes, dislikes, and none counts based on feedback type
             if (feedbackType === 'Like') {
                 likesCount++;
             } else if (feedbackType === 'Dislike') {
                 dislikesCount++;
+            } else if (feedbackType === 'None') {
+                noneCount++;
             }
         } else {
             question.style.display = 'none';  // Hide the question
         }
     });
 
-    // Update the chart with the new likes and dislikes counts
+    // Update the chart with the new likes, dislikes, and none counts
     updateChartData();
 }
 
