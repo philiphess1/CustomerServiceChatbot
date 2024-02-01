@@ -91,21 +91,23 @@ function updateFileListDisplay() {
         } else if (fileExtension === 'csv') {
             fileIcon = 'csv';
         }
+        let filename = fileArray[i].name;
+            if (filename.length > 50) {
+                filename = filename.substring(0, 25) + '...' + filename.substring(filename.length - 20);
+            }
 
-
-
-        const fileHtml = `
-            <div id="fileitem">
-                <div id="fileinfo">
-                    <img src="static/images/${fileIcon}.png" height="30" width="30" alt="PDF-icon">
-                    <div id="filename">${fileArray[i].name}</div>
-                    <div id="spacer"></div>
-                    <div class="x-icon">
-                        <img src="static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button" data-index="${i}">
+            const fileHtml = `
+                <div id="fileitem">
+                    <div id="fileinfo">
+                        <img src="static/images/${fileIcon}.png" height="30" width="30" alt="PDF-icon">
+                        <div id="filename">${filename}</div>
+                        <div id="spacer"></div>
+                        <div class="x-icon">
+                            <img src="static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button" data-index="${i}">
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
 
         // Insert the fileHtml into the DOM
         fileList.insertAdjacentHTML('beforeend', fileHtml);

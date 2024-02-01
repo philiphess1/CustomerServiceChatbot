@@ -81,7 +81,7 @@
                         
                         <div id="loading" class="loader-div">
                             <div class="lds-ring" id="lds-ring"><div></div><div></div><div></div><div></div></div>
-                            <h3 id="loading-text">This may take a little while.</h3>
+                            <!-- <h3 id="loading-text">This may take a little while.</h3> -->
                         </div>
                         
                         
@@ -100,6 +100,7 @@
                         </div>
                         <div id="loading_1" class="loader-div">
                             <div class="lds-ring" id="lds-ring"><div></div><div></div><div></div><div></div></div>
+                            <!-- <h3 id="loading-text">This may take a little while.</h3> -->
                         </div>
                     </form>
                 </section>
@@ -136,7 +137,13 @@
 
                                 <tr>
                                     <td><img src="{{ url_for('static', filename='images/' + file_icon + '.png') }}" height="30" width="30" alt="{{ file_icon }}-icon"></td>
-                                    <td>{{ document.name }}</td>
+                                    <td>
+                                        {% if document.name|length > 50 %}
+                                            {{ document.name[:25] }}...{{ document.name[-20:] }}
+                                        {% else %}
+                                            {{ document.name }}
+                                        {% endif %}
+                                    </td>
                                     <td class="sub-column">{{ document.size }} Mb</td>
                                     <td class="sub-column">{{ document.date_added.strftime('%m/%d/%Y') }}</td>
                                     <td>
