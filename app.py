@@ -486,6 +486,8 @@ def upload_file():
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
+            if len(filename) > 50:
+                filename = filename[:50]
             file_size = len(file.read())  # Read the content of the file once
             
             # Reset the file position to the beginning
