@@ -287,12 +287,24 @@ Do not makeup answers if you are not sure about the answer. If you don't know th
 
     return render_template('index.html', settings=settings, user_id=user_id)
 
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_community.document_loaders import WebBaseLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+
 @app.route('/<int:user_id>/chat', methods=['POST'])
 def chat(user_id):
     user_message = request.form.get('message')
     
     # Load the conversation history from session
-    conversation_history = session.get('conversation_history_{user_id}', [])
+    conversation_history = session.get('conversation_history_{user_id}', [
+        AIMessage(content="Hello! I am Ecco, your AI assistant. How can I help you today?", user_id=user_id)
+    ])
     
     bot_temperature = get_bot_temperature(user_id)
     custom_prompt = get_custom_prompt(user_id)
@@ -303,6 +315,7 @@ def chat(user_id):
         model_name='gpt-3.5-turbo',
         temperature=bot_temperature
     )
+    retriever = vectorstore.as_retriever()
 
     # Define the prompt template with placeholders for context and chat history
     prompt_template = f"""
@@ -315,18 +328,28 @@ def chat(user_id):
         # Create a PromptTemplate object with input variables for context and chat history
     TEST_PROMPT = PromptTemplate(input_variables=["context", "question"], template=prompt_template)
 
-    # Create a ConversationBufferMemory object to store the chat history
-    memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True, k=8)
+    retriever_chain = create_history_aware_retriever(llm, retriever, TEST_PROMPT)
+    stuff_documents_chain = create_stuff_documents_chain(llm,TEST_PROMPT)
+    conversation_rag_chain = create_retrieval_chain(retriever_chain, stuff_documents_chain)
 
-    # Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
-    conversation_chain = ConversationalRetrievalChain.from_llm(
-            llm=llm,
-            retriever=vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}}),
-            memory=memory,
-            combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
-        )
+    response = conversation_rag_chain.invoke({
+        "chat_history": conversation_history,
+        "input": user_message
+    })
+
+    
+    # # Create a ConversationBufferMemory object to store the chat history
+    # memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True, k=8)
+
+    # # Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
+    # conversation_chain = ConversationalRetrievalChain.from_llm(
+    #         llm=llm,
+    #         retriever=vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}}),
+    #         memory=memory,
+    #         combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
+    #     )
     # Handle the user input and get the response
-    response = conversation_chain.run({'question': user_message})
+    # response = conversation_chain.run({'question': user_message})
     # Save the user message and bot response to session
     conversation_history.append({'input': user_message, 'output': response})
     session['conversation_history'] = conversation_history
@@ -336,7 +359,8 @@ def chat(user_id):
     print(session)
     print("*"*100)
     
-    return jsonify(response=response)
+    # return jsonify(response=response)
+    return response['answer']
 
 @app.route('/<int:user_id>/store_feedback', methods=['POST'])
 def store_feedback(user_id):
