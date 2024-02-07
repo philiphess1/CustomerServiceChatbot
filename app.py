@@ -215,10 +215,10 @@ def reset_password(token):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']  # Change this line
+        email = request.form['email'].lower()
         password = request.form['password']
         
-        g.cursor.execute("SELECT id, password FROM users WHERE email = %s", (email,))  # And this line
+        g.cursor.execute("SELECT id, password FROM users WHERE LOWER(email) = %s", (email,))
         user_data = g.cursor.fetchone()
         
         if user_data:
