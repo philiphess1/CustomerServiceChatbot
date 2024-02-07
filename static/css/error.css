@@ -1,0 +1,26 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    padding-left: 30%;
+    padding-right: 30%;
+    padding-top: 5;
+    background-color: aliceblue;
+}
+.section {
+    margin-bottom: 20px;
+}
+.section h2 {
+    margin-bottom: -5px;
+}
+hr {
+    border: none;
+    border-top: 3px solid #333;
+    color: #333;
+    overflow: visible;
+    text-align: center;
+    height: 3px;
+}  
+p {
+    margin-bottom: 0px;
+
+    color: #494949;
+}

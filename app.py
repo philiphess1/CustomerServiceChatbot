@@ -886,6 +886,15 @@ def analytics_data():
     # Return the data as JSON
     return jsonify({'likes': likes, 'dislikes': dislikes, 'none': none})
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('error.html', message="Page not found."), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    # note that we set the 500 status explicitly
+    return render_template('error.html', message="An unexpected error has occurred. Please try again later."), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Use PORT if it's there
