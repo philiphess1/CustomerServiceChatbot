@@ -4,6 +4,7 @@ body {
     padding-right: 30%;
     padding-top: 5;
     background-color: aliceblue;
+    margin-top: 400px;
 }
 .section {
     margin-bottom: 20px;
@@ -18,9 +19,14 @@ hr {
     overflow: visible;
     text-align: center;
     height: 3px;
-}  
+} 
+h1 {
+    font-size: 2.8em;
+    margin: 0.67em 0;
+} 
 p {
-    margin-bottom: 0px;
+    margin-bottom: 5px;
+    margin-top: -20px;
 
     color: #494949;
 }
