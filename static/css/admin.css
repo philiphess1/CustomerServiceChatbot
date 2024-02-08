@@ -529,3 +529,13 @@ section {
     transform: rotate(360deg);
   }
 }
+
+#submit-button {
+  background-color: darkblue;
+  color: white;
+}
+
+#submit-button:disabled {
+  background-color: lightblue;
+  color: darkblue;
+}

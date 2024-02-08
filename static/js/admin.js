@@ -244,3 +244,29 @@ for (var i = 0; i < btns.length; i++) {
         btns[i].style.backgroundColor = '#444';
     }
 }
+
+function validateURL(url) {
+    // Regular expression pattern for URL validation
+    var pattern = new RegExp(
+        "^" +
+        // Protocol (optional)
+        "(?:(?:https?|ftp):\\/\\/)?" +
+        // Domain name (required)
+        "(?:\\w+(?:\\.\\w+)+)" +
+        // Optional port number
+        "(?::\\d+)?" +
+        // Optional path
+        "(?:\\/[^\\s]*)?" +
+        // Optional query string
+        "(?:\\?[^\\s]*)?" +
+        // Optional fragment identifier
+        "(?:#[\\w\\-]*)?" +
+        "$", "i");
+
+    return pattern.test(url);
+}
+
+document.getElementById('url').addEventListener('input', function() {
+    var url = this.value;
+    document.getElementById('submit-button').disabled = !url || !validateURL(url);
+});
