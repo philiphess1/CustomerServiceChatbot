@@ -281,7 +281,7 @@
                 // Hide the typing indicator when the bot responds
                 hideTypingIndicator();
 
-                appendMessage("Chatbot", "left", data.response);
+                appendMessage("Chatbot", "left", data.content);
             })
             .fail(function() {
                 // Hide the typing indicator in case of an error

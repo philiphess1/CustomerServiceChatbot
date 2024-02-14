@@ -2,15 +2,14 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, g
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
 import pinecone
 from langchain_community.vectorstores import Pinecone
-from operator import itemgetter
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain.chains.conversation.memory import ConversationBufferWindowMemory
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableLambda, RunnablePassthrough
+from langchain_core.messages import get_buffer_string
+from operator import itemgetter
 from langchain.schema import format_document
-from langchain_core.messages import AIMessage, HumanMessage, get_buffer_string
-from langchain_core.prompts import ChatPromptTemplate
-from langchain.prompts.prompt import PromptTemplate
+from langchain.memory import ConversationBufferMemory
 import os
 import tiktoken
 from dotenv import load_dotenv
@@ -291,24 +290,34 @@ Do not makeup answers if you are not sure about the answer. If you don't know th
 
     return render_template('index.html', settings=settings, user_id=user_id)
 
-
 @app.route('/<int:user_id>/chat', methods=['POST'])
 def chat(user_id):
     user_message = request.form.get('message')
-    
-    # Load the conversation history from session
-    # conversation_history = session.get('conversation_history_{user_id}', [
-    #     AIMessage(content="Hello! I am Ecco, your AI assistant. How can I help you today?", user_id=user_id)
-    # ])
-    
+
+    retriever = vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}})
+
+    memory = ConversationBufferMemory(
+    return_messages=True, output_key="answer", input_key="question"
+    )
+
     bot_temperature = get_bot_temperature(user_id)
     custom_prompt = get_custom_prompt(user_id)
 
+    llm = ChatOpenAI(
+        openai_api_key=openai_api_key,
+        model_name='gpt-3.5-turbo',
+        temperature=bot_temperature
+    )
 
-    retriever = vectorstore.as_retriever()
+    DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
 
-    from langchain.prompts.prompt import PromptTemplate
-
+    def _combine_documents(
+        docs, document_prompt=DEFAULT_DOCUMENT_PROMPT, document_separator="\n\n"
+    ):
+        doc_strings = [format_document(doc, document_prompt) for doc in docs]
+        return document_separator.join(doc_strings)
+    
+    
     _template = """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
 
     Chat History:
@@ -317,93 +326,70 @@ def chat(user_id):
     Standalone question:"""
     CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_template)
 
-    template = """Answer the question based only on the following context:
-    {context}
+    template = f"""{custom_prompt}
 
-    Question: {question}
+    Answer the question based only on the following context:
+    {{context}}
+
+    Question: {{question}}
     """
     ANSWER_PROMPT = ChatPromptTemplate.from_template(template)
 
-    DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template(template="{page_content}")
-
-
-    def _combine_documents(
-        docs, document_prompt=DEFAULT_DOCUMENT_PROMPT, document_separator="\n\n"
-    ):
-        doc_strings = [format_document(doc, document_prompt) for doc in docs]
-        return document_separator.join(doc_strings)
-    # Initialize the chatbot with the bot_temperature
-    model = ChatOpenAI(
-        openai_api_key=openai_api_key,
-        model_name='gpt-3.5-turbo',
-        temperature=bot_temperature
+    # First we add a step to load memory
+    # This adds a "memory" key to the input object
+    loaded_memory = RunnablePassthrough.assign(
+        chat_history=RunnableLambda(memory.load_memory_variables) | itemgetter("history"),
     )
-
-    _inputs = RunnableParallel(
-        standalone_question=RunnablePassthrough.assign(
-            chat_history=lambda x: get_buffer_string(x["chat_history"])
-        )
+    # Now we calculate the standalone question
+    standalone_question = {
+        "standalone_question": {
+            "question": lambda x: x["question"],
+            "chat_history": lambda x: get_buffer_string(x["chat_history"]),
+        }
         | CONDENSE_QUESTION_PROMPT
-        | ChatOpenAI(temperature=0)
+        | llm
         | StrOutputParser(),
-    )
-    _context = {
-        "context": itemgetter("standalone_question") | retriever | _combine_documents,
+    }
+    # Now we retrieve the documents
+    retrieved_documents = {
+        "docs": itemgetter("standalone_question") | retriever,
         "question": lambda x: x["standalone_question"],
     }
-    conversational_qa_chain = _inputs | _context | ANSWER_PROMPT | ChatOpenAI()
+    # Now we construct the inputs for the final prompt
+    final_inputs = {
+        "context": lambda x: _combine_documents(x["docs"]),
+        "question": itemgetter("question"),
+    }
+    # And finally, we do the part that returns the answers
+    answer = {
+        "answer": final_inputs | ANSWER_PROMPT | ChatOpenAI(),
+        "docs": itemgetter("docs"),
+    }
+    # And now we put it all together!
+    final_chain = loaded_memory | standalone_question | retrieved_documents | answer
 
-    response = conversational_qa_chain.invoke(
-        {
-            "question": user_message,
-            "chat_history": [],
-        }
-    )
+    inputs = {"question": user_message}
+    result = final_chain.invoke(inputs)
+    memory.save_context(inputs, {"answer": result["answer"].content})
 
-    # # Define the prompt template with placeholders for context and chat history
-    # prompt_template = f"""
-    #     {custom_prompt}
-
-    #     CONTEXT: {{context}}
-
-    #     QUESTION: {{question}}"""
-    
-    #     # Create a PromptTemplate object with input variables for context and chat history
-    # TEST_PROMPT = PromptTemplate(input_variables=["context", "question"], template=prompt_template)
-
-    # retriever_chain = create_history_aware_retriever(llm, retriever, TEST_PROMPT)
-    # stuff_documents_chain = create_stuff_documents_chain(llm,TEST_PROMPT)
-    # conversation_rag_chain = create_retrieval_chain(retriever_chain, stuff_documents_chain)
-
-    # response = conversation_rag_chain.invoke({
-    #     "chat_history": conversation_history,
-    #     "input": user_message
-    # })
-
-    
-    # # Create a ConversationBufferMemory object to store the chat history
-    # memory = ConversationBufferWindowMemory(memory_key="chat_history", return_messages=True, k=8)
-
-    # # Create a ConversationalRetrievalChain object with the modified prompt template and chat history memory
-    # conversation_chain = ConversationalRetrievalChain.from_llm(
-    #         llm=llm,
-    #         retriever=vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}}),
-    #         memory=memory,
-    #         combine_docs_chain_kwargs={"prompt": TEST_PROMPT},
-    #     )
-    # Handle the user input and get the response
-    # response = conversation_chain.run({'question': user_message})
-    # Save the user message and bot response to session
-    # conversation_history.append({'input': user_message, 'output': response})
-    # session['conversation_history'] = conversation_history
-    
-    # print(f"User: {user_message} | Bot:{response}")  # This will print the conversation history
-    # print(conversation_history)
+    print("*"*100)
+    print(result)
+    print("*"*100)
     print(session)
     print("*"*100)
-    
-    # return jsonify(response=response)
-    return jsonify(response=response)
+
+    response = result['answer']
+    docs = result['docs']
+    # Convert the AIMessage to a dictionary
+    filenames = [doc.metadata['filename'] for doc in docs]
+    response_dict = {
+        'content': response.content,
+        'sources': filenames,
+        # Add any other fields as necessary
+    }
+
+    print(response_dict)
+    return jsonify(response_dict)
 
 @app.route('/<int:user_id>/store_feedback', methods=['POST'])
 def store_feedback(user_id):
