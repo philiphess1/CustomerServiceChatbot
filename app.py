@@ -27,6 +27,7 @@ from flask_session import Session
 import pandas as pd
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
+import pickle
 
 
 load_dotenv()
@@ -248,6 +249,7 @@ def logout():
 @app.route('/<int:user_id>')
 def home(user_id):
     print(f"session ID: {session.sid}")
+    session[f'memory_{user_id}'] = pickle.dumps(None)
     print()
 
     # Query PostgreSQL to get the settings
@@ -296,9 +298,17 @@ def chat(user_id):
 
     retriever = vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}})
 
-    memory = ConversationBufferMemory(
-    return_messages=True, output_key="answer", input_key="question"
-    )
+    if f'memory_{user_id}' in session:
+        memory = pickle.loads(session[f'memory_{user_id}'])
+    else:
+        memory = ConversationBufferMemory(
+            return_messages=True, output_key="answer", input_key="question"
+        )
+
+    if memory is None:
+        memory = ConversationBufferMemory(
+            return_messages=True, output_key="answer", input_key="question"
+        )
 
     bot_temperature = get_bot_temperature(user_id)
     custom_prompt = get_custom_prompt(user_id)
@@ -387,6 +397,13 @@ def chat(user_id):
         'sources': filenames,
         # Add any other fields as necessary
     }
+    # Save the memory back to the session at the end of the request
+    session[f'memory_{user_id}'] = pickle.dumps(memory)
+
+    # Print the contents of the memory
+    print(f"Memory for user {user_id}: {memory}")
+
+
 
     print(response_dict)
     return jsonify(response_dict)
