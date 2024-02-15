@@ -249,7 +249,7 @@ def logout():
 @app.route('/<int:user_id>')
 def home(user_id):
     print(f"session ID: {session.sid}")
-    session[f'memory_{user_id}'] = pickle.dumps(None)
+    session[f'memory_{session.sid}'] = pickle.dumps(None)
     print()
 
     # Query PostgreSQL to get the settings
@@ -298,8 +298,8 @@ def chat(user_id):
 
     retriever = vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}})
 
-    if f'memory_{user_id}' in session:
-        memory = pickle.loads(session[f'memory_{user_id}'])
+    if f'memory_{session.sid}' in session:
+        memory = pickle.loads(session[f'memory_{session.sid}'])
     else:
         memory = ConversationBufferMemory(
             return_messages=True, output_key="answer", input_key="question"
@@ -398,10 +398,12 @@ def chat(user_id):
         # Add any other fields as necessary
     }
     # Save the memory back to the session at the end of the request
-    session[f'memory_{user_id}'] = pickle.dumps(memory)
+    session[f'memory_{session.sid}'] = pickle.dumps(memory)
 
     # Print the contents of the memory
-    print(f"Memory for user {user_id}: {memory}")
+    print("*"*100)
+    print(f"Memory for user {session.sid}: {memory}")
+    print("*"*100)
 
 
 
