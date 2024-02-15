@@ -105,11 +105,34 @@
             }
         }
 
-        function appendMessage(name, side, text) {
+        function appendSources(sources) {
+            if (!sources || sources.length === 0) return '';
+
+            let sourcesHTML = '<div class="msg-sources"><br>Sources:<br>';
+            sources
+                .filter(source => source.startsWith('http://') || source.startsWith('https://')) // Filter to only include URLs
+                .slice(0, 3) // Get the first three URL sources
+                .forEach((source) => {
+                    const hostname = (new URL(source)).hostname.replace('www.', '');
+                    sourcesHTML += `
+                        <div class="source">
+                            <a href="${source}" target="_blank">${hostname}</a>
+                            <div class="iframe-container">
+                                <iframe src="${source}" width="80%" height="100" scrolling="no"></iframe>
+                            </div>
+                        </div>
+                    `;
+                });
+            sourcesHTML += '</div>';
+
+            return sourcesHTML;
+        }
+        function appendMessage(name, side, text, sources) {
             text = text.replace(/\n/g, '<br>');
             text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
             text = text.replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>');
             const chatboxBody = document.querySelector(".chatbox-body");
+            const sourcesHTML = appendSources(sources);
             const msgHTML = `
                 <div class="msg ${side}-msg">
                     <div class="msg-info">
@@ -127,6 +150,7 @@
                 <div class="msg ${side}-msg">
                     <div class="msg-bubble">
                         <div class="msg-text"></div>
+                        ${sourcesHTML}
                     </div>
                 </div>
                 ` : ""}
@@ -268,25 +292,28 @@
         function botResponse(rawText) {
             // Get the current URL path
             var path = window.location.pathname;
-
+        
             // Split the path into segments
             var segments = path.split('/');
-
+        
             // The user ID should be the first segment after the leading empty segment
             var userId = segments[1];
-
-
+        
             $.post("/" + userId + "/chat", { message: rawText })
             .done(function(data) {
                 // Hide the typing indicator when the bot responds
                 hideTypingIndicator();
-
-                appendMessage("Chatbot", "left", data.content);
+        
+                // Assuming the API response includes a 'sources' array
+                let sources = data.sources || []; // Fallback to an empty array if no sources are provided
+        
+                // Now pass the content and sources to appendMessage
+                appendMessage("Chatbot", "left", data.content, sources);
             })
             .fail(function() {
                 // Hide the typing indicator in case of an error
                 hideTypingIndicator();
-
+        
                 appendMessage("Chatbot", "left", "An error occurred while processing your request");
             });
-        }
+        }        
