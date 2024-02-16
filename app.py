@@ -11,6 +11,11 @@ from langchain_core.messages import get_buffer_string
 from operator import itemgetter
 from langchain.schema import format_document
 from langchain.memory import ConversationBufferMemory
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import Normalizer
+from sklearn.cluster import KMeans
 import os
 import tiktoken
 from dotenv import load_dotenv
@@ -793,12 +798,6 @@ def greeting_message(user_id):
     else:
         greeting_message = row[0]
     return jsonify(greeting_message=greeting_message)
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import Normalizer
-from sklearn.cluster import KMeans
 
 @app.route('/analytics')
 @login_required
