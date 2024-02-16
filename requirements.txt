@@ -39,6 +39,7 @@ langchain==0.1.6
 langchain-community==0.0.19
 langchain-core==0.1.22
 langchain-openai==0.0.5
+langchain-pinecone==0.0.2
 langsmith==0.0.87
 loguru==0.7.2
 lxml==4.9.3
@@ -53,7 +54,7 @@ openpyxl==3.1.2
 packaging==23.2
 pandas==2.1.1
 Pillow==10.0.1
-pinecone-client==2.2.4
+pinecone-client==3.0.3
 psycopg2==2.9.9
 pydantic==2.5.0
 pydantic_core==2.14.1

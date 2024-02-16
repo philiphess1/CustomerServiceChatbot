@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
 import pinecone
-from langchain_community.vectorstores import Pinecone
+from pinecone import Pinecone
+from langchain_pinecone import Pinecone
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -47,14 +48,16 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
-pinecone_api_key = os.getenv("PINECONE_API_KEY")
-environment = os.getenv("PINECONE_ENVIRONMENT")
 openai_api_key = os.getenv("OPENAI_API_KEY")
+
 database_url = os.getenv('DATABASE_URL')
 
-pinecone.init(api_key=pinecone_api_key, environment=environment)
+environment = os.getenv("PINECONE_ENVIRONMENT")
+pinecone_api_key = os.getenv("PINECONE_API_KEY")
 index_name= os.getenv("PINECONE_INDEX")
-index = pinecone.Index(index_name)
+host = os.getenv("PINECONE_HOST")
+
+index = pinecone.Index(api_key=pinecone_api_key, host=host)
 text_field="text"
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
