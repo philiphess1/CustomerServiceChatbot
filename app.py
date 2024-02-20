@@ -391,8 +391,6 @@ def chat(user_id):
     memory.save_context(inputs, {"answer": result["answer"].content})
 
     print("*"*100)
-    print(result)
-    print("*"*100)
     print(session)
     print("*"*100)
 
@@ -409,7 +407,6 @@ def chat(user_id):
     session[f'memory_{session.sid}'] = pickle.dumps(memory)
 
     # Print the contents of the memory
-    print("*"*100)
     print(f"Memory for user {session.sid}: {memory}")
     print("*"*100)
 

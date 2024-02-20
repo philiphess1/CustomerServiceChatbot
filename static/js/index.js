@@ -17,7 +17,7 @@
 
             // The user ID should be the first segment after the leading empty segment
             var userId = segments[1];
-
+            
             // Check if there are any existing messages in the chatbox
             const chatboxBody = document.querySelector(".chatbox-body");
             const existingMessages = chatboxBody.children.length > 0;
@@ -108,22 +108,26 @@
         function appendSources(sources) {
             if (!sources || sources.length === 0) return '';
 
-            let sourcesHTML = '<div class="msg-sources"><br>Sources:<br>';
-            sources
-                .filter(source => source.startsWith('http://') || source.startsWith('https://')) // Filter to only include URLs
-                .slice(0, 3) // Get the first three URL sources
-                .forEach((source) => {
-                    const hostname = (new URL(source)).hostname.replace('www.', '');
-                    sourcesHTML += `
-                        <div class="source">
-                            <a href="${source}" target="_blank">${hostname}</a>
-                            <div class="iframe-container">
-                                <iframe src="${source}" width="80%" height="100" scrolling="no"></iframe>
+            let sourcesHTML = '';
+            const validSources = sources.filter(source => source.startsWith('http://') || source.startsWith('https://')); // Filter to only include URLs
+
+            if (validSources.length > 0) {
+                sourcesHTML += '<div class="msg-sources"><br>Sources:<br>';
+                validSources
+                    .slice(0, 3) // Get the first three URL sources
+                    .forEach((source) => {
+                        const hostname = (new URL(source)).hostname.replace('www.', '');
+                        sourcesHTML += `
+                            <div class="source">
+                                <a href="${source}" target="_blank">${hostname}</a>
+                                <div class="iframe-container">
+                                    <iframe src="${source}" width="80%" height="100" scrolling="no"></iframe>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                });
-            sourcesHTML += '</div>';
+                        `;
+                    });
+                sourcesHTML += '</div>';
+            }
 
             return sourcesHTML;
         }
@@ -136,24 +140,24 @@
             const msgHTML = `
                 <div class="msg ${side}-msg">
                     <div class="msg-info">
-                        <div class="msg-info-name">${name}</div>
+                        ${side === "left" ? `
+                        <div class="msg-info-name">
+                            <img src="static/images/chatbot.svg" alt="Chatbot Icon" />
+                        </div>
+                        ` : ""}
                     </div>
-                </div>
-                ${side === "right" ? `
-                <div class="msg ${side}-msg">
+                    ${side === "right" ? `
                     <div class="msg-bubble">
                         <div class="msg-text-user">${text}</div>
                     </div>
-                </div>
-                ` : ""}
-                ${side === "left" ? `
-                <div class="msg ${side}-msg">
+                    ` : ""}
+                    ${side === "left" ? `
                     <div class="msg-bubble">
-                        <div class="msg-text"></div>
+                        <div class="msg-text">${text}</div>
                         ${sourcesHTML}
                     </div>
+                    ` : ""}
                 </div>
-                ` : ""}
                 <div class="msg ${side}-msg">
                     ${side === "left" ? `
                     <div class="post" data-post-id="7712">
@@ -166,11 +170,12 @@
                             </div>
                         </div>
                     </div>
-                        ` : ""}
+                    ` : ""}
                 </div>
             `;
             chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
             chatboxBody.scrollTop = chatboxBody.scrollHeight;
+        
 
             if (side === "left" && lastUserMessage.trim() !== "") {
                 storeQuestionAnswer(lastUserMessage, text);
@@ -285,8 +290,8 @@
             });
         }
 
-        document.getElementById('refresh').addEventListener('click', function() {
-            location.reload();
+        document.getElementById('close-button').addEventListener('click', function() {
+            parent.closeChatbot();
         });
 
         function botResponse(rawText) {
