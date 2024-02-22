@@ -304,7 +304,10 @@ Do not makeup answers if you are not sure about the answer. If you don't know th
 def chat(user_id):
     user_message = request.form.get('message')
 
-    retriever = vectorstore.as_retriever(search_kwargs={'filter': {'user_id': f"{user_id}"}})
+    retriever = vectorstore.as_retriever(
+            search_type = "similarity_score_threshold",
+            search_kwargs={'filter': {'user_id': f"{user_id}"}, 'score_threshold': 0.9, 'k': 5},
+        )
 
     if f'memory_{session.sid}' in session:
         memory = pickle.loads(session[f'memory_{session.sid}'])
