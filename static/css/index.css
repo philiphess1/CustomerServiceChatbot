@@ -137,6 +137,7 @@
             width: 30px;
             height: 30px;
             margin-right: 9px;
+
         }
         
 
@@ -175,7 +176,9 @@
             margin-top: 5px;
         }
         .msg-info {
-            text-align: center;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center; /* if you want to center the contents horizontally */
             margin-bottom: 0px;
         }
 
