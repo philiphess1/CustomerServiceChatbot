@@ -128,12 +128,17 @@
             color: var(--title-color);
         }
 
+        .msg-info-name {
+            display: flex;
+            align-items: flex-end;
+        }
+        
         .msg-info-name img {
             width: 30px;
             height: 30px;
-            padding-top: 5px;
-            margin-right: 5px;
+            margin-right: 9px;
         }
+        
 
         #send-button svg {
             width: 30px; /* adjust as needed */
@@ -160,12 +165,14 @@
 
         .right-msg {
             justify-content: flex-end;
+            margin-right: 5px;
         }
 
         .msg-bubble {
-            border-radius: 15px;
+            position: relative;
             padding: 10px;
-            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 5px;
         }
         .msg-info {
             text-align: center;
@@ -181,10 +188,44 @@
         .right-msg .msg-bubble {
             background-color: #318aff;
             color: white;
+            position: relative; /* Add this line */
         }
-          .left-msg .msg-bubble {
-          background-color: #ffffff;
+        
+        .right-msg .msg-bubble::after {
+            content: "";
+            position: absolute;
+            bottom: -5px; /* Adjust this value as needed */
+            right: 7px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left-color: #318aff;
+            border-right: 0;
+            margin-right: -10px;
+            transform: rotate(270deg);
         }
+        
+        .left-msg .msg-bubble {
+            background-color: #ffffff;
+            color: black;
+            position: relative; /* Add this line */
+        }
+        
+        .left-msg .msg-bubble::after {
+            content: "";
+            position: absolute;
+            bottom: -5px; 
+            left: 5px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-right-color: #ffffff;
+            border-left: 0;
+            margin-left: -10px;
+            transform: rotate(90deg);
+        }
+        
+
         .msg-image {
             display: flex;
             align-items: center;
