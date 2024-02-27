@@ -47,6 +47,11 @@
         </div>
             
             <div id="styling-settings" class="subpage">
+                <form action="/{{ chatbot_id }}/upload_logo" method="post" enctype="multipart/form-data">
+                    <label for="logo">Logo:</label>
+                    <input type="file" id="logo" name="logo" accept="image/*"><br>
+                    <input type="submit" value="Upload">
+                </form>
                 <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" style="width: 2000px; height: 2000px;">
                     <div class="info-bundle">
                         <h2 class="instructions"><b>Chatbot Settings</b></h2>

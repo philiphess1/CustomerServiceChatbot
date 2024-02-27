@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, g
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
 from langchain_pinecone import Pinecone
 from pinecone import Pinecone as PineconeClient
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, ContentSettings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -51,6 +52,9 @@ app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+
+connection_string = os.getenv('AZURE_CONNECTION_STRING')
+container_name = os.getenv('AZURE_CONTAINER_NAME')
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -643,7 +647,7 @@ def process_text(text, filename, page_num, user_id, chatbot_id):
         chunk_doc_id = f"{filename}_page{page_num}_start{start}:{end}"
 
         # Prepare data for Pinecone
-        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk, "user_id": user_id})]
+        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
         
         # Store the embeddings in Pinecone using 'upsert' method
         index.upsert(upsert_data, namespace=f"{user_id}{chatbot_id}")
@@ -664,7 +668,7 @@ def process_excel_text(full_text, headers, filename,user_id, chatbot_id):
 
 
         # Prepare data for Pinecone
-        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk, "user_id": user_id})]
+        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
         
         # Store the embeddings in Pinecone using 'upsert' method
         index.upsert(upsert_data, namespace=f"{user_id}{chatbot_id}")
@@ -805,6 +809,39 @@ def update_chatbot_settings(chatbot_id):
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings', chatbot_id=chatbot_id))
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'png'
+
+@app.route('/<int:chatbot_id>/upload_logo', methods=['POST'])
+def upload_logo(chatbot_id):
+    user_id = current_user.id
+    print(user_id, chatbot_id)
+    if 'logo' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['logo']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+
+        # Create a blob client using the local file name as the name for the blob
+        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+        blob_client = blob_service_client.get_blob_client(container_name, filename)
+
+        # Upload the file
+        blob_client.upload_blob(file, blob_type="BlockBlob", content_settings=ContentSettings(content_type='image/png', content_disposition='inline'))
+
+        # Save the URL of the blob
+        logo_url = blob_client.url
+        print(logo_url)
+        g.cursor.execute("UPDATE chatbot_settings SET logo = %s WHERE user_id = %s AND id = %s;", (logo_url, user_id, chatbot_id))
+        g.db_conn.commit()  
+        # Now you can save logo_url in your PostgreSQL database
+
+        return redirect(url_for('settings', chatbot_id=chatbot_id))
 
 @app.route('/<int:user_id>/<int:chatbot_id>/greeting_message')
 def greeting_message(user_id, chatbot_id):
