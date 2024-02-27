@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
-import pinecone
-from pinecone import Pinecone
 from langchain_pinecone import Pinecone
+from pinecone import Pinecone as PineconeClient
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -60,26 +59,25 @@ database_url = os.getenv('DATABASE_URL')
 environment = os.getenv("PINECONE_ENVIRONMENT")
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 index_name= os.getenv("PINECONE_INDEX")
-host = os.getenv("PINECONE_HOST")
+index_host = os.getenv("PINECONE_HOST")
 
-index = pinecone.Index(api_key=pinecone_api_key, host=host)
+
+pc = PineconeClient(api_key=pinecone_api_key)
+index = pc.Index(index_name)
 text_field="text"
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
-vectorstore = Pinecone(
-    index, embeddings, text_field
-)
 
-def get_bot_temperature(user_id):
+def get_bot_temperature(user_id, chatbot_id):
     with g.db_conn.cursor() as cursor:
-        cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE user_id = %s;", (user_id,))
+        cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
         row = cursor.fetchone()
         return row[0] if row else 0.0
     
 
-def get_custom_prompt(user_id):
+def get_custom_prompt(user_id, chatbot_id):
     with g.db_conn.cursor() as cursor:
-        cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE user_id = %s;", (user_id,))
+        cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
         row = cursor.fetchone()
         return row[0] if row else "Default prompt part"
 
@@ -236,7 +234,7 @@ def login():
                     if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
                         user = AuthenticatedUser(id=user_data[0])
                         login_user(user)
-                        return redirect(url_for('admin'))
+                        return redirect('/')
                     else:  # Passwords do not match
                         flash('Invalid password', 'error')
                 except ValueError:  # Invalid bcrypt salt
@@ -248,20 +246,30 @@ def login():
             
     return render_template('login.html')
 
+@app.route('/', methods=['GET'])
+@login_required
+def home():
+    # Fetch the chatbot settings for the current user
+    g.cursor.execute("SELECT id, chatbot_name FROM chatbot_settings WHERE user_id = %s", (current_user.id,))
+    chatbots = g.cursor.fetchall()
+
+    # Pass the chatbot settings to the template
+    return render_template('home.html', chatbots=chatbots)
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
 
-@app.route('/<int:user_id>')
-def home(user_id):
+@app.route('/<int:user_id>/<int:chatbot_id>')
+def chatbot(user_id, chatbot_id):
     print(f"session ID: {session.sid}")
     session[f'memory_{session.sid}'] = pickle.dumps(None)
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s;",(user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s AND id = %s;",(user_id, chatbot_id))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -300,13 +308,17 @@ Do not makeup answers if you are not sure about the answer. If you don't know th
 
     return render_template('index.html', settings=settings, user_id=user_id)
 
-@app.route('/<int:user_id>/chat', methods=['POST'])
-def chat(user_id):
+@app.route('/<int:user_id>/<int:chatbot_id>/chat', methods=['POST'])
+def chat(user_id, chatbot_id):
+    vectorstore = Pinecone(
+        index, embeddings, text_field,  namespace=f"{user_id}{chatbot_id}"
+    )
+
     user_message = request.form.get('message')
 
     retriever = vectorstore.as_retriever(
             search_type = "similarity_score_threshold",
-            search_kwargs={'filter': {'user_id': f"{user_id}"}, 'score_threshold': 0.9, 'k': 5},
+            search_kwargs={'score_threshold': 0.7, 'k': 5},
         )
 
     if f'memory_{session.sid}' in session:
@@ -321,8 +333,8 @@ def chat(user_id):
             return_messages=True, output_key="answer", input_key="question"
         )
 
-    bot_temperature = get_bot_temperature(user_id)
-    custom_prompt = get_custom_prompt(user_id)
+    bot_temperature = get_bot_temperature(user_id, chatbot_id)
+    custom_prompt = get_custom_prompt(user_id, chatbot_id)
 
     llm = ChatOpenAI(
         openai_api_key=openai_api_key,
@@ -391,6 +403,7 @@ def chat(user_id):
 
     inputs = {"question": user_message}
     result = final_chain.invoke(inputs)
+    print(result)
     memory.save_context(inputs, {"answer": result["answer"].content})
 
     print("*"*100)
@@ -418,8 +431,8 @@ def chat(user_id):
     print(response_dict)
     return jsonify(response_dict)
 
-@app.route('/<int:user_id>/store_feedback', methods=['POST'])
-def store_feedback(user_id):
+@app.route('/<int:user_id>/<int:chatbot_id>/store_feedback', methods=['POST'])
+def store_feedback(user_id, chatbot_id):
     data = request.json
     feedback_type = data.get('feedback_type')
     bot_response = data.get('bot_response')
@@ -428,8 +441,8 @@ def store_feedback(user_id):
     
     try:
         g.cursor.execute(
-            "UPDATE feedback SET user_question = %s, bot_response = %s, feedback_type = %s, user_id = %s WHERE id = %s",
-            (user_question, bot_response, feedback_type, user_id, record_id)
+            "UPDATE feedback SET user_question = %s, bot_response = %s, feedback_type = %s, user_id = %s, chatbot_id = %s WHERE id = %s",
+            (user_question, bot_response, feedback_type, user_id, chatbot_id, record_id)
         )
         g.db_conn.commit()
         return jsonify({"message": "Feedback stored successfully!"})
@@ -437,16 +450,16 @@ def store_feedback(user_id):
         print(f"Error storing feedback: {e}")
         return jsonify({"message": "Error storing feedback"}), 500
 
-@app.route('/<int:user_id>/store_qa', methods=['POST'])
-def store_qa(user_id):
+@app.route('/<int:user_id>/<int:chatbot_id>/store_qa', methods=['POST'])
+def store_qa(user_id, chatbot_id):
     data = request.json
     question = data.get('question')
     answer = data.get('answer')
     
     try:
         g.cursor.execute(
-            "INSERT INTO feedback (user_question, bot_response, user_id, feedback_type) VALUES (%s, %s, %s, %s) RETURNING id",
-            (question, answer, user_id, None)
+            "INSERT INTO feedback (user_question, bot_response, user_id, chatbot_id, feedback_type) VALUES (%s, %s, %s, %s, %s) RETURNING id",
+            (question, answer, user_id, chatbot_id, None)
         )
         record_id = g.cursor.fetchone()[0]
         g.db_conn.commit()
@@ -455,9 +468,9 @@ def store_qa(user_id):
         print(f"Error storing question and answer: {e}")
         return jsonify({"message": "Error storing question and answer"}), 500
 
-@app.route('/admin')
+@app.route('/<int:chatbot_id>/admin')
 @login_required
-def admin():
+def admin(chatbot_id):
     if current_user.is_authenticated:
         user_id = current_user.id
     else:
@@ -465,11 +478,11 @@ def admin():
         return redirect(url_for('login'))
 
     # Query PostgreSQL to get the list of documents
-    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s;", (user_id,))
+    g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id))
     documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]
 
     # Query for chatbot settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s;", (user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -511,14 +524,14 @@ Do not makeup answers if you are not sure about the answer. If you don't know th
             'border_color': row[10],
         }
 
-    return render_template('admin.html', documents=documents, settings=settings, user_id=user_id)
+    return render_template('admin.html', documents=documents, settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
 
-@app.route('/integrations')
+@app.route('/<int:chatbot_id>/integrations')
 @login_required
-def integrations():
+def integrations(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s;", (user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -554,10 +567,10 @@ def integrations():
             'title_color': row[9],
             'border_color': row[10],
         }
-    return render_template('integrations.html', settings=settings, user_id=user_id)
+    return render_template('integrations.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
+@app.route('/<int:chatbot_id>/upload', methods=['POST'])
+def upload_file(chatbot_id):
     uploaded_files = request.files.getlist('file')
     user_id = current_user.id
     for file in uploaded_files:
@@ -570,7 +583,7 @@ def upload_file():
 
             file_size = file_size/1000000
 
-            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id) VALUES (%s, %s, %s) RETURNING id;", (filename, file_size, user_id))
+            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (filename, file_size, user_id, chatbot_id))
             g.db_conn.commit()
 
             # Create a BytesIO stream from the uploaded file
@@ -583,19 +596,19 @@ def upload_file():
                 for page_num in range(num_pages):
                     page = pdf_reader.pages[page_num]
                     text = page.extract_text()
-                    process_text(text, filename, page_num,f"{user_id}")
+                    process_text(text, filename, page_num,f"{user_id}", f"{chatbot_id}")
 
             elif file_extension == "docx":
                 doc = docx2txt.process(file_stream)
                 cleaned_doc = re.sub(r'\s+', ' ', doc.strip())
-                process_text(cleaned_doc, filename, 0,f"{user_id}")
+                process_text(cleaned_doc, filename, 0,f"{user_id}", f"{chatbot_id}")
 
             elif file_extension == "xlsx":
                 # use pandas to read the excel file from the bytesIO steam
                 df = pd.read_excel(file_stream)
                 headers = ' '.join(df.columns) + '\n'
                 full_text = df.to_string(index=False, header=False)
-                process_excel_text(full_text, headers, filename,f"{user_id}")
+                process_excel_text(full_text, headers, filename,f"{user_id}", f"{chatbot_id}")
 
             elif file_extension == "csv":
                 # use pandas to read the excel file from the bytesIO steam
@@ -605,7 +618,7 @@ def upload_file():
                         df = pd.read_csv(file_stream, encoding=encoding)
                         headers = ' '.join(df.columns) + '\n'
                         full_text = df.to_string(index=False, header=False)
-                        process_excel_text(full_text, headers, filename,f"{user_id}")
+                        process_excel_text(full_text, headers, filename,f"{user_id}", f"{chatbot_id}")
                         break
                     except UnicodeDecodeError:
                         continue
@@ -614,7 +627,7 @@ def upload_file():
             
     return jsonify({"status": "success", "message": "Files uploaded successfully!"})
 
-def process_text(text, filename, page_num, user_id):
+def process_text(text, filename, page_num, user_id, chatbot_id):
     # Process the text (i.e., break it into chunks and create embeddings)
     chunk_size = 750
     overlap = 100
@@ -633,9 +646,9 @@ def process_text(text, filename, page_num, user_id):
         upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk, "user_id": user_id})]
         
         # Store the embeddings in Pinecone using 'upsert' method
-        index.upsert(upsert_data)
+        index.upsert(upsert_data, namespace=f"{user_id}{chatbot_id}")
 
-def process_excel_text(full_text, headers, filename,user_id):
+def process_excel_text(full_text, headers, filename,user_id, chatbot_id):
     chunk_size = 750
     overlap = 100
     for start in range(0, len(full_text), chunk_size - overlap):
@@ -654,12 +667,12 @@ def process_excel_text(full_text, headers, filename,user_id):
         upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk, "user_id": user_id})]
         
         # Store the embeddings in Pinecone using 'upsert' method
-        index.upsert(upsert_data)
+        index.upsert(upsert_data, namespace=f"{user_id}{chatbot_id}")
 
 
-@app.route('/scrape', methods=['POST'])
+@app.route('/<int:chatbot_id>/scrape', methods=['POST'])
 @login_required
-def scrape_url():
+def scrape_url(chatbot_id):
     url = request.form['url']
     user_id = current_user.id
     try:
@@ -690,13 +703,13 @@ def scrape_url():
         print(f"File size: {file_size}")  # Print file size
 
         # Insert into database
-        g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id) VALUES (%s, %s, %s) RETURNING id;", (url, file_size, user_id))
+        g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (url, file_size, user_id, chatbot_id))
         g.db_conn.commit()
 
         # Process the text and put it in the vector database
-        process_text(text, url, 0, f"{user_id}")
+        process_text(text, url, 0, f"{user_id}", f"{chatbot_id}")
 
-        return redirect(url_for('admin'))
+        return redirect(url_for('admin', chatbot_id=chatbot_id))
 
     except requests.RequestException as e:
         return jsonify({"status": "error", "message": f"Error processing URL: {str(e)}"})
@@ -704,36 +717,47 @@ def scrape_url():
         return jsonify({"status": "error", "message": f"Unexpected error: {str(e)}"})
 
 
-@app.route('/delete/<doc_id>', methods=['POST'])
+@app.route('/<int:chatbot_id>/delete/<doc_id>', methods=['POST'])
 @login_required
-def delete(doc_id):
+def delete(chatbot_id, doc_id):
     user_id = current_user.id
     # Delete from PostgreSQL
     g.cursor.execute("DELETE FROM document_mapping WHERE id = %s AND user_id = %s RETURNING filename;", (doc_id, user_id))
     result = g.cursor.fetchone()
     g.db_conn.commit()
     if result:
-        filename = result[0]  # Assuming filename is the first element returned
+        filename = result[0]
+        prefix = f"{filename}_"
         print(f"Deleted entry for ID {doc_id} from the database")
 
-        # Delete from Pinecone
-        delete_filter = {
-            "filename": {"$eq": filename},
-            "user_id": {"$eq": f"{user_id}"}
+        namespace = f"{user_id}{chatbot_id}"
+        list_url = f"https://{index_host}/vectors/list?namespace={namespace}&prefix={prefix}"
+        delete_url = f"https://{index_host}/vectors/delete"
+
+        headers = {
+            "Api-Key": pinecone_api_key,
+            "Content-Type": "application/json"
         }
-        index.delete(filter=delete_filter)
-        print(f"Deleted vectors with filename {filename} from Pinecone")
 
+        list_response = requests.get(list_url, headers=headers)
+        if list_response.status_code == 200:
+            ids_to_delete = [record['id'] for record in list_response.json().get('vectors', [])]
+            if ids_to_delete:
+                delete_response = requests.post(delete_url, headers=headers, json={"ids": ids_to_delete})
+                if delete_response.status_code == 200:
+                    print(f"Deleted vectors with IDS {ids_to_delete} from Pinecone")
+        else:
+            print(f"Error listing record from Pincone")
     else:
-        print(f"File not found for ID {doc_id}")
+        print(f"File not found")
 
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin', chatbot_id=chatbot_id))
 
-@app.route('/settings')
+@app.route('/<int:chatbot_id>/settings')
 @login_required
-def settings():
+def settings(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s;", (user_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     # It is assumed that row will not be None, as default settings should have been set in the /admin route.
@@ -751,24 +775,20 @@ def settings():
         'border_color': row[10],
     }
 
-    return render_template('settings.html', settings=settings, user_id=user_id)
+    return render_template('settings.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
-def update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color):
-    # Prepare the SQL query
+def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color):
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s WHERE user_id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s WHERE user_id = %s AND id = %s;
     """
 
-    # Execute the SQL query
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color, user_id)) 
-
-    # Commit the changes
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color, user_id, chatbot_id)) 
     g.db_conn.commit()
 
-@app.route('/update_chatbot_settings', methods=['POST'])
-def update_chatbot_settings():
+@app.route('/<int:chatbot_id>/update_chatbot_settings', methods=['POST'])
+def update_chatbot_settings(chatbot_id):
     widget_icon = request.form.get('widget_icon')
     background_color = request.form.get('background_color')
     font_style = request.form.get('font_style')
@@ -781,17 +801,15 @@ def update_chatbot_settings():
     title_color = request.form.get('title_color')
     border_color = request.form.get('border_color')
 
-
-    # Assuming a function 'update_chatbot_settings_in_db' to update or insert settings
-    update_chatbot_settings_in_db(widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color)
+    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color)
 
     flash('Chatbot settings updated successfully!', 'success')
-    return redirect(url_for('settings'))
+    return redirect(url_for('settings', chatbot_id=chatbot_id))
 
-@app.route('/<int:user_id>/greeting_message')
-def greeting_message(user_id):
+@app.route('/<int:user_id>/<int:chatbot_id>/greeting_message')
+def greeting_message(user_id, chatbot_id):
     # Query PostgreSQL to get the greeting message for the user with id = 1
-    g.cursor.execute("SELECT greeting_message FROM chatbot_settings WHERE user_id = %s;", (user_id,))
+    g.cursor.execute("SELECT greeting_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
     if row is None:
         greeting_message = 'Hello, how can I help?'  # Default value if no greeting message is found for the user
@@ -799,11 +817,11 @@ def greeting_message(user_id):
         greeting_message = row[0]
     return jsonify(greeting_message=greeting_message)
 
-@app.route('/analytics')
+@app.route('/<int:chatbot_id>/analytics')
 @login_required
-def analytics():
+def analytics(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback WHERE user_id = %s;", (user_id,))
+    g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id))
     rows = g.cursor.fetchall()
 
     if not rows:
@@ -857,9 +875,12 @@ def analytics():
     else:
         data = []
 
-    return render_template('analytics.html', data=data, common_topics=common_topics)
+    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id)
 
-    
+
+#!!!!!!!!!!!!!!!!!!!!
+#route not being used
+#!!!!!!!!!!!!!!!!!!!!
 @app.route('/delete_feedback', methods=['POST'])
 @login_required
 def delete_feedback():
@@ -874,6 +895,9 @@ def delete_feedback():
 
     return redirect(url_for('analytics'))
 
+#!!!!!!!!!!!!!!!!!!!!
+#route not being used
+#!!!!!!!!!!!!!!!!!!!!
 @app.route('/analytics/data')
 @login_required
 def analytics_data():

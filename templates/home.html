@@ -1,0 +1,16 @@
+<!-- FILEPATH: /Users/philiphess_1/Desktop/Coding/HR_bot/hr_bot_demo/templates/home.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+    <h1>Chatbots</h1>
+    <ul>
+        {% for chatbot in chatbots %}
+            <li><a href="{{ url_for('admin', chatbot_id=chatbot[0]) }}">{{ chatbot[1] }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

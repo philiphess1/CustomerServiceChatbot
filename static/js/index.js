@@ -17,14 +17,17 @@
 
             // The user ID should be the first segment after the leading empty segment
             var userId = segments[1];
-            
+
+            // The chatbot ID should be the second segment
+            var chatbotId = segments[2];
+
             // Check if there are any existing messages in the chatbox
             const chatboxBody = document.querySelector(".chatbox-body");
             const existingMessages = chatboxBody.children.length > 0;
 
             // If there are no existing messages, show the greeting with a delay
             if (!existingMessages) {
-                fetch('/' + userId + '/greeting_message')
+                fetch('/' + userId + '/' + chatbotId + '/greeting_message')
                     .then(response => response.json())
                     .then(data => {
                         const greetingMessage = data.greeting_message;
@@ -142,7 +145,7 @@
                     <div class="msg-info">
                         ${side === "left" ? `
                         <div class="msg-info-name">
-                            <img src="static/images/chatbot.svg" alt="Chatbot Icon" />
+                            <img src="/static/images/chatbot.svg" alt="Chatbot Icon" />
                         </div>
                         ` : ""}
                     </div>
@@ -238,8 +241,9 @@
 
             // The user ID should be the first segment after the leading empty segment
             var userId = segments[1];
+            var chatbotId = segments[2];
 
-            fetch('/' + userId + '/store_feedback', {
+            fetch('/' + userId + '/' + chatbotId + '/store_feedback', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -269,8 +273,9 @@
 
             // The user ID should be the first segment after the leading empty segment
             var userId = segments[1];
+            var chatbotId = segments[2];
 
-            fetch('/' + userId + '/store_qa', {
+            fetch('/' + userId + '/' + chatbotId + '/store_qa', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -297,28 +302,31 @@
         function botResponse(rawText) {
             // Get the current URL path
             var path = window.location.pathname;
-        
+
             // Split the path into segments
             var segments = path.split('/');
-        
+
             // The user ID should be the first segment after the leading empty segment
             var userId = segments[1];
-        
-            $.post("/" + userId + "/chat", { message: rawText })
+
+            // The chatbot ID should be the second segment
+            var chatbotId = segments[2];
+
+            $.post("/" + userId + "/" + chatbotId + "/chat", { message: rawText })
             .done(function(data) {
                 // Hide the typing indicator when the bot responds
                 hideTypingIndicator();
-        
+
                 // Assuming the API response includes a 'sources' array
                 let sources = data.sources || []; // Fallback to an empty array if no sources are provided
-        
+
                 // Now pass the content and sources to appendMessage
                 appendMessage("Chatbot", "left", data.content, sources);
             })
             .fail(function() {
                 // Hide the typing indicator in case of an error
                 hideTypingIndicator();
-        
+
                 appendMessage("Chatbot", "left", "An error occurred while processing your request");
             });
-        }        
+        }       

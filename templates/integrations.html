@@ -26,10 +26,10 @@
     <section id="sidepanel">
         <div id="mySidepanel" class="sidepanel">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="{{ url_for('admin') }}" id="admin" class="mgn-top">Documents</a>
-            <a href="{{ url_for('settings') }}" id="settings" class="mgn">Settings</a>
-            <a href="{{ url_for('integrations') }}" id="integrations" class="mgn">Integrations</a>
-            <a href="{{ url_for('analytics') }}" id="analytics" class="mgn">Analytics</a>
+            <a href="{{ url_for('admin', chatbot_id=chatbot_id) }}" id="admin" class="mgn-top">Documents</a>
+            <a href="{{ url_for('settings', chatbot_id=chatbot_id) }}" id="settings" class="mgn">Settings</a>
+            <a href="{{ url_for('integrations', chatbot_id=chatbot_id) }}" id="integrations" class="mgn">Integrations</a>
+            <a href="{{ url_for('analytics', chatbot_id=chatbot_id) }}" id="analytics" class="mgn">Analytics</a>
             <a href="#" id="usage">Usage</a>
         </div>
     </section>
@@ -41,9 +41,9 @@
     </ul>
     <div class="code-container">
         <pre><code id="chatbot-code" class="language-javascript">
-        &lt;img id="chatbot-button" src="https://app.eccoai.org/{{ url_for('static', filename='images/' + settings['widget_icon'] + '.png') }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;"&gt;
+        &lt;img id="chatbot-button" src="http://127.0.0.1:5000/{{ url_for('static', filename='images/' + settings['widget_icon'] + '.png') }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;"&gt;
 
-        &lt;iframe src="https://app.eccoai.org/{{ user_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"&gt;&lt;/iframe&gt;
+        &lt;iframe src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"&gt;&lt;/iframe&gt;
         &lt;script&gt;
             var chatbotButton = document.getElementById('chatbot-button');
             chatbotButton.addEventListener('mouseover', function() {

@@ -28,10 +28,10 @@
     <section id="sidepanel">
         <div id="mySidepanel" class="sidepanel">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="{{ url_for('admin') }}" id="admin" class="mgn-top">Documents</a>
-            <a href="{{ url_for('settings') }}" id="settings" class="mgn">Settings</a>
-            <a href="{{ url_for('integrations') }}" id="integrations" class="mgn">Integrations</a>
-            <a href="{{ url_for('analytics') }}" id="analytics" class="mgn">Analytics</a>
+            <a href="{{ url_for('admin', chatbot_id=chatbot_id) }}" id="admin" class="mgn-top">Documents</a>
+            <a href="{{ url_for('settings', chatbot_id=chatbot_id) }}" id="settings" class="mgn">Settings</a>
+            <a href="{{ url_for('integrations', chatbot_id=chatbot_id) }}" id="integrations" class="mgn">Integrations</a>
+            <a href="{{ url_for('analytics', chatbot_id=chatbot_id) }}" id="analytics" class="mgn">Analytics</a>
             <a href="#" id="usage">Usage</a>
         </div>
             
@@ -63,10 +63,10 @@
                                 <div id="filelist">
                                     <div id="fileitem">
                                         <div id="fileinfo">
-                                            <img src="{{ url_for('static', filename='images/IU bball logo.jpeg') }}" height="30" width="30" alt="PDF-icon">
+                                            <img src="{{ url_for('static', filename='/images/IU bball logo.jpeg') }}" height="30" width="30" alt="PDF-icon">
                                             <div id="filename"></div>
                                             <div id="filesize"></div>
-                                            <div  class="left"><img src="{{ url_for('static', filename='images/X-icon.png') }}" height="20" width="20" alt="X-icon"></div>
+                                            <div  class="left"><img src="{{ url_for('static', filename='/images/X-icon.png') }}" height="20" width="20" alt="X-icon"></div>
                                         </div>
                                         <div id="fileprogress"></div>
                                     </div>
@@ -87,7 +87,7 @@
                         
                     </form>
                     <!-- url form -->
-                    <form class="form form_1" action="/scrape" method="post" enctype="multipart/form-data" id="url-form">
+                    <form class="form form_1" action="/{{ chatbot_id }}/scrape" method="post" enctype="multipart/form-data" id="url-form">
                         <div id="url-area">
                             <div id="url-input">
                                 <label class="url-label" for="url">Or enter a URL:</label>
@@ -147,7 +147,7 @@
                                     <td class="sub-column">{{ document.date_added.strftime('%m/%d/%Y') }}</td>
                                     <td>
                                         <div class="bin-container">
-                                            <form action="/delete/{{ document.id }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">
+                                            <form action="/{{ chatbot_id }}/delete/{{ document.id }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">
                                                 <input class ="bin" type="image" src="{{ url_for('static', filename='images/bin.png') }}" alt="Submit">
                                             </form>
                                         </div>
@@ -161,7 +161,7 @@
             </section>
         </div>
         <img id="chatbot-button" src="https://app.eccoai.org/static/images/{{ settings.widget_icon }}.png" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
-        <iframe src="https://app.eccoai.org/{{ user_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
+        <iframe src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
         <script>
             var chatbotButton = document.getElementById('chatbot-button');
             chatbotButton.addEventListener('mouseover', function() {

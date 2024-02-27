@@ -22,7 +22,9 @@ function uploadFiles() {
         formData.append("fileSize", fileArray[i].size);
     }
 
-    fetch('/upload', {
+    let chatbot_id = window.location.pathname.split('/')[1];
+
+    fetch('/' + chatbot_id + '/upload', {
         method: 'POST',
         body: formData
     })
@@ -32,7 +34,7 @@ function uploadFiles() {
         document.getElementById("form-content").style.display = "block";  // Show form content
         if (data.status === "success") {
             // Redirect to the admin page
-            window.location.href = '/admin';  
+            window.location.href = '/' + chatbot_id + '/admin';    
         } else {
             // Handle errors or show an error message to the user
             console.error(data.message);

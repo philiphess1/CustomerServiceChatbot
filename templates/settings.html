@@ -29,10 +29,10 @@
     <section id="sidepanel">
         <div id="mySidepanel" class="sidepanel">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="{{ url_for('admin') }}" id="admin" class="mgn-top">Documents</a>
-            <a href="{{ url_for('settings') }}" id="settings" class="mgn">Settings</a>
-            <a href="{{ url_for('integrations') }}" id="integrations" class="mgn">Integrations</a>
-            <a href="{{ url_for('analytics') }}" id="analytics" class="mgn">Analytics</a>
+            <a href="{{ url_for('admin', chatbot_id=chatbot_id) }}" id="admin" class="mgn-top">Documents</a>
+            <a href="{{ url_for('settings', chatbot_id=chatbot_id) }}" id="settings" class="mgn">Settings</a>
+            <a href="{{ url_for('integrations', chatbot_id=chatbot_id) }}" id="integrations" class="mgn">Integrations</a>
+            <a href="{{ url_for('analytics', chatbot_id=chatbot_id) }}" id="analytics" class="mgn">Analytics</a>
             <a href="#" id="usage">Usage</a>
         </div>
             
@@ -47,7 +47,7 @@
         </div>
             
             <div id="styling-settings" class="subpage">
-                <form id="settingsForm" action="/update_chatbot_settings" method="post" style="width: 2000px; height: 2000px;">
+                <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" style="width: 2000px; height: 2000px;">
                     <div class="info-bundle">
                         <h2 class="instructions"><b>Chatbot Settings</b></h2>
                         <div class="tooltip-container">
