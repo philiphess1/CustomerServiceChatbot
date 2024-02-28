@@ -59,6 +59,33 @@ for (var i = 0; i < btns.length; i++) {
     }
 }
 
+window.addEventListener('DOMContentLoaded', (event) => {
+    var primaryInput = document.getElementById('primary');
+    var secondaryInput = document.getElementById('secondary');
+
+    primaryInput.addEventListener('input', function() {
+        var primaries = document.querySelectorAll('.primary');
+        primaries.forEach(function(primary) {
+            primary.style.fill = this.value;
+        }, this);
+    });
+
+    secondaryInput.addEventListener('input', function() {
+        var secondaries = document.querySelectorAll('.secondary');
+        secondaries.forEach(function(secondary) {
+            secondary.style.fill = this.value;
+        }, this);
+    });
+
+    // Trigger the input event manually
+    primaryInput.dispatchEvent(new Event('input'));
+    secondaryInput.dispatchEvent(new Event('input'));
+
+    // Change display property
+    var elementToDisplay = document.getElementById('svg_icon'); // replace 'elementId' with the id of your element
+    elementToDisplay.style.display = 'block'; // or 'inline', 'flex', etc. depending on your needs
+});
+
 window.onload = function() {
     var labels = document.querySelectorAll('#widget_icon label');
     labels.forEach(function(label) {

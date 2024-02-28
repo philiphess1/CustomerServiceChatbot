@@ -62,12 +62,11 @@
         .chatbox-body {
             flex-grow: 1;
             padding: 5px;
-            width: 330px;
+            width: 340.5px;
             height: 440px; 
             overflow-y: scroll;
             font-family: var(--font-family);
             background-color: var(--background-color);
-            margin-top: 5px;
         }
 
         .chatbox-input {
@@ -211,7 +210,7 @@
         .left-msg .msg-bubble {
             background-color: #ffffff;
             color: black;
-            position: relative; /* Add this line */
+            position: relative; 
         }
         
         .left-msg .msg-bubble::after {
@@ -349,4 +348,7 @@
         }
         html body {
             border: none;
+        }
+        body {
+            overflow-x: auto; 
         }
