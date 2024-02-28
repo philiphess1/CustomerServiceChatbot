@@ -535,7 +535,7 @@ Do not makeup answers if you are not sure about the answer. If you don't know th
 @login_required
 def integrations(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -556,6 +556,8 @@ def integrations(chatbot_id):
             'chatbot_title': 'EccoAI',
             'title_color': '#000000',
             'border_color': '#ffffff',
+            'primary_color':'#B2E24C',
+            'secondary_color':'#80A12C',
         }
     else:
         settings = {
@@ -570,6 +572,8 @@ def integrations(chatbot_id):
             'chatbot_title': row[8],
             'title_color': row[9],
             'border_color': row[10],
+            'primary_color':row[11],
+            'secondary_color':row[12],
         }
     return render_template('integrations.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
