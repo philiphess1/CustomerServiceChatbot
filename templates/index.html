@@ -30,10 +30,9 @@
                 <div class="chatbox-body">
                     <!-- Chat messages go here -->
                     <div class="suggested-questions">
-                        <p class="suggested-question">Who is nick frische</p>
-                        <p class="suggested-question">What is nick frische's gpa?</p>
-                        <p class="suggested-question">Who is the best UI of all time</p>
-                        <p class="suggested-question">What is the weather like today?</p>
+                        {% for question in settings.suggested_questions %}
+                            <p class="suggested-question">{{ question }}</p>
+                        {% endfor %}
                     </div>
                 </div>
 

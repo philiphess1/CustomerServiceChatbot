@@ -739,6 +739,9 @@
                     <label for="custom_prompt">Custom Prompt:</label>
                     <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000">{{ settings['custom_prompt'] }}</textarea>
                     <em><small>Must be no more than 1000 characters.</small></em><br><br>
+
+                    <label for="suggested_questions">Custom Prompt: <br>Suggested questions to be shown to user (1 suggestion per line). Leave empty to disable.</label>
+                    <textarea id="suggested_questions" name="suggested_questions" rows="4" cols="50" maxlength="500">{{ settings['suggested_questions']|join('\n') }}</textarea>
                 </div>
 
                 <input type="submit" value="Save Settings">

@@ -273,7 +273,7 @@ def chatbot(user_id, chatbot_id):
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s AND id = %s;",(user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,suggested_questions FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
     if row is None:
         settings = {
@@ -308,6 +308,9 @@ Do not makeup answers if you are not sure about the answer. If you don't know th
             'chatbot_title': row[8],
             'title_color': row[9],
             'border_color': row[10],
+            'primary_color':row[11],
+            'secondary_color':row[12],
+            'suggested_questions':row[13],
         }
 
     return render_template('index.html', settings=settings, user_id=user_id)
@@ -765,7 +768,7 @@ def delete(chatbot_id, doc_id):
 @login_required
 def settings(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,suggested_questions FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     # It is assumed that row will not be None, as default settings should have been set in the /admin route.
@@ -783,19 +786,20 @@ def settings(chatbot_id):
         'border_color': row[10],
         'primary_color': row[11],
         'secondary_color': row[12],
+        'suggested_questions': row[13],
         
     }
 
     return render_template('settings.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
-def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color):
+def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions):
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s WHERE user_id = %s AND id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s, suggested_questions = %s WHERE user_id = %s AND id = %s;
     """
 
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color, user_id, chatbot_id)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions, user_id, chatbot_id)) 
     g.db_conn.commit()
 
 @app.route('/<int:chatbot_id>/update_chatbot_settings', methods=['POST'])
@@ -813,8 +817,11 @@ def update_chatbot_settings(chatbot_id):
     border_color = request.form.get('border_color')
     primary_color = request.form.get('primary')
     secondary_color = request.form.get('secondary')
+    suggested_questions = request.form.get('suggested_questions')
+    suggested_questions = suggested_questions.split('\n')
 
-    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color)
+
+    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions)
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings', chatbot_id=chatbot_id))
