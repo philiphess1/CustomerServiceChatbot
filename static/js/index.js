@@ -23,7 +23,7 @@
 
             // Check if there are any existing messages in the chatbox
             const chatboxBody = document.querySelector(".chatbox-body");
-            const existingMessages = chatboxBody.children.length > 0;
+            const existingMessages = 0;
 
             // If there are no existing messages, show the greeting with a delay
             if (!existingMessages) {
@@ -115,19 +115,20 @@
             const validSources = sources.filter(source => source.startsWith('http://') || source.startsWith('https://')); // Filter to only include URLs
 
             if (validSources.length > 0) {
-                sourcesHTML += '<div class="msg-sources"><br>Sources:<br>';
+                sourcesHTML += '<div class="msg-sources"><br>Check it out:<br>';
                 validSources
-                    .slice(0, 3) // Get the first three URL sources
+                    .slice(0, 1) // Get the first three URL sources
                     .forEach((source) => {
                         const hostname = (new URL(source)).hostname.replace('www.', '');
                         sourcesHTML += `
                             <div class="source">
+                                <img src="https://www.google.com/s2/favicons?domain=${source}" alt="Website Icon">
                                 <a href="${source}" target="_blank">${hostname}</a>
-                                <div class="iframe-container">
-                                    <iframe src="${source}" width="80%" height="100" scrolling="no"></iframe>
-                                </div>
                             </div>
                         `;
+                        // <div class="iframe-container">
+                        //      <iframe src="${source}" width="80%" height="100" scrolling="no"></iframe>
+                        // </div>
                     });
                 sourcesHTML += '</div>';
             }
@@ -179,6 +180,7 @@
             chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
             chatboxBody.scrollTop = chatboxBody.scrollHeight;
         
+            
 
             if (side === "left" && lastUserMessage.trim() !== "") {
                 storeQuestionAnswer(lastUserMessage, text);
@@ -329,4 +331,5 @@
 
                 appendMessage("Chatbot", "left", "An error occurred while processing your request");
             });
-        }       
+        }
+        

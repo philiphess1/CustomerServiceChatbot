@@ -352,3 +352,40 @@
         body {
             overflow-x: auto; 
         }
+
+        /* suggested questions */
+        .parent-div {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .suggested-questions {
+            display: flex;
+            overflow-x: scroll;
+            white-space: nowrap;
+            border-radius: 7px;
+            margin-bottom: 9px;
+        }
+        .suggested-question {
+            display: flex;
+            padding: 5px;
+            margin: 2px;
+            background-color: gainsboro;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: -0.5px;
+            color: rgb(61, 61, 61);
+            margin-bottom: 9px;
+        }
+        .suggested-questions::-webkit-scrollbar { /* For Chrome, Safari and Edge */
+            margin-top: 5px;
+            height: 5px;
+        }
+
+        .suggested-questions::-webkit-scrollbar-thumb {
+            background-color: darkgrey;
+            border-radius: 3px;
+        }
+        /* suggested questions done */

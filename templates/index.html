@@ -27,9 +27,26 @@
                     </div>
                     <!-- <div class="chatbox-close" id="chatbox-close">X</div> -->
                 </div>
-                <div class="chatbox-body" >
+                <div class="chatbox-body">
                     <!-- Chat messages go here -->
+                    <div class="suggested-questions">
+                        <p class="suggested-question">Who is nick frische</p>
+                        <p class="suggested-question">What is nick frische's gpa?</p>
+                        <p class="suggested-question">Who is the best UI of all time</p>
+                        <p class="suggested-question">What is the weather like today?</p>
+                    </div>
                 </div>
+
+                <script>
+                    var suggestedQuestions = document.querySelectorAll('.suggested-question');
+                    suggestedQuestions.forEach(function(question) {
+                        question.addEventListener('click', function() {
+                            var message = this.textContent;
+                            document.getElementById('user-input').value = message;
+                            sendUserMessage(message);
+                        });
+                    });
+                </script>
                 <div class="chatbox-input">
                     <div class="input-wrapper">
                         <input type="text" id="user-input" placeholder="Ask a question..." autocomplete="off">
