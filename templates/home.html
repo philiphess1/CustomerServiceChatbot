@@ -17,11 +17,21 @@
     <section class="body">
         
         <div class="container">
+            <div class="dashboard-metrics">
+                <div class="metric-box">
+                    <p>{{count}} Messages</p>
+                </div>
+                <div class="metric-box">
+                    <p>0/30 Bots</p>
+                </div>
+                <div class="metric-box">
+                    <p>Usage Reset Date: 3/15/2024</p>
+                </div>
+            </div>
             <div class="row">
                 <div class="four columns">
                     <div class="middle_content">
-                        <h1>Chatbots</h1>
-                         <p>Click in its time to get started</p>
+                        <h1 class="chatbot-header">Chatbots</h1>
                         <ul>
                             {% for chatbot in chatbots %}
                                 <a href="{{ url_for('admin', chatbot_id=chatbot[0]) }}">
@@ -37,9 +47,6 @@
                     </div>
                 </div>
                 <div class="eight columns">
-                    <div class="box">
-                        <p>{{count}} Messages used</p>
-                    </div>
                 </div>
             </div>
         </div>

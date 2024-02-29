@@ -1,82 +1,104 @@
 @font-face {
     font-family: 'Questrial';
-    src: url('fonts/questrial.woff2') format('woff2'), /* Modern Browsers */
-         url('fonts/questrial.woff') format('woff');   /* Older Browsers */
-    /* You can include additional font formats if needed */
+    src: url('fonts/questrial.woff2') format('woff2'),
+         url('fonts/questrial.woff') format('woff');
 }
-html{
+
+html, body {
     font-family: "Questrial", sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #ffffff;
+    background-color: #1a1a1a; /* Dark background color */
 }
-body {
-    background-color: #f0f8ff; /* A light blue color */
+
+.container {
+    margin-left: 2%; /* Adjust as needed */
+    margin-right: 2%; /* Adjust as needed */
 }
+
 .banner {
-    background-color: #36646C;
+    background-color: #2a2d34; /* Darker gray for the banner */
     width: 100%;
     height: 100px;
     position: fixed;
-    top: 0;
-    left: 0;
+    z-index: 10;
 }
-.chatbot-box {
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    list-style-type: none;
-    width: 50%;
-    margin-left: -2.5%;
-    font-style: none;
-    color:#36646C;
-}
-.body { 
-    margin-top: 150px;
-    padding: 20px;
-    margin-left: 10%;
 
-}
-.button_logout{
-background-color: #BFEF4B;
-color: rgb(0, 0, 0);
-border: none;
-padding: 10px 20px;
-text-align: center;
-text-decoration: none;
-/* display: inline-block; */
-font-size: 16px;
-margin: 10px 20px;
-cursor: pointer;
-float: right; 
-width:200px;
-height: 75px ;
-border-radius: 5px;
-}
-h1 {
-    color: #333333;
-    font-size: 1.5em;
+.chatbot-header {
+    font-size: 2em;
     margin: 0;
     padding: 0;
+    color: #ffffff;
 }
+
+.chatbot-box {
+    background-color: #ffffff;
+    border: none;
+    padding: 15px;
+    margin: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+}
+
+.body { 
+    padding-top: 150px; /* Adjusted to account for fixed banner */
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.button_logout{
+    background-color: #5C6BC0; /* Adjusted to a darker blue */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+
+
+
+h1 {
+    font-size: 2em; /* Bigger font for headings */
+}
+
 p {
-    color: #333333;
-    font-size: 1.2em;
-    margin-top: 10px;
-    padding: 0;
+    font-size: 1em;
 }
-/* .middle_content{
+
+/* New styles for dashboard metrics */
+.dashboard-metrics {
     display: flex;
-} */
-.box{
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 10px;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.metric-box {
+    background-color: #ffffff;
+    padding: 20px;
     margin: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-    list-style-type: none;
-    width: 300px;
-    height: inherit;
-    font-style: none;
-    color:#36646C;
-    float: right; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    width: 30%; /* Each metric box takes up a third of the width */
+    text-align: center;
+}
+
+.metric-box p {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Adjusting the overall box styling */
+.box {
+    background-color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px 0;
+    width: calc(100% - 40px); /* Full width minus padding */
 }
