@@ -1,0 +1,66 @@
+@font-face {
+    font-family: 'Questrial';
+    src: url('fonts/questrial.woff2') format('woff2'), /* Modern Browsers */
+         url('fonts/questrial.woff') format('woff');   /* Older Browsers */
+    /* You can include additional font formats if needed */
+}
+html{
+    font-family: "Questrial", sans-serif;
+}
+body {
+    background-color: #f0f8ff; /* A light blue color */
+}
+.banner {
+    background-color: #36646C;
+    width: 100%;
+    height: 100px;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+.chatbot-box {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    list-style-type: none;
+    width: 15%;
+    margin-left: -2.5%;
+    font-style: none;
+    color:#36646C;
+}
+.body { 
+    margin-top: 150px;
+    padding: 20px;
+    margin-left: 10%;
+
+}
+.button_logout{
+background-color: #BFEF4B;
+color: rgb(0, 0, 0);
+border: none;
+padding: 10px 20px;
+text-align: center;
+text-decoration: none;
+/* display: inline-block; */
+font-size: 16px;
+margin: 10px 20px;
+cursor: pointer;
+float: right; 
+width:200px;
+height: 75px ;
+border-radius: 5px;
+}
+h1 {
+    color: #333333;
+    font-size: 1.5em;
+    margin: 0;
+    padding: 0;
+}
+p {
+    color: #333333;
+    font-size: 1.2em;
+    margin-top: 10px;
+    padding: 0;
+}
