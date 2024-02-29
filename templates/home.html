@@ -5,6 +5,7 @@
 <head>
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
 </head>
 <body>
     <div class="banner">
@@ -14,21 +15,34 @@
         <button class="button_logout" onclick="location.href='https://app.eccoai.org/login'">Logout</button>
     </div>
     <section class="body">
-        <h1>Chatbots</h1>
-        <p>Click in its time to get started</p>
-
-        <ul>
-            {% for chatbot in chatbots %}
-                <a href="{{ url_for('admin', chatbot_id=chatbot[0]) }}">
-                    <li class="chatbot-box">
-                        {{ chatbot[1] }}
-                        <br>
-                        <hr>
-                        created on: 01/01/2021
-                    </li>
-                </a>
-            {% endfor %}
-        </ul>
+        
+        <div class="container">
+            <div class="row">
+                <div class="four columns">
+                    <div class="middle_content">
+                        <h1>Chatbots</h1>
+                         <p>Click in its time to get started</p>
+                        <ul>
+                            {% for chatbot in chatbots %}
+                                <a href="{{ url_for('admin', chatbot_id=chatbot[0]) }}">
+                                    <li class="chatbot-box">
+                                        {{ chatbot[1] }}
+                                        <br>
+                                        <hr>
+                                        created on: 01/01/2021
+                                    </li>
+                                </a>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="eight columns">
+                    <div class="box">
+                        <p>{{count}} Messages used</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </body>
 </html>

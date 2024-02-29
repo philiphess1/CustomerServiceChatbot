@@ -257,8 +257,11 @@ def home():
     g.cursor.execute("SELECT id, chatbot_name FROM chatbot_settings WHERE user_id = %s", (current_user.id,))
     chatbots = g.cursor.fetchall()
 
+    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (current_user.id,))
+    count = g.cursor.fetchone()[0]
+
     # Pass the chatbot settings to the template
-    return render_template('home.html', chatbots=chatbots)
+    return render_template('home.html', chatbots=chatbots, count=count)
 
 @app.route('/logout')
 @login_required

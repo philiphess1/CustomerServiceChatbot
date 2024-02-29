@@ -25,7 +25,7 @@ body {
     margin: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     list-style-type: none;
-    width: 15%;
+    width: 50%;
     margin-left: -2.5%;
     font-style: none;
     color:#36646C;
@@ -63,4 +63,20 @@ p {
     font-size: 1.2em;
     margin-top: 10px;
     padding: 0;
+}
+/* .middle_content{
+    display: flex;
+} */
+.box{
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    list-style-type: none;
+    width: 300px;
+    height: inherit;
+    font-style: none;
+    color:#36646C;
+    float: right; 
 }
