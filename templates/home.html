@@ -35,12 +35,12 @@
                         <ul>
                             {% for chatbot in chatbots %}
                                 <a href="{{ url_for('admin', chatbot_id=chatbot[0]) }}">
-                                    <li class="chatbot-box">
+                                    <div class="chatbot-box">
                                         {{ chatbot[1] }}
                                         <br>
                                         <hr>
                                         created on: 01/01/2021
-                                    </li>
+                                    </div>
                                 </a>
                             {% endfor %}
                         </ul>

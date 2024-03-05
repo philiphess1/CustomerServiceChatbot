@@ -34,6 +34,8 @@ import pandas as pd
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 import pickle
+import stripe
+from stripe.error import SignatureVerificationError
 
 
 load_dotenv()
@@ -55,6 +57,9 @@ s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 connection_string = os.getenv('AZURE_CONNECTION_STRING')
 container_name = os.getenv('AZURE_CONTAINER_NAME')
+
+stripe.api_key = os.getenv('STRIPE_API_KEY')
+endpoint_secret = os.getenv('ENDPOINT_SECRET')
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -160,7 +165,7 @@ def forgot_password():
         email = request.form['email']
 
         # Check if email exists in the database
-        g.cursor.execute("SELECT id FROM public.users WHERE email = %s", (email,))
+        g.cursor.execute("SELECT id, name FROM public.users WHERE email = %s", (email,))
         user_data = g.cursor.fetchone()
         if not user_data:
             flash('No account associated with that email address', 'error')
@@ -178,7 +183,7 @@ def forgot_password():
 
         # Send an email to the user with the reset link
         msg = Message('Password Reset Requested', recipients=[email])
-        msg.body = f'Here is your password reset link: {reset_link}'
+        msg.html = render_template('reset_password_email.html', reset_link=reset_link, name=user_data[1])
         mail.send(msg)
 
         flash('Password reset link sent to your email address', 'success')
@@ -191,7 +196,9 @@ def reset_password(token):
     try:
         # Validate the password reset token
         email = s.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=3600)
-    except:
+        app.logger.info(f"Email from token: {email}")
+    except Exception as e:
+        app.logger.error(f"Error validating token: {e}")
         flash('The password reset link is invalid or has expired', 'error')
         return redirect(url_for('login'))
 
@@ -199,6 +206,7 @@ def reset_password(token):
     g.cursor.execute("SELECT user_id FROM public.password_resets WHERE token = %s", (token,))
     user_data = g.cursor.fetchone()
     if not user_data:
+        app.logger.error(f"Token not found in database: {token}")
         flash('The password reset link is invalid or has expired', 'error')
         return redirect(url_for('login'))
 
@@ -250,6 +258,86 @@ def login():
             
     return render_template('login.html')
 
+@app.route('/subscription', methods=['POST'])
+def update_subscription():
+    payload = request.get_data(as_text=True)
+    sig_header = request.headers.get('STRIPE_SIGNATURE')
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        return jsonify(success=False), 400
+    except SignatureVerificationError as e:
+        # Invalid signature
+        return jsonify(success=False), 400
+    
+    if event['type'] == 'customer.subscription.deleted':
+        subscription = event['data']['object']
+        customer_id = subscription['customer']
+
+        # Set the user's subscription_item_id to null in the database
+        g.cursor.execute("UPDATE users SET subscription_item_id = NULL WHERE stripe_customer_id = %s", (customer_id,))
+        g.db_conn.commit()
+
+    if event['type'] == 'customer.subscription.updated':
+        subscription = event['data']['object']
+        customer_id = subscription['customer']
+        subscription_item_id = subscription['items']['data'][0]['id']
+
+        # Update the user's subscription_item_id in the database
+        g.cursor.execute("UPDATE users SET subscription_item_id = %s WHERE stripe_customer_id = %s", (subscription_item_id, customer_id))
+        g.db_conn.commit()
+    
+    if event['type'] == 'checkout.session.completed':
+        subscription = event['data']['object']
+        customer_email = subscription['customer_details']['email']
+        customer_id = subscription['customer']
+        customer_name = subscription['customer_details']['name']
+        subscription_id = subscription['subscription']
+        stripe_subscription = stripe.Subscription.retrieve(subscription_id)
+        subscription_item_id = stripe_subscription['items']['data'][0]['id']
+
+        # Print statements
+        print(f'Customer Email: {customer_email}')
+        print(f'Customer Name: {customer_name}')
+        print(f'Stripe Customer ID: {customer_id}')
+        print(f'Subscription ID: {subscription_id}')
+        print(f'Subscription Item ID: {subscription_item_id}')
+
+        # Check if user already exists
+        g.cursor.execute("SELECT id FROM users WHERE email = %s", (customer_email,))
+        user_data = g.cursor.fetchone()
+
+        if user_data:
+            # User exists, update their subscription_item_id
+            g.cursor.execute("UPDATE users SET subscription_item_id = %s WHERE id = %s", (subscription_item_id, user_data[0]))
+        else:
+            # User does not exist, create a new user record
+            g.cursor.execute("INSERT INTO users (email, name, subscription_item_id, stripe_customer_id) VALUES (%s, %s, %s, %s) RETURNING id", (customer_email, customer_name, subscription_item_id, customer_id))
+            user_id = g.cursor.fetchone()[0]
+
+            # Generate a password reset token
+            token = s.dumps(customer_email, salt=app.config['SECURITY_PASSWORD_SALT'])
+
+            # Save the token in the database
+            g.cursor.execute("INSERT INTO public.password_resets (user_id, token) VALUES (%s, %s)", (user_id, token))
+            g.db_conn.commit()
+
+            # Create a password reset link with the token
+            reset_link = url_for('reset_password', token=token, _external=True)
+
+            # Send an email to the user with the reset link
+            msg = Message('Password Update Requested', recipients=[customer_email])
+            msg.html = render_template('reset_password_email.html', reset_link=reset_link, name=customer_name)
+            mail.send(msg)
+
+        g.db_conn.commit()
+
+    return jsonify(success=True)
+
 @app.route('/', methods=['GET'])
 @login_required
 def home():
@@ -261,7 +349,7 @@ def home():
     count = g.cursor.fetchone()[0]
 
     # Pass the chatbot settings to the template
-    return render_template('home.html', chatbots=chatbots, count=count)
+    return render_template('home.html', chatbots=chatbots, count=count, user_id=current_user.id)
 
 @app.route('/logout')
 @login_required
