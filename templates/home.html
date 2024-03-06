@@ -1,25 +1,28 @@
-<!-- FILEPATH: /Users/philiphess_1/Desktop/Coding/HR_bot/hr_bot_demo/templates/home.html -->
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.6/lottie.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <div class="banner">
         <a href="https://www.eccoai.org/">
-            <img src="{{ url_for('static', filename='images/Ecco_logo.png') }}" alt="Ecco Logo" style="height: 75px; margin: 5px 20px;">
+            <img src="{{ url_for('static', filename='images/Ecco_logo.png') }}" alt="Ecco Logo" style="height: 75px;">
         </a>
-        <button class="button_logout" onclick="location.href='https://app.eccoai.org/login'">Logout</button>
+        <div style="margin-right: 10px;">
+            <a href="https://billing.stripe.com/p/login/test_cN24imbPggUkeFWdQQ" class="billing_link">Billing</a>
+            <button class="button_logout" onclick="location.href='https://www.eccoai.org/'">Logout</button>
+        </div>
     </div>
-    <section class="body">
-        
-        <div class="container">
+    <section class="body">   
+        <div id="myContainer" class="container">
             <div class="dashboard-metrics">
                 <div class="metric-box">
-                    <p>{{count}} Messages</p>
+                    <p>{{count}}/150 Messages</p>
                 </div>
                 <div class="metric-box">
                     <p>0/30 Bots</p>
@@ -28,28 +31,141 @@
                     <p>Usage Reset Date: 3/15/2024</p>
                 </div>
             </div>
+            <div id="loading-animation" style="width: 200px; height: 200px; display: none;"></div>
+            <div id="create-bot" class="chatbot-box">
+                <p>You have not created any chatbots yet.</p>
+                <button id="create-chatbot-button">Create New Chatbot</button>
+            </div>
             <div class="row">
-                <div class="four columns">
-                    <div class="middle_content">
-                        <h1 class="chatbot-header">Chatbots</h1>
-                        <ul>
+                <div class="header-container">
+                    <h1 class="chatbot-header">Chatbots</h1>
+                    <button id="create-bot-2" class="create-chatbot-button">CREATE CHATBOT</button>
+                </div>
+                        <ul id="chatbot-list">
                             {% for chatbot in chatbots %}
-                                <a href="{{ url_for('admin', chatbot_id=chatbot[0]) }}">
-                                    <div class="chatbot-box">
-                                        {{ chatbot[1] }}
-                                        <br>
-                                        <hr>
-                                        created on: 01/01/2021
+                                <li onclick="location.href='{{ url_for('admin', chatbot_id=chatbot[0]) }}';" class="chatbot">
+                                    <div class="flex justify-between items-center">
+                                        <span class="chatbot-name">{{ chatbot[1] }}</span>
+                                        <span class="chatbot-date">{{ chatbot[2] }}</span>
                                     </div>
-                                </a>
+                                    <div class="flex justify-between items-center">
+                                        <div class="status">
+                                            <span class="status-dot"></span>
+                                            <span class="status-text">Online</span>
+                                        </div>
+                                        <a href="{{ url_for('delete_chatbot', chatbot_id=chatbot[0]) }}" class="delete-icon" onclick="event.stopPropagation();">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </li>
                             {% endfor %}
                         </ul>
-                    </div>
-                </div>
-                <div class="eight columns">
-                </div>
             </div>
-        </div>
     </section>
+    <script>
+        document.querySelectorAll('.delete-icon').forEach(function(deleteIcon) {
+            deleteIcon.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                var chatbotId = this.getAttribute('href').split('/').pop();
+
+                fetch("/delete_chatbot/" + chatbotId, { method: 'DELETE' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    });
+            });
+        });
+
+        window.onload = function() {
+            var chatbotList = document.getElementById('chatbot-list');
+            var createBotBox = document.getElementById('create-bot');
+            var headerContainer = document.querySelector('.header-container');
+            var loadingAnimation = document.getElementById('loading-animation');
+
+            if (chatbotList.querySelectorAll('li').length === 0) {
+                createBotBox.style.display = 'flex';
+                headerContainer.style.display = 'none';
+            } else {
+                headerContainer.style.display = 'flex';
+            }
+
+            document.getElementById('create-chatbot-button').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            // Hide the create-bot box
+            createBotBox.style.display = 'none';
+
+            // Show the loading animation
+            loadingAnimation.style.display = 'block';
+
+            // Load the Lottie animation
+            var animation = lottie.loadAnimation({
+                container: loadingAnimation,
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                path: '{{ url_for('static', filename='animations/loading_animation.json') }}'
+            });
+
+            var fetchPromise = fetch("{{ url_for('create_chatbot') }}", { method: 'POST' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                });
+
+            var timeoutPromise = new Promise(function(resolve) {
+                setTimeout(resolve, 4500);
+            });
+
+            Promise.all([fetchPromise, timeoutPromise])
+                .then(values => {
+                    var data = values[0];
+
+                    // Hide the loading animation
+                    loadingAnimation.style.display = 'none';
+
+                    // Redirect to the new URL
+                    window.location.href = data.url;
+                })
+                .catch(error => {
+                    // Hide the loading animation if there is an error
+                    loadingAnimation.style.display = 'none';
+
+                    // Show the create-bot box
+                    createBotBox.style.display = 'flex';
+
+                    console.error('There has been a problem with your fetch operation:', error);
+                });
+        });
+        };
+            document.getElementById('create-bot-2').addEventListener('click', function(event) {
+                event.preventDefault();
+
+                fetch("{{ url_for('create_chatbot') }}", { method: 'POST' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        window.location.href = data.url;
+                    })
+                    .catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    });
+            });
+    </script>
 </body>
 </html>

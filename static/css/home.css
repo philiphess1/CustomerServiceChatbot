@@ -4,6 +4,21 @@
          url('fonts/questrial.woff') format('woff');
 }
 
+#myContainer {
+    position: relative;
+    width: 100%;
+    max-width: none; /* No maximum width */
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+@media (min-width: 550px) {
+    #myContainer {
+        width: 100%; /* Full width */
+    }
+}
+
 html, body {
     font-family: "Questrial", sans-serif;
     margin: 0;
@@ -12,17 +27,59 @@ html, body {
     background-color: #1a1a1a; /* Dark background color */
 }
 
-.container {
-    margin-left: 2%; /* Adjust as needed */
-    margin-right: 2%; /* Adjust as needed */
-}
-
 .banner {
     background-color: #2a2d34; /* Darker gray for the banner */
     width: 100%;
     height: 100px;
     position: fixed;
     z-index: 10;
+    display: flex; /* Added */
+    justify-content: space-between; /* Added */
+    align-items: center; /* Added */
+    padding: 0 20px; /* Added */
+}
+
+.button_logout {
+    background-color: #5C6BC0; /* Adjusted to a darker blue */
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Added */
+}
+
+/* .button_logout{
+    background-color: #5C6BC0; 
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    transition: background-color 0.3s ease; 
+    margin-top: 15px; */
+
+.button_logout:hover {
+    background-color: #3F51B5; /* Change to the color you want on hover */
+    color: #ffffff; /* Keeps the text color the same on hover */
+}
+
+.billing_link {
+    color: #ffffff; /* Makes the link text white */
+    text-decoration: none; /* Removes the underline from the link */
+    margin-left: 10px; /* Adds some space to the left of the link */
+}
+
+p {
+    margin: 0 !important;
 }
 
 .chatbot-header {
@@ -30,6 +87,7 @@ html, body {
     margin: 0;
     padding: 0;
     color: #ffffff;
+    margin-bottom: 10px;
 }
 
 .chatbot-box {
@@ -43,6 +101,119 @@ html, body {
     font-weight: bold; /* Makes the text bold */
 }
 
+.header-container {
+    display: flex; /* Makes the header and button align horizontally */
+    justify-content: space-between; /* Spaces the header and button evenly */
+    align-items: center; /* Vertically centers the header and button */
+    margin-bottom: 10px;
+}
+
+.create-chatbot-button {
+    color: #FFFFFF; /* Makes the button text white */
+    text-decoration: none; /* Removes the underline from the link */
+    border-radius: 5px; /* Rounds the corners of the button */
+    background-color: #5C6BC0; /* Adjusted to a darker blue */
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.create-chatbot-button:hover {
+    background-color: #3F51B5; /* Change to the color you want on hover */
+    color: #ffffff; /* Keeps the text color the same on hover */
+}
+
+#chatbot-list li {
+    cursor: pointer;
+    list-style-type: none; /* No list item markers */
+    width: 32%; /* Each chatbot takes up a third of the width */
+    box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+    padding: 0 10px; /* Adds some space around each chatbot */
+    background-color: rgba(59, 130, 246, 0.5); /* Color from --tw-ring-color */
+    border-radius: 15px; /* Very rounded edges */
+    border: 2px solid transparent; /* Initial border */
+    transition: border-color 0.3s ease; /* Animation */
+}
+
+#chatbot-list li:hover {
+    border-color: white; /* Border color on hover */
+}
+
+.header-container {
+    display: flex; /* Makes the header and button align horizontally */
+    justify-content: space-between; /* Spaces the header and button evenly */
+    align-items: center; /* Vertically centers the header and button */
+    width: 100%; /* Spreads the header container across the whole row */
+}
+
+#chatbot-list {
+    display: flex; /* Makes the chatbot list a flex container */
+    flex-wrap: wrap; /* Allows the chatbots to wrap onto the next line */
+    justify-content: space-between; /* Evenly spaces the chatbots across the width of the row */
+    width: 100%; /* Spreads the chatbot list across the whole row */
+}
+
+/* ... rest of your CSS ... */
+
+.header-container {
+    display: flex; /* Makes the header and button align horizontally */
+    justify-content: space-between; /* Spaces the header and button evenly */
+    align-items: center; /* Vertically centers the header and button */
+    width: 100%; /* Spreads the header container across the whole row */
+}
+
+/* ... rest of your CSS ... */
+
+.flex.justify-between.items-center {
+    border: none;
+    padding: 15px;
+    border-radius: 4px;
+    font-size: 20px; /* Adjust as needed */
+    font-weight: bold; /* Makes the text bold */
+    display: flex; /* Add this line to make .chatbot-box a flex container */
+    justify-content: space-between; /* Add this line to space the items evenly */
+    align-items: center; /* Add this line to vertically center the spans */
+}
+
+.flex.justify-between.items-center span.chatbot-name {
+    font-size: large;
+    font-weight: bold; /* Makes the text bold */
+    color: #BFEF4B; /* Vibrant blue */
+}
+
+.flex.justify-between.items-center span.chatbot-date {
+    font-size: small;
+    font-weight: normal; /* Non-bold */
+    color: #FFFFFF; /* White */
+}
+
+.status-dot {
+    height: 10px; /* Smaller size */
+    width: 10px; /* Smaller size */
+    background-color: #00FF00; /* Green */
+    border-radius: 50%; /* Makes it a circle */
+    display: inline-block;
+}
+
+.status-text {
+    font-size: 0.8em; /* Smaller text */
+    color: #ffffff; /* White */
+    text-decoration: none; /* Remove underline */
+    font-weight: normal; /* Not bold */
+}
+
+.delete-icon {
+    color: #000000; /* Black */
+    text-decoration: none; /* Remove underline */
+}
+
+a:has(.flex.justify-between.items-center) {
+    text-decoration: none;
+    color: inherit;
+}
+
 a:has(.chatbot-box) {
     text-decoration: none;
     color: inherit;
@@ -52,20 +223,6 @@ a:has(.chatbot-box) {
     padding-left: 5%;
     padding-right: 5%;
 }
-
-.button_logout{
-    background-color: #5C6BC0; /* Adjusted to a darker blue */
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    position: absolute;
-    right: 20px;
-    top: 10px;
-}
-
-
 
 h1 {
     font-size: 2em; /* Bigger font for headings */
@@ -80,7 +237,6 @@ p {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin-top: 20px;
 }
 
 .metric-box {
@@ -97,8 +253,47 @@ p {
     margin: 0;
     font-size: 1em;
 }
+#create-bot {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    min-height: 30vh;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #000;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-left: 2%;
+    margin-right: 2%;
+}
 
-/* Adjusting the overall box styling */
+#create-bot button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #5C6BC0;
+    color: #ffffff;
+    border: none;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    transition: background-color 0.3s ease; /* Added */
+}
+
+#create-bot button:hover {
+    background-color: #3F51B5; /* Change this to the color you want */
+}
+
+#loading-animation {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+}
+
 .box {
     background-color: #333;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);

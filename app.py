@@ -285,10 +285,10 @@ def update_subscription():
     if event['type'] == 'customer.subscription.updated':
         subscription = event['data']['object']
         customer_id = subscription['customer']
-        subscription_item_id = subscription['items']['data'][0]['id']
+        plan_id = subscription['items']['data'][0]['plan']['id']
 
         # Update the user's subscription_item_id in the database
-        g.cursor.execute("UPDATE users SET subscription_item_id = %s WHERE stripe_customer_id = %s", (subscription_item_id, customer_id))
+        g.cursor.execute("UPDATE users SET subscription_item_id = %s WHERE stripe_customer_id = %s", (plan_id, customer_id))
         g.db_conn.commit()
     
     if event['type'] == 'checkout.session.completed':
@@ -298,7 +298,7 @@ def update_subscription():
         customer_name = subscription['customer_details']['name']
         subscription_id = subscription['subscription']
         stripe_subscription = stripe.Subscription.retrieve(subscription_id)
-        subscription_item_id = stripe_subscription['items']['data'][0]['id']
+        subscription_item_id = stripe_subscription['items']['data'][0]['plan']['id']
 
         # Print statements
         print(f'Customer Email: {customer_email}')
@@ -342,7 +342,7 @@ def update_subscription():
 @login_required
 def home():
     # Fetch the chatbot settings for the current user
-    g.cursor.execute("SELECT id, chatbot_name FROM chatbot_settings WHERE user_id = %s", (current_user.id,))
+    g.cursor.execute("SELECT id, chatbot_name, created_at FROM chatbot_settings WHERE user_id = %s", (current_user.id,))
     chatbots = g.cursor.fetchall()
 
     g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (current_user.id,))
@@ -350,6 +350,64 @@ def home():
 
     # Pass the chatbot settings to the template
     return render_template('home.html', chatbots=chatbots, count=count, user_id=current_user.id)
+
+@app.route('/create_chatbot', methods=['POST'])
+@login_required
+def create_chatbot():
+    user_id = current_user.id
+
+    chatbot_count = g.cursor.execute("SELECT COUNT(*) FROM chatbot_settings WHERE user_id = %s", (user_id,)).fetchone()[0]
+
+    user_plan = g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,)).fetchone()[0]
+
+    if user_plan == 'beginner' and chatbot_count >= 1:
+        return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the beginner plan!"})
+    elif user_plan == 'intermediate' and chatbot_count >= 3:
+        return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the intermediate plan!"})
+    elif user_plan == 'enterprise' and chatbot_count >= 5:
+        return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the enterprise plan!"})
+
+    default_settings = {
+        'widget_icon_url': 'ecco_icon',  # Default widget icon URL
+        'background_color': '#ffffff',  # Default background color
+        'font_style': 'Arial',  # Default font style
+        'bot_temperature': 0.3,  # Default bot temperature
+        'greeting_message': 'Hello! I am Ecco, your AI assistant. How can I help you today?',  # Default greeting message
+        'custom_prompt': """
+            As "Ecco", your role is to provide friendly and humorous customer support for our company. Your knowledge is confined to the context provided, and you should strive to deliver accurate information about our company based on this context. Be as detailed as possible without fabricating answers. Politely decline to respond to any inquiries that are not related to the provided documents or our company. Maintain your character at all times. Respond in the language used in the incoming message. Use simple formatting in your responses and speak as a member of our team, using "we" and "us" instead of "they". Include hyperlinks when necessary.
+
+            RESTRICTIONS:
+            Avoid using the phrase "Based on the given information".
+            Do not invent answers. If you are uncertain about a response, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and conclude your response there.
+            """,
+        'dot_color': '#555555',
+        'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
+        'chatbot_title': 'EccoAI',
+        'title_color': '#BFEF4B',
+        'border_color': '#ffffff',
+        'chatbot_name': 'Chatbot',
+        'primary_color': '#BFEF4B',
+        'secondary_color': '#ffffff',
+        'suggested_questions': ['Question 1', 'Question 2', 'Question 3']  # Default suggested questions
+    }
+    g.cursor.execute("""
+            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color, suggested_questions)
+            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(custom_prompt)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(suggested_questions)s)
+            RETURNING id;
+        """, {'user_id': user_id, **default_settings})
+    chatbot_id = g.cursor.fetchone()[0]
+    g.db_conn.commit()
+    return jsonify({'url': url_for('admin', chatbot_id=chatbot_id, _external=True)})
+
+@app.route('/delete_chatbot/<int:chatbot_id>', methods=['DELETE'])
+@login_required
+def delete_chatbot(chatbot_id):
+    g.cursor.execute("""
+        DELETE FROM chatbot_settings
+        WHERE id = %s
+    """, (chatbot_id,))
+    g.db_conn.commit()
+    return jsonify({'message': 'Chatbot deleted successfully'})
 
 @app.route('/logout')
 @login_required
@@ -366,48 +424,45 @@ def chatbot(user_id, chatbot_id):
     # Query PostgreSQL to get the settings
     g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,suggested_questions FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
-    if row is None:
-        settings = {
-            'widget_icon': 'ecco_icon',  # Default values if no settings are found for the user
-            'background_color': '#ffffff',
-            'font_style': 'Arial',
-            'bot_temperature': 0.3,
-            'greeting_message': 'Hello! I am Ecco, your AI assistant. How can I help you today?',
-            'custom_prompt': """
-I want you to act as a funny and friendly customer support AI from my company. Your name is “Assistant AI". You limit your knowledge to the context provided. You will provide me with accurate answers related to my company only from your context. You will be as detailed as possible. Do not make up answers. Refuse to answer any question not about the documents or my company. Never break character. Always answer in the language of my message. Please use simple formatting. Answer like you are part of the team using we/us and not they. Give hyperlinks when needed.
 
-RESTRICTIONS:
-Do NOT say "Based on the given information.
-Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
-""",
-            'dot_color': '#555555',
-            'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
-            'chatbot_title': 'EccoAI',
-            'title_color': '#000000',
-            'border_color': '#ffffff',
-        }
-    else:
-        settings = {
-            'widget_icon': row[0],
-            'background_color': row[1],
-            'font_style': row[2],
-            'bot_temperature': row[3],
-            'greeting_message': row[4],
-            'custom_prompt': row[5],
-            'dot_color': row[6],
-            'logo': row[7],
-            'chatbot_title': row[8],
-            'title_color': row[9],
-            'border_color': row[10],
-            'primary_color':row[11],
-            'secondary_color':row[12],
-            'suggested_questions':row[13],
-        }
+    if row is None:
+        return "No settings found for the given user_id and chatbot_id", 404
+
+    settings = {
+        'widget_icon': row[0],
+        'background_color': row[1],
+        'font_style': row[2],
+        'bot_temperature': row[3],
+        'greeting_message': row[4],
+        'custom_prompt': row[5],
+        'dot_color': row[6],
+        'logo': row[7],
+        'chatbot_title': row[8],
+        'title_color': row[9],
+        'border_color': row[10],
+        'primary_color':row[11],
+        'secondary_color':row[12],
+        'suggested_questions':row[13],
+    }
 
     return render_template('index.html', settings=settings, user_id=user_id)
 
 @app.route('/<int:user_id>/<int:chatbot_id>/chat', methods=['POST'])
 def chat(user_id, chatbot_id):
+    # Get the user's plan
+    user_plan = g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,)).fetchone()[0]
+
+    # Count the number of questions the user has asked
+    question_count = g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (user_id,)).fetchone()[0]
+
+    # Check if the user has exceeded their question limit
+    if user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and question_count >= 50:
+        return jsonify({"status": "error", "message": "You have exceeded your question limit for the beginner plan!"})
+    elif user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and question_count >= 2500:
+        return jsonify({"status": "error", "message": "You have exceeded your question limit for the intermediate plan!"})
+    elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and question_count >= 10000:
+        return jsonify({"status": "error", "message": "You have exceeded your question limit for the enterprise plan!"})
+
     vectorstore = Pinecone(
         index, embeddings, text_field,  namespace=f"{user_id}{chatbot_id}"
     )
@@ -584,43 +639,21 @@ def admin(chatbot_id):
     row = g.cursor.fetchone()
 
     if row is None:
-        # Insert default settings for new user
-        default_settings = (
-            'ecco_icon',  # Default widget icon URL
-            '#ffffff',      # Default background color
-            'Arial',        # Default font style
-            0.3,            # Default bot temperature
-            'Hello! I am Ecco, your AI assistant. How can I help you today?',  # Default greeting message
-            """
-I want you to act as a funny and friendly customer support AI from my company. Your name is “Assistant AI". You limit your knowledge to the context provided. You will provide me with accurate answers related to my company only from your context. You will be as detailed as possible. Do not make up answers. Refuse to answer any question not about the documents or my company. Never break character. Always answer in the language of my message. Please use simple formatting. Answer like you are part of the team using we/us and not they. Give hyperlinks when needed.
+        return "No settings found for the given user_id and chatbot_id", 404
 
-RESTRICTIONS:
-Do NOT say "Based on the given information.
-Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
-""",
-            '#555555', #'dot_color'
-            'https://app.eccoai.org/static/images/ecco_icon.png', #'logo'
-            'EccoAI', #'chatbot_title'
-            '#000000', #'title_color'
-            '#ffffff' #'border_color'
-        )
-        g.cursor.execute("INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (user_id,) + default_settings)
-        g.db_conn.commit()
-        settings = dict(zip(['widget_icon', 'background_color', 'font_style', 'bot_temperature', 'greeting_message', 'custom_prompt', 'dot_color', 'logo', 'chatbot_title', 'title_color', 'border_color'], default_settings))
-    else:
-        settings = {
-            'widget_icon': row[0],
-            'background_color': row[1],
-            'font_style': row[2],
-            'bot_temperature': row[3],
-            'greeting_message': row[4],
-            'custom_prompt': row[5],
-            'dot_color': row[6],
-            'logo': row[7],
-            'chatbot_title': row[8],
-            'title_color': row[9],
-            'border_color': row[10],
-        }
+    settings = {
+        'widget_icon': row[0],
+        'background_color': row[1],
+        'font_style': row[2],
+        'bot_temperature': row[3],
+        'greeting_message': row[4],
+        'custom_prompt': row[5],
+        'dot_color': row[6],
+        'logo': row[7],
+        'chatbot_title': row[8],
+        'title_color': row[9],
+        'border_color': row[10],
+    }
 
     return render_template('admin.html', documents=documents, settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
@@ -632,27 +665,7 @@ def integrations(chatbot_id):
     g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
     if row is None:
-        settings = {
-            'widget_icon': 'chatboticon',  # Default values if no settings are found for the user
-            'background_color': '#ffffff',
-            'font_style': 'Arial',
-            'bot_temperature': 0.0,
-            'greeting_message': 'Hello! I am Ecco, your AI assistant. How can I help you today?',
-            'custom_prompt': """
-            I want you to act as a funny and friendly customer support AI from my company. Your name is “Assistant AI". You limit your knowledge to the context provided. You will provide me with accurate answers related to my company only from your context. You will be as detailed as possible. Do not make up answers. Refuse to answer any question not about the documents or my company. Never break character. Always answer in the language of my message. Please use simple formatting. Answer like you are part of the team using we/us and not they. Give hyperlinks when needed.
-
-            RESTRICTIONS:
-            Do NOT say "Based on the given information.
-            Do not makeup answers if you are not sure about the answer. If you don't know the answer, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and stop after that.
-            """,
-            'dot_color': '#555555',
-            'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
-            'chatbot_title': 'EccoAI',
-            'title_color': '#000000',
-            'border_color': '#ffffff',
-            'primary_color':'#B2E24C',
-            'secondary_color':'#80A12C',
-        }
+        return "No settings found for the given user_id and chatbot_id", 404
     else:
         settings = {
             'widget_icon': row[0],
@@ -675,11 +688,36 @@ def integrations(chatbot_id):
 def upload_file(chatbot_id):
     uploaded_files = request.files.getlist('file')
     user_id = current_user.id
+    total_file_size = 0
+
+    store_file_size = g.cursor.execute("SELECT SUM(file_size) FROM document_mapping WHERE user_id = %s", (user_id,)).fetchone()[0]
+    if store_file_size is None:
+        store_file_size = 0
+
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
             file_size = len(file.read())
             
+            # Reset the file position to the beginning
+            file.seek(0)
+
+            file_size = file_size/1000000
+            total_file_size += file_size
+            
+    user_plan = g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,)).fetchone()[0]
+
+    # Check if the user has exceeded their file size limit
+    if (user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and total_file_size + store_file_size > 10) or \
+        (user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and total_file_size + store_file_size > 50) or \
+        (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + store_file_size > 1024):  # 1 GB is 1024 MB
+         return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
+    
+    for file in uploaded_files:
+        if file.filename != '':
+            filename = secure_filename(file.filename)
+            file_size = len(file.read())
+
             # Reset the file position to the beginning
             file.seek(0)
 
@@ -862,7 +900,6 @@ def settings(chatbot_id):
     g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,suggested_questions FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
-    # It is assumed that row will not be None, as default settings should have been set in the /admin route.
     settings = {
         'widget_icon': row[0],
         'background_color': row[1],
@@ -893,6 +930,9 @@ def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, fon
     g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions, user_id, chatbot_id)) 
     g.db_conn.commit()
 
+#!!!!!!!!!!!!!!!!!!!!!!!!!
+#Need to add in new fields
+#!!!!!!!!!!!!!!!!!!!!!!!!!
 @app.route('/<int:chatbot_id>/update_chatbot_settings', methods=['POST'])
 def update_chatbot_settings(chatbot_id):
     widget_icon = "ecco_icon"
