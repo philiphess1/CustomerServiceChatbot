@@ -178,3 +178,34 @@ showPage('styling-settings');
 $(document).ready(function() {
     $('#font_style').select2();
 });
+
+$(document).ready(function() {
+    function formatIcon (icon) {
+        var originalOption = icon.element;
+        var img = $(originalOption).data('icon');
+        if (!icon.id) { return icon.text; }
+        var $icon = $(
+            '<span><img src="' + img + '" class="img-flag" style="width: 30px; height: 30px;" /> ' + icon.text + '</span>'
+        );
+        return $icon;
+    };
+
+    $('#icon-select').select2({
+        templateResult: formatIcon
+    });
+
+    // Add an event listener for the change event
+    $('#icon-select').on('change', function() {
+        // Get the selected option
+        var selectedOption = $(this).find('option:selected');
+
+        // Get the data-icon attribute of the selected option
+        var icon = selectedOption.data('icon');
+
+        // Update the src attribute of the img element
+        $('#selected-icon').attr('src', icon);
+    });
+
+    // Trigger the change event manually to display the initial value
+    $('#icon-select').trigger('change');
+});

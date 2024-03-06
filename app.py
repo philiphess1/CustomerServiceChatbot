@@ -701,7 +701,11 @@ def integrations(chatbot_id):
             'secondary_color':row[12],
             'popup_message':row[13],
         }
-    return render_template('integrations.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id)
+        popup_logic = "block"
+        if settings['popup_message'] =="":
+            popup_logic = "none"
+
+    return render_template('integrations.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id, popup_logic=popup_logic)
 
 @app.route('/<int:chatbot_id>/upload', methods=['POST'])
 def upload_file(chatbot_id):
@@ -954,7 +958,7 @@ def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, fon
 #!!!!!!!!!!!!!!!!!!!!!!!!!
 @app.route('/<int:chatbot_id>/update_chatbot_settings', methods=['POST'])
 def update_chatbot_settings(chatbot_id):
-    widget_icon = "ecco_icon"
+    widget_icon = request.form.get('icon-select')
     background_color = request.form.get('background_color')
     font_style = request.form.get('font_style')
     bot_temperature = request.form.get('bot_temperature')
