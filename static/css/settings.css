@@ -49,7 +49,7 @@ label[for="custom_prompt"] {
   margin-bottom: 10px;
 }
 
-textarea#custom_prompt {
+textarea {
   font-family: Arial, sans-serif;
   resize: none;
   width: 100%;

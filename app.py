@@ -680,7 +680,7 @@ def admin(chatbot_id):
 @login_required
 def integrations(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
     if row is None:
         return "No settings found for the given user_id and chatbot_id", 404
@@ -699,6 +699,7 @@ def integrations(chatbot_id):
             'border_color': row[10],
             'primary_color':row[11],
             'secondary_color':row[12],
+            'popup_message':row[13],
         }
     return render_template('integrations.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
@@ -915,7 +916,7 @@ def delete(chatbot_id, doc_id):
 @login_required
 def settings(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,suggested_questions FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,suggested_questions, popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     settings = {
@@ -933,19 +934,19 @@ def settings(chatbot_id):
         'primary_color': row[11],
         'secondary_color': row[12],
         'suggested_questions': row[13],
-        
+        'popup_message': row[14],
     }
 
     return render_template('settings.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
-def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions):
+def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions,popup_message):
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s, suggested_questions = %s WHERE user_id = %s AND id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s, suggested_questions = %s,popup_message = %s WHERE user_id = %s AND id = %s;
     """
 
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions, user_id, chatbot_id)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions,popup_message, user_id, chatbot_id)) 
     g.db_conn.commit()
 
 #!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -968,9 +969,10 @@ def update_chatbot_settings(chatbot_id):
     secondary_color = request.form.get('secondary')
     suggested_questions = request.form.get('suggested_questions')
     suggested_questions = suggested_questions.split('\n')
+    popup_message = request.form.get('popup_message')
 
 
-    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions)
+    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions,popup_message)
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings', chatbot_id=chatbot_id))

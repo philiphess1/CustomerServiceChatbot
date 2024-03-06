@@ -709,6 +709,13 @@
                             {% endfor %}
                         </select><br><br>
 
+                        <label for="popup_message">Pop Up Message:</label><br>
+                        <textarea id="popup_message" name="popup_message" rows="2" cols="25" maxlength="50" width="50%" height="50%">{{ settings['popup_message'] }}</textarea>
+                        <br><em><small>Must be no more than 50 characters.</small></em><br><br>
+
+
+
+
                         
                     </div>
                     <input type="submit" value="Save Settings">
