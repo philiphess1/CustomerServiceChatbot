@@ -373,10 +373,13 @@ def home():
 @login_required
 def create_chatbot():
     user_id = current_user.id
+    print(f"User ID: {user_id}")
 
-    chatbot_count = g.cursor.execute("SELECT COUNT(*) FROM chatbot_settings WHERE user_id = %s", (user_id,)).fetchone()[0]
+    g.cursor.execute("SELECT COUNT(*) FROM chatbot_settings WHERE user_id = %s", (user_id,))
+    chatbot_count = g.cursor.fetchone()[0]
 
-    user_plan = g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,)).fetchone()[0]
+    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
+    user_plan = g.cursor.fetchone()[0]
 
     if user_plan == 'beginner' and chatbot_count >= 1:
         return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the beginner plan!"})

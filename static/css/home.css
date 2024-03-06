@@ -28,58 +28,62 @@ html, body {
 }
 
 .banner {
-    background-color: #2a2d34; /* Darker gray for the banner */
+    background-color: #2a2d34;
     width: 100%;
     height: 100px;
     position: fixed;
     z-index: 10;
-    display: flex; /* Added */
-    justify-content: space-between; /* Added */
-    align-items: center; /* Added */
-    padding: 0 20px; /* Added */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.banner a:first-child {
+    flex-grow: 1;
+}
+
+.banner div {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .button_logout {
-    background-color: #5C6BC0; /* Adjusted to a darker blue */
+    background-color: #5C6BC0;
     color: #ffffff;
     border: none;
     padding: 10px 20px;
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease; /* Added */
+    transition: background-color 0.3s ease;
+    margin-bottom: 0;
+    line-height: 1;
 }
 
-/* .button_logout{
-    background-color: #5C6BC0; 
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    transition: background-color 0.3s ease; 
-    margin-top: 15px; */
-
 .button_logout:hover {
-    background-color: #3F51B5; /* Change to the color you want on hover */
-    color: #ffffff; /* Keeps the text color the same on hover */
+    background-color: #3F51B5;
+    color: #ffffff;
 }
 
 .billing_link {
-    color: #ffffff; /* Makes the link text white */
-    text-decoration: none; /* Removes the underline from the link */
-    margin-left: 10px; /* Adds some space to the left of the link */
+    color: #ffffff;
+    text-decoration: none;
+    margin-left: 10px;
+    font-size: medium;
+    font-weight: bold;
 }
 
 p {
     margin: 0 !important;
+}
+
+.header-container {
+    display: flex; /* Makes the header and button align horizontally */
+    justify-content: space-between; /* Spaces the header and button evenly */
+    align-items: center; /* Vertically centers the header and button */
+    margin-bottom: 10px;
 }
 
 .chatbot-header {
@@ -101,12 +105,6 @@ p {
     font-weight: bold; /* Makes the text bold */
 }
 
-.header-container {
-    display: flex; /* Makes the header and button align horizontally */
-    justify-content: space-between; /* Spaces the header and button evenly */
-    align-items: center; /* Vertically centers the header and button */
-    margin-bottom: 10px;
-}
 
 .create-chatbot-button {
     color: #FFFFFF; /* Makes the button text white */
@@ -135,36 +133,20 @@ p {
     border-radius: 15px; /* Very rounded edges */
     border: 2px solid transparent; /* Initial border */
     transition: border-color 0.3s ease; /* Animation */
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 #chatbot-list li:hover {
     border-color: white; /* Border color on hover */
 }
 
-.header-container {
-    display: flex; /* Makes the header and button align horizontally */
-    justify-content: space-between; /* Spaces the header and button evenly */
-    align-items: center; /* Vertically centers the header and button */
-    width: 100%; /* Spreads the header container across the whole row */
-}
-
 #chatbot-list {
     display: flex; /* Makes the chatbot list a flex container */
     flex-wrap: wrap; /* Allows the chatbots to wrap onto the next line */
-    justify-content: space-between; /* Evenly spaces the chatbots across the width of the row */
+    justify-content: flex-start; /* Evenly spaces the chatbots across the width of the row */
     width: 100%; /* Spreads the chatbot list across the whole row */
 }
-
-/* ... rest of your CSS ... */
-
-.header-container {
-    display: flex; /* Makes the header and button align horizontally */
-    justify-content: space-between; /* Spaces the header and button evenly */
-    align-items: center; /* Vertically centers the header and button */
-    width: 100%; /* Spreads the header container across the whole row */
-}
-
-/* ... rest of your CSS ... */
 
 .flex.justify-between.items-center {
     border: none;
