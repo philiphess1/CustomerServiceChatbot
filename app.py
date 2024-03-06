@@ -18,6 +18,7 @@ from sklearn.preprocessing import Normalizer
 from sklearn.cluster import KMeans
 import os
 import tiktoken
+from datetime import datetime
 from dotenv import load_dotenv
 from io import BytesIO
 from PyPDF2 import PdfReader
@@ -348,8 +349,25 @@ def home():
     g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (current_user.id,))
     count = g.cursor.fetchone()[0]
 
+    # Fetch the user's plan
+    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (current_user.id,))
+    user_plan = g.cursor.fetchone()[0]
+
+    # Fetch the user's Stripe customer ID
+    g.cursor.execute("SELECT stripe_customer_id FROM users WHERE id = %s", (current_user.id,))
+    stripe_customer_id = g.cursor.fetchone()[0]
+
+    # Fetch the subscriptions from Stripe
+    subscriptions = stripe.Subscription.list(customer=stripe_customer_id)
+
+    # Get the latest subscription
+    latest_subscription = subscriptions.data[0]
+
+    # Extract the renewal date
+    renewal_date = datetime.fromtimestamp(latest_subscription.current_period_end)
+
     # Pass the chatbot settings to the template
-    return render_template('home.html', chatbots=chatbots, count=count, user_id=current_user.id)
+    return render_template('home.html', chatbots=chatbots, count=count, user_id=current_user.id, user_plan=user_plan, renewal_date=renewal_date)
 
 @app.route('/create_chatbot', methods=['POST'])
 @login_required
@@ -704,7 +722,7 @@ def upload_file(chatbot_id):
 
             file_size = file_size/1000000
             total_file_size += file_size
-            
+
     user_plan = g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,)).fetchone()[0]
 
     # Check if the user has exceeded their file size limit
