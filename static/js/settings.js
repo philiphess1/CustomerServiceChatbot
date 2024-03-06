@@ -191,7 +191,8 @@ $(document).ready(function() {
     };
 
     $('#icon-select').select2({
-        templateResult: formatIcon
+        templateResult: formatIcon,
+        placeholder: "Click to change"
     });
 
     // Add an event listener for the change event
@@ -202,10 +203,10 @@ $(document).ready(function() {
         // Get the data-icon attribute of the selected option
         var icon = selectedOption.data('icon');
 
+        // Log the icon variable
+        console.log('icon:', icon);
+
         // Update the src attribute of the img element
         $('#selected-icon').attr('src', icon);
     });
-
-    // Trigger the change event manually to display the initial value
-    $('#icon-select').trigger('change');
 });

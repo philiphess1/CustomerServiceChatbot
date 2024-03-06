@@ -65,17 +65,18 @@
                     <div class="settings-section">
                         <h3>Styling</h3>
                         <label>Widget Icon:</label><br>
-                        <img id="selected-icon" src="" alt="Selected Icon" height="150px" width="150px" value="{{ settings['widget_icon_url'] }}">
+                        <img id="selected-icon" src="{{ url_for('static', filename='images/' + settings['widget_icon']) }}" alt="Selected Icon" height="150px" width="150px">
                         <br>
                         <select id="icon-select" name="icon-select" style="width: 200px;">
-                            <option value="ecco_icon" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}">Lime</option>
-                            <option value="ecco_icon_black" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}">Black</option>
-                            <option value="ecco_icon_blue" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}">Blue</option>
-                            <option value="ecco_icon_grey" data-icon="{{ url_for('static', filename='images/ecco_icon_grey.svg') }}">Grey</option>
-                            <option value="ecco_icon_orange" data-icon="{{ url_for('static', filename='images/ecco_icon_orange.svg') }}">Orange</option>
-                            <option value="ecco_icon_purple" data-icon="{{ url_for('static', filename='images/ecco_icon_purple.svg') }}">Purple</option>
-                            <option value="ecco_icon_red" data-icon="{{ url_for('static', filename='images/ecco_icon_red.svg') }}">Red</option>
-                            <option value="ecco_icon_yellow" data-icon="{{ url_for('static', filename='images/ecco_icon_yellow.svg') }}">Yellow</option>
+                            <option value="{{settings['widget_icon']}}" selected data-icon="{{ url_for('static', filename='images/' + settings['widget_icon']) }}">Current</option>
+                            <option value="ecco_icon.svg" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon.svg') %}selected{% endif %}>Lime</option>
+                            <option value="ecco_icon_black.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_black.svg') %}selected{% endif %}>Black</option>
+                            <option value="ecco_icon_blue.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_blue.svg') %}selected{% endif %}>Blue</option>
+                            <option value="ecco_icon_grey.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_grey.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_grey.svg') %}selected{% endif %}>Grey</option>
+                            <option value="ecco_icon_orange.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_orange.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_orange.svg') %}selected{% endif %}>Orange</option>
+                            <option value="ecco_icon_purple.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_purple.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_purple.svg') %}selected{% endif %}>Purple</option>
+                            <option value="ecco_icon_red.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_red.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_red.svg') %}selected{% endif %}>Red</option>
+                            <option value="ecco_icon_yellow.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_yellow.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_yellow.svg') %}selected{% endif %}>Yellow</option>
                         </select>
                         <br>
                         <p style="margin-bottom: 50px;"></p>
@@ -110,7 +111,7 @@
                         </select><br><br>
 
                         <label for="popup_message">Pop Up Message:</label><br>
-                        <input type="text" id="popup_message" name="popup_message">{{ settings['popup_message'] }}</input>
+                        <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}">
                         <br><em><small>Must be no more than 50 characters.</small></em><br><br>
 
 
