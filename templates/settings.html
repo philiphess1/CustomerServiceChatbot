@@ -80,22 +80,26 @@
                         </select>
                         <br>
                         <p style="margin-bottom: 50px;"></p>
-        
-                        <label for="background_color">Background Color:</label>
-                        <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}"><br><br>
-        
-                        <label for="title_color">Title Color:</label>
-                        <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}"><br><br>
-        
-                        <label for="border_color">Border Color:</label>
-                        <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}"><br><br>
-        
+                        
+                        <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}">
+                        <label for="title_color">Title Font Color.</label>
+                        <br><br>
+                        
+                        <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}">
+                        <label for="border_color">Banner Backround Color.</label>
+                        <br><br>
+
+                        <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}">
+                        <label for="background_color">Chatbot Background Color.</label>
+                        <br><br>
+                        
+                        <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}">
+                        <label for="dot_color">Dot Animation Color.</label>
+                        <br><br>
+                        
                         <label for="chatbot_title">Chatbot Title:</label>
                         <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}" maxlength="20"><br>
                         <em><small>Must be no more than 20 characters.</small></em><br><br>
-
-                        <label for="dot_color">Dot Color:</label>
-                        <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}"><br><br>
         
                         <label for="logo">Logo URL:</label>
                         <input type="text" id="logo" name="logo" value="{{ settings['logo'] }}"><br>
@@ -113,10 +117,6 @@
                         <label for="popup_message">Pop Up Message:</label><br>
                         <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}">
                         <br><em><small>Must be no more than 50 characters.</small></em><br><br>
-
-
-
-
                         
                     </div>
                     <input type="submit" value="Save Settings">
