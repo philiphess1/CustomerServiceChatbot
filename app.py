@@ -600,9 +600,6 @@ def chat(user_id, chatbot_id):
     # Print the contents of the memory
     print(f"Memory for user {session.sid}: {memory}")
     print("*"*100)
-
-
-
     print(response_dict)
     return jsonify(response_dict)
 

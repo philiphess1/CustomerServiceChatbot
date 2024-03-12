@@ -101,11 +101,11 @@ function updateFileListDisplay() {
             const fileHtml = `
                 <div id="fileitem">
                     <div id="fileinfo">
-                        <img src="static/images/${fileIcon}.png" height="30" width="30" alt="PDF-icon">
+                        <img src="/static/images/${fileIcon}.png" height="30" width="30" alt="${fileIcon}-icon">
                         <div id="filename">${filename}</div>
                         <div id="spacer"></div>
                         <div class="x-icon">
-                            <img src="static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button" data-index="${i}">
+                            <img src="/static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button" data-index="${i}">
                         </div>
                     </div>
                 </div>
