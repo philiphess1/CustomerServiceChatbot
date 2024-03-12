@@ -56,7 +56,8 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
-connection_string = os.getenv('AZURE_CONNECTION_STRING')
+AZURE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=eccoaiassets;AccountKey=utLcmZ0UjxcgspIkg6W52aVPJ1VszubHQO5YW/nI8jczhQBLloYezWkJl+cPaxbmPXsHHiI1KXg6+AStdbpA0w==;EndpointSuffix=core.windows.net"
+connection_string = AZURE_CONNECTION_STRING
 container_name = os.getenv('AZURE_CONTAINER_NAME')
 
 stripe.api_key = os.getenv('STRIPE_API_KEY')
@@ -389,7 +390,7 @@ def create_chatbot():
         return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the enterprise plan!"})
 
     default_settings = {
-        'widget_icon_url': 'ecco_icon',  # Default widget icon URL
+        'widget_icon_url': 'ecco_icon.png',  # Default widget icon URL
         'background_color': '#ffffff',  # Default background color
         'font_style': 'Arial',  # Default font style
         'bot_temperature': 0.3,  # Default bot temperature
@@ -716,9 +717,11 @@ def upload_file(chatbot_id):
     user_id = current_user.id
     total_file_size = 0
 
-    store_file_size = g.cursor.execute("SELECT SUM(file_size) FROM document_mapping WHERE user_id = %s", (user_id,)).fetchone()[0]
+    g.cursor.execute("SELECT SUM(file_size) FROM document_mapping WHERE user_id = %s", (user_id,))
+    store_file_size = g.cursor.fetchone()[0]
     if store_file_size is None:
         store_file_size = 0
+    print(store_file_size)
 
     for file in uploaded_files:
         if file.filename != '':
@@ -731,12 +734,14 @@ def upload_file(chatbot_id):
             file_size = file_size/1000000
             total_file_size += file_size
 
-    user_plan = g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,)).fetchone()[0]
+    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
+    user_plan = g.cursor.fetchone()[0]
+    print(user_plan)
 
     # Check if the user has exceeded their file size limit
-    if (user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and total_file_size + store_file_size > 10) or \
-        (user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and total_file_size + store_file_size > 50) or \
-        (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + store_file_size > 1024):  # 1 GB is 1024 MB
+    if (user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and total_file_size + float(store_file_size) > 10) or \
+        (user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and total_file_size + float(store_file_size) > 50) or \
+        (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + float(store_file_size) > 1024):  # 1 GB is 1024 MB
          return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
     
     for file in uploaded_files:
@@ -762,7 +767,8 @@ def upload_file(chatbot_id):
                 for page_num in range(num_pages):
                     page = pdf_reader.pages[page_num]
                     text = page.extract_text()
-                    process_text(text, filename, page_num,f"{user_id}", f"{chatbot_id}")
+                    text = text.replace('\n', ' ')  # replace newline characters with space
+                    process_text(text, filename, page_num, f"{user_id}", f"{chatbot_id}")
 
             elif file_extension == "docx":
                 doc = docx2txt.process(file_stream)
@@ -944,23 +950,66 @@ def settings(chatbot_id):
         'popup_message': row[14],
     }
 
-    return render_template('settings.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id)
+    # Fetch the pre-made questions and answers
+    g.cursor.execute("SELECT id, question, response FROM premade_questions WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id,))
+    premade_questions = g.cursor.fetchall()
 
-def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions,popup_message):
+    return render_template('settings.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id, premade_questions=premade_questions)
+
+def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message):
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s, suggested_questions = %s,popup_message = %s WHERE user_id = %s AND id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s,popup_message = %s WHERE user_id = %s AND id = %s;
     """
 
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions,popup_message, user_id, chatbot_id)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message, user_id, chatbot_id)) 
     g.db_conn.commit()
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!
-#Need to add in new fields
-#!!!!!!!!!!!!!!!!!!!!!!!!!
+@app.route('/delete_question', methods=['DELETE'])
+def delete_question():
+    question_id = request.json.get('question_id')
+    g.cursor.execute("DELETE FROM premade_questions WHERE id = %s;", (question_id,))
+    g.db_conn.commit()
+    return jsonify({"message": "Question deleted successfully!"})
+
+def insert_new_premade_question_in_db(chatbot_id, question, response):
+    user_id = current_user.id
+    query = """
+    INSERT INTO premade_questions (user_id, chatbot_id, question, response)
+    VALUES (%s, %s, %s, %s)
+    """
+    params = (user_id, chatbot_id, question, response)
+    g.cursor.execute(query, params)
+    g.db_conn.commit()
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'png'
+
+def get_existing_logo_url(chatbot_id):
+    g.cursor.execute("SELECT logo FROM chatbot_settings WHERE id = %s;", (chatbot_id,))
+    return g.cursor.fetchone()[0]
+
 @app.route('/<int:chatbot_id>/update_chatbot_settings', methods=['POST'])
 def update_chatbot_settings(chatbot_id):
+    # Process the logo file first, if it exists
+    logo_url = None  # Default to None in case no logo is uploaded
+    if 'logo' in request.files:
+        file = request.files['logo']
+        if file.filename != '' and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            # You might want to generate a unique filename here to avoid overwrites
+            # For example, append a timestamp or a unique ID to the filename
+            
+            blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=filename)
+
+            blob_client.upload_blob(file, blob_type="BlockBlob", content_settings=ContentSettings(content_type='image/png', content_disposition='inline'))
+
+            logo_url = blob_client.url
+            # If you're using a unique filename, make sure to update the logo URL with the new filename
+    
+    # Process the rest of the form data
     widget_icon = request.form.get('icon-select')
     background_color = request.form.get('background_color')
     font_style = request.form.get('font_style')
@@ -968,54 +1017,28 @@ def update_chatbot_settings(chatbot_id):
     greeting_message = request.form.get('greeting_message')
     custom_prompt = request.form.get('custom_prompt')
     dot_color = request.form.get('dot_color')
-    logo = request.form.get('logo')
     chatbot_title = request.form.get('chatbot_title')
     title_color = request.form.get('title_color')
     border_color = request.form.get('border_color')
     primary_color = request.form.get('primary')
     secondary_color = request.form.get('secondary')
-    suggested_questions = request.form.get('suggested_questions')
-    suggested_questions = suggested_questions.split('\n')
     popup_message = request.form.get('popup_message')
+    premade_questions = request.form.getlist('premade_questions[]')
+    premade_responses = request.form.getlist('premade_responses[]')
+    print(f"Premade questions: {premade_questions}")
+    print(f"Premade responses: {premade_responses}")
 
+    for question, response in zip(premade_questions, premade_responses):
+        insert_new_premade_question_in_db(chatbot_id, question, response)
 
-    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,suggested_questions,popup_message)
+    # If a new logo was uploaded, override the existing logo URL
+    # If a new logo was uploaded, use its URL, otherwise use the existing logo URL
+    logo = logo_url if logo_url else get_existing_logo_url(chatbot_id)
+
+    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message)
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings', chatbot_id=chatbot_id))
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'png'
-
-@app.route('/<int:chatbot_id>/upload_logo', methods=['POST'])
-def upload_logo(chatbot_id):
-    user_id = current_user.id
-    print(user_id, chatbot_id)
-    if 'logo' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
-    file = request.files['logo']
-    if file.filename == '':
-        flash('No selected file')
-        return redirect(request.url)
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-
-        # Create a blob client using the local file name as the name for the blob
-        blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-        blob_client = blob_service_client.get_blob_client(container_name, filename)
-
-        # Upload the file
-        blob_client.upload_blob(file, blob_type="BlockBlob", content_settings=ContentSettings(content_type='image/png', content_disposition='inline'))
-
-        # Save the URL of the blob
-        logo_url = blob_client.url
-        print(logo_url)
-        g.cursor.execute("UPDATE chatbot_settings SET logo = %s WHERE user_id = %s AND id = %s;", (logo_url, user_id, chatbot_id))
-        g.db_conn.commit()  
-        # Now you can save logo_url in your PostgreSQL database
-
-        return redirect(url_for('settings', chatbot_id=chatbot_id))
 
 @app.route('/<int:user_id>/<int:chatbot_id>/greeting_message')
 def greeting_message(user_id, chatbot_id):
@@ -1036,7 +1059,7 @@ def analytics(chatbot_id):
     rows = g.cursor.fetchall()
 
     if not rows:
-        return render_template('analytics.html', data=[], common_topics=None)
+        return render_template('analytics.html', data=[], common_topics=None, chatbot_id=chatbot_id)
 
     questions = [row[0] for row in rows]
 

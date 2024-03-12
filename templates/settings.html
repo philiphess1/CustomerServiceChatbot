@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Settings</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/settings.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
@@ -46,40 +47,20 @@
             <div class="button-holder">
             <button class="button-35 selected" onclick="showPage('styling-settings')">Styling Settings</button>
             <button class="button-35" onclick="showPage('system-settings')">System Settings</button>
+            <button class="button-35" onclick="showPage('faq-settings')">FAQ</button>
         </div>
-            
+        <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" enctype="multipart/form-data">
             <div id="styling-settings" class="subpage">
-                <form action="/{{ chatbot_id }}/upload_logo" method="post" enctype="multipart/form-data">
-                    <label for="logo">Logo:</label>
-                    <input type="file" id="logo" name="logo" accept="image/*"><br>
-                    <input type="submit" value="Upload">
-                </form>
-                <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" style="width: 2000px; height: 2000px;">
-                    <div class="info-bundle">
-                        <h2 class="instructions"><b>Chatbot Settings</b></h2>
-                        <div class="tooltip-container">
-                            <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
-                            <div class="tooltip-text">Change the settings and your system preferences below then click the save button:</div>
-                        </div>   
-                    </div>         
+                <div class="info-bundle">
+                    <h2 class="instructions"><b>Chatbot Settings</b></h2>
+                    <div class="tooltip-container">
+                        <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
+                        <div class="tooltip-text">Change the settings and your system preferences below then click the save button:</div>
+                    </div>   
+                </div>         
+                <div class="settings-container">
                     <div class="settings-section">
                         <h3>Styling</h3>
-                        <label>Widget Icon:</label><br>
-                        <img id="selected-icon" src="{{ url_for('static', filename='images/' + settings['widget_icon']) }}" alt="Selected Icon" height="150px" width="150px">
-                        <br>
-                        <select id="icon-select" name="icon-select" style="width: 200px;">
-                            <option value="{{settings['widget_icon']}}" selected data-icon="{{ url_for('static', filename='images/' + settings['widget_icon']) }}">Current</option>
-                            <option value="ecco_icon.svg" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon.svg') %}selected{% endif %}>Lime</option>
-                            <option value="ecco_icon_black.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_black.svg') %}selected{% endif %}>Black</option>
-                            <option value="ecco_icon_blue.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_blue.svg') %}selected{% endif %}>Blue</option>
-                            <option value="ecco_icon_grey.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_grey.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_grey.svg') %}selected{% endif %}>Grey</option>
-                            <option value="ecco_icon_orange.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_orange.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_orange.svg') %}selected{% endif %}>Orange</option>
-                            <option value="ecco_icon_purple.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_purple.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_purple.svg') %}selected{% endif %}>Purple</option>
-                            <option value="ecco_icon_red.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_red.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_red.svg') %}selected{% endif %}>Red</option>
-                            <option value="ecco_icon_yellow.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_yellow.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_yellow.svg') %}selected{% endif %}>Yellow</option>
-                        </select>
-                        <br>
-                        <p style="margin-bottom: 50px;"></p>
                         
                         <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}">
                         <label for="title_color">Title Font Color.</label>
@@ -100,12 +81,23 @@
                         <label for="chatbot_title">Chatbot Title:</label>
                         <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}" maxlength="20"><br>
                         <em><small>Must be no more than 20 characters.</small></em><br><br>
-        
-                        <label for="logo">Logo URL:</label>
-                        <input type="text" id="logo" name="logo" value="{{ settings['logo'] }}"><br>
-                        <em><small>Must be a valid URL. <a href="https://www.wikihow.com/Get-the-URL-for-Pictures#:~:text=Things%20You%20Should%20Know,%2C%20or%20%22Copy%20Link.%22" target="_blank">Need help?</a></small></em><br><br>
+
+                        <label for="dot_color">Dot Color:</label>
+                        <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}"><br><br>
+
+                        <label for="popup_message">Pop Up Message:</label><br>
+                        <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}">
+                        <br><em><small>Must be no more than 50 characters.</small></em><br>
+
+                    </div>
+                    <div class="settings-section">
+                        <h3>Branding</h3>
+
+                        <label for="logo">Logo:</label><br>
+                        <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" style="width: 100px; height: 100px;">
+                        <input type="file" id="logo" name="logo" accept="image/*"><br>
                         
-                        
+                        <br>
                         <label for="font_style">Font Style:</label>
                         <select id="font_style" name="font_style">
                             {% set font_options = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Trebuchet MS', 'Comic Sans MS', 'Palatino Linotype', 'Arial Black', 'Book Antiqua', 'Garamond', 'Courier', 'Franklin Gothic Medium', 'Copperplate', 'Century Gothic', 'Rockwell', 'Baskerville', 'Californian FB', 'Candara', 'Consolas', 'Ebrima', 'Cambria', 'MS Gothic', 'MS Mincho'] %}
@@ -113,25 +105,33 @@
                                 <option value="{{ font }}" style="font-family: '{{ font }}';" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
                             {% endfor %}
                         </select><br><br>
-
-                        <label for="popup_message">Pop Up Message:</label><br>
-                        <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}">
-                        <br><em><small>Must be no more than 50 characters.</small></em><br><br>
-                        
+                        <label>Widget Icon:</label><br>
+                        <img id="selected-icon" src="{{ url_for('static', filename='images/' + settings['widget_icon']) }}" alt="Selected Icon" height="150px" width="150px">
+                        <br>
+                        <select id="icon-select" name="icon-select" style="width: 200px;">
+                            <option value="{{settings['widget_icon']}}" selected data-icon="{{ url_for('static', filename='images/' + settings['widget_icon']) }}">Current</option>
+                            <option value="ecco_icon.svg" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon.svg') %}selected{% endif %}>Lime</option>
+                            <option value="ecco_icon_black.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_black.svg') %}selected{% endif %}>Black</option>
+                            <option value="ecco_icon_blue.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_blue.svg') %}selected{% endif %}>Blue</option>
+                            <option value="ecco_icon_grey.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_grey.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_grey.svg') %}selected{% endif %}>Grey</option>
+                            <option value="ecco_icon_orange.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_orange.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_orange.svg') %}selected{% endif %}>Orange</option>
+                            <option value="ecco_icon_purple.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_purple.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_purple.svg') %}selected{% endif %}>Purple</option>
+                            <option value="ecco_icon_red.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_red.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_red.svg') %}selected{% endif %}>Red</option>
+                            <option value="ecco_icon_yellow.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_yellow.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_yellow.svg') %}selected{% endif %}>Yellow</option>
+                        </select>
                     </div>
-                    <input type="submit" value="Save Settings">
-            </div>
-
+                </div> 
+            </div>  
             <div id="system-settings" class="subpage">
                 <div class="info-bundle">
-                    <h2 class="instructions"><b>Chatbot Settings</b></h2>
+                    <h2 class="instructions"><b>System Settings</b></h2>
                     <div class="tooltip-container">
                         <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
                         <div class="tooltip-text">Change the settings and your system preferences below then click the save button:</div>
                     </div>   
                 </div>  
                 <div class="settings-section1">
-                    <h3>System Settings</h3>
+                    <h3>Settings</h3>
                     <label for="bot_temperature">Bot Temperature:</label>
                     <span id="bot_temperature_value">{{ settings['bot_temperature'] }}</span> <!-- Add this line -->
                     <div class="range-container"> <!-- Add this line -->
@@ -147,18 +147,38 @@
                     <label for="custom_prompt">Custom Prompt:</label>
                     <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000">{{ settings['custom_prompt'] }}</textarea>
                     <em><small>Must be no more than 1000 characters.</small></em><br><br>
-
-                    <label for="suggested_questions">Suggested questions: <br>Suggested questions to be shown to user (1 suggestion per line). Leave empty to disable.</label>
-                    <textarea id="suggested_questions" name="suggested_questions" rows="4" cols="50" maxlength="500">{{ settings['suggested_questions']|join('\n') }}</textarea>
                 </div>
-
-                <input type="submit" value="Save Settings">
-    
-                
             </div>
-            
-            </form>
-        </div>
+            <div id="faq-settings" class="subpage">
+                <div class="info-bundle">
+                    <h2 class="instructions"><b>FAQ Settings</b></h2>
+                    <div class="tooltip-container">
+                        <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
+                        <div class="tooltip-text">Change the settings and your system preferences below then click the save button:</div>
+                    </div>
+                </div>
+                <div class="settings-section1">
+                    <h3>Pre-made Questions</h3>
+                    <div id="premade-questions-container">
+                        {% for id, question, response in premade_questions %}
+                        <div class="premade-question" data-saved="true" id="question_{{ id }}">
+                            <input type="hidden" name="premade_question_ids[]" value="{{ id }}">
+                            <label for="premade_question_{{ loop.index }}">Question:</label>
+                            <input type="text" id="premade_question_{{ loop.index }}" name="premade_questions[]" value="{{ question }}" required readonly>
+                            <label for="premade_response_{{ loop.index }}">Response:</label>
+                            <input type="text" id="premade_response_{{ loop.index }}" name="premade_responses[]" value="{{ response }}" required readonly>
+                            <button type="button" class="delete-premade-question">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <button type="button" id="add-premade-question">Add another question</button>
+                </div>
+            </div> 
+            <input type="submit" value="Save Settings">          
+        </form>
         
         
 
@@ -167,30 +187,42 @@
 
 
 
-    <img id="chatbot-button" src="https://app.eccoai.org/static/images/{{ settings.widget_icon }}.png" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
-    <iframe src="https://app.eccoai.org/{{ user_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:93px; right:0; z-index:9999;"></iframe>
+
+
+    <img id="b" src="http://127.0.0.1:5000//static/images/{{ settings.widget_icon }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
+    <div id="p" style="display:block;position:fixed;bottom:100px;right:15px;z-index:10000;background:#fff;border:1px solid #ccc;padding:10px;border-radius:5px;box-shadow:0 0 10px rgba(0,0,0,.1);">Welcome! How can I help you today?</div>
+    <span id="c" style="display:none;position:fixed;bottom:128px;right:10px;z-index:10001;cursor:pointer;padding:2px 6px;border-radius:10px;background-color:#dadada;font-family: arial;color: #4e4e4e;">x</span>
+    <iframe src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}" id="e" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
     <script>
-        var chatbotButton = document.getElementById('chatbot-button');
-        chatbotButton.addEventListener('mouseover', function() {
+        var p = document.getElementById('p'), c = document.getElementById('c'), b = document.getElementById('b');
+        p.onmouseover = c.onmouseover = function() { c.style.display = 'block'; };
+        p.onmouseout = function() { c.style.display = 'none'; };
+        c.onclick = function() { p.style.display = c.style.display = 'none'; };
+        b.addEventListener('mouseover', function() {
             this.style.transform = 'scale(1.1)';
         });
-        chatbotButton.addEventListener('mouseout', function() {
+        b.addEventListener('mouseout', function() {
             this.style.transform = 'scale(1)';
         });
-        document.getElementById('chatbot-button').addEventListener('click', function() {
-            var iframe = document.getElementById('chatbot-iframe');
+        b.addEventListener('click', function() {
+            var iframe = document.getElementById('e');
             if (iframe.style.display === 'none') {
                 iframe.style.display = 'block';
+                p.style.display = 'none'; // hide the 'p' element
             } else {
                 iframe.style.display = 'none';
+                p.style.display = 'block'; // show the 'p' element
             }
         });
 
         function closeChatbot() {
-            var iframe = document.getElementById('chatbot-iframe');
+            var iframe = document.getElementById('e');
             iframe.style.display = 'none';
+            p.style.display = 'block'; // show the 'p' element when the chatbot is closed
         }
-    </script>      
+    </script>
+
+    
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 </body>
 </html>

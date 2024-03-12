@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     // Simulate a click on the chatbot button to open it when the page loads
-    document.getElementById('chatbot-button').click();
+    document.getElementById('b').click();
 });
 
 // sidebar JS
@@ -109,10 +109,9 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
     var customPrompt = document.getElementById('custom_prompt').value;
     var greetingMessage = document.getElementById('greeting_message').value;
     var chatbotTitle = document.getElementById('chatbot_title').value;
-    var logoUrl = document.getElementById('logo_url').value;  // Add this line
 
     // Add this block
-    if (!botTemperature || !customPrompt || !greetingMessage || !chatbotTitle || !logoUrl) {
+    if (!botTemperature || !customPrompt || !greetingMessage || !chatbotTitle) {
         alert('All fields must be filled out.');
         event.preventDefault();
     }
@@ -134,13 +133,6 @@ document.getElementById('settingsForm').addEventListener('submit', function(even
 
     if (chatbotTitle.length > 20) {
         alert('Chatbot Title cannot be more than 20 characters.');
-        event.preventDefault();
-    }
-
-    // Add this block
-    var urlPattern = /^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
-    if (!urlPattern.test(logoUrl)) {
-        alert('Logo URL must be a valid URL.');
         event.preventDefault();
     }
 });
@@ -170,10 +162,58 @@ function showPage(pageId) {
         document.querySelector('button[onclick="showPage(\'styling-settings\')"]').classList.add('selected');
     } else if (pageId === 'system-settings') {
         document.querySelector('button[onclick="showPage(\'system-settings\')"]').classList.add('selected');
+    } else if (pageId === 'faq-settings') {
+        document.querySelector('button[onclick="showPage(\'faq-settings\')"]').classList.add('selected');
     }
 }
+document.getElementById('add-premade-question').addEventListener('click', function() {
+    var container = document.getElementById('premade-questions-container');
+    var index = container.getElementsByClassName('premade-question').length + 1;
+    var question = document.createElement('div');
+    question.className = 'premade-question';
+    question.innerHTML = `
+        <label for="premade_question_${index}">Question:</label>
+        <input type="text" id="premade_question_${index}" name="premade_questions[]" required>
+        <label for="premade_response_${index}">Response:</label>
+        <input type="text" id="premade_response_${index}" name="premade_responses[]" required>
+        <button type="button" class="delete-premade-question">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    question.dataset.saved = 'false';
+    container.appendChild(question);
+});
 
-showPage('styling-settings');
+document.getElementById('premade-questions-container').addEventListener('click', function(event) {
+    var target = event.target;
+    if (target.tagName !== 'BUTTON') {
+        target = target.parentNode;
+    }
+    if (target.className === 'delete-premade-question') {
+        if (target.parentNode.dataset.saved === 'true') {
+            // If the question is saved in the database, send a delete request to the server
+            var xhr = new XMLHttpRequest();
+            xhr.open('DELETE', '/delete_question', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                question_id: target.parentNode.id.split('_')[1] // Extract the question id from the id attribute
+            }));
+
+            xhr.onload = function() {
+                if (xhr.status == 200) {
+                    // If the server responded with a status of 200, remove the question from the DOM
+                    target.parentNode.remove();
+                } else {
+                    // If the server responded with an error status, log the error message
+                    console.error('Failed to delete question:', xhr.responseText);
+                }
+            };
+        } else {
+            // If the question is not saved in the database, just remove it from the DOM
+            target.parentNode.remove();
+        }
+    }
+});
 
 $(document).ready(function() {
     $('#font_style').select2();

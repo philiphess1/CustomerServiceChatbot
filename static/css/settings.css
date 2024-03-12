@@ -14,7 +14,7 @@ h2 {
   font-weight: normal;
 }
 h3 {
-  margin: 40px 0 15px 0;
+  margin: 10px 0 10px 0;
   font-size: 16px;
   color: #9d9d9d;
 }
@@ -205,20 +205,24 @@ body {
     margin-left: 100px; /* left margin of 100px */
     text-align: left;
 }
-.settings-section {
-    margin-left: 100px;
-    margin-bottom: 50px;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 45%;
-    border: 2px solid #c1c1c1;
+.settings-container {
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff; /* Moved from .settings-section */
+  border-radius: 5px; /* Moved from .settings-section */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Moved from .settings-section */
+  border: 2px solid #c1c1c1; /* Moved from .settings-section */ /* Added to give some space around the sections */
+  margin-left: 100px;
+  margin-bottom: 25px;
 }
 
+.settings-section {
+  padding: 20px;
+  width: 45%; /* Adjust this value as needed */
+}
 .settings-section1 {
   margin-left: 100px;
-  margin-bottom: 50px;
+  margin-bottom: 25px;
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
@@ -347,7 +351,7 @@ input#background_color {
 }
 
 #styling-settings{
-  display: flex;
+  display:block;
 }
 
 textarea {

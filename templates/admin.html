@@ -160,30 +160,38 @@
                 </section>
             </section>
         </div>
-        <img id="chatbot-button" src="https://app.eccoai.org/static/images/{{ settings.widget_icon }}.png" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
-        <iframe src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}" id="chatbot-iframe" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
+        <img id="b" src="http://127.0.0.1:5000//static/images/{{ settings.widget_icon }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
+        <div id="p" style="display:block;position:fixed;bottom:100px;right:15px;z-index:10000;background:#fff;border:1px solid #ccc;padding:10px;border-radius:5px;box-shadow:0 0 10px rgba(0,0,0,.1);">Welcome! How can I help you today?</div>
+        <span id="c" style="display:none;position:fixed;bottom:128px;right:10px;z-index:10001;cursor:pointer;padding:2px 6px;border-radius:10px;background-color:#dadada;font-family: arial;color: #4e4e4e;">x</span>
+        <iframe src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}" id="e" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
         <script>
-            var chatbotButton = document.getElementById('chatbot-button');
-            chatbotButton.addEventListener('mouseover', function() {
+            var p = document.getElementById('p'), c = document.getElementById('c'), b = document.getElementById('b');
+            p.onmouseover = c.onmouseover = function() { c.style.display = 'block'; };
+            p.onmouseout = function() { c.style.display = 'none'; };
+            c.onclick = function() { p.style.display = c.style.display = 'none'; };
+            b.addEventListener('mouseover', function() {
                 this.style.transform = 'scale(1.1)';
             });
-            chatbotButton.addEventListener('mouseout', function() {
+            b.addEventListener('mouseout', function() {
                 this.style.transform = 'scale(1)';
             });
-            document.getElementById('chatbot-button').addEventListener('click', function() {
-                var iframe = document.getElementById('chatbot-iframe');
+            b.addEventListener('click', function() {
+                var iframe = document.getElementById('e');
                 if (iframe.style.display === 'none') {
                     iframe.style.display = 'block';
+                    p.style.display = 'none'; // hide the 'p' element
                 } else {
                     iframe.style.display = 'none';
+                    p.style.display = 'block'; // show the 'p' element
                 }
             });
-
+    
             function closeChatbot() {
-                var iframe = document.getElementById('chatbot-iframe');
+                var iframe = document.getElementById('e');
                 iframe.style.display = 'none';
+                p.style.display = 'block'; // show the 'p' element when the chatbot is closed
             }
-        </script>       
+        </script>      
         <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 </body>
 </html>
