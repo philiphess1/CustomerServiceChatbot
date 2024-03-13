@@ -472,10 +472,12 @@ def chatbot(user_id, chatbot_id):
 @app.route('/<int:user_id>/<int:chatbot_id>/chat', methods=['POST'])
 def chat(user_id, chatbot_id):
     # Get the user's plan
-    user_plan = g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,)).fetchone()[0]
+    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
+    user_plan = g.cursor.fetchone()[0]
 
     # Count the number of questions the user has asked
-    question_count = g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (user_id,)).fetchone()[0]
+    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (user_id,))
+    question_count = g.cursor.fetchone()[0]
 
     # Check if the user has exceeded their question limit
     if user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and question_count >= 50:
@@ -588,10 +590,10 @@ def chat(user_id, chatbot_id):
     response = result['answer']
     docs = result['docs']
     # Convert the AIMessage to a dictionary
-    filenames = [doc.metadata['filename'] for doc in docs]
+    sources = [{'source_url': doc.metadata['source_url'], 'filename': doc.metadata['filename']} for doc in docs]
     response_dict = {
         'content': response.content,
-        'sources': filenames,
+        'sources': sources,
         # Add any other fields as necessary
     }
     # Save the memory back to the session at the end of the request
@@ -740,7 +742,23 @@ def upload_file(chatbot_id):
         (user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and total_file_size + float(store_file_size) > 50) or \
         (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + float(store_file_size) > 1024):  # 1 GB is 1024 MB
          return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
-    
+
+    source_url = ''
+    for file in uploaded_files:
+        if file.filename != '':
+            filename = secure_filename(file.filename)
+
+            # Modify the filename to include the user_id and chatbot_id
+            unique_filename = f"{user_id}_{chatbot_id}_{filename}"
+
+            # Create a blob client using the unique file name as the name for the blob
+            blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
+            blob_client = blob_service_client.get_blob_client(container_name, unique_filename)
+
+            # Upload the file
+            blob_client.upload_blob(file, blob_type="BlockBlob", content_settings=ContentSettings(content_type='application/pdf'))
+            source_url = blob_client.url
+
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
@@ -765,19 +783,19 @@ def upload_file(chatbot_id):
                     page = pdf_reader.pages[page_num]
                     text = page.extract_text()
                     text = text.replace('\n', ' ')  # replace newline characters with space
-                    process_text(text, filename, page_num, f"{user_id}", f"{chatbot_id}")
+                    process_text(text, filename, page_num, f"{user_id}", f"{chatbot_id}", f"{source_url}")
 
             elif file_extension == "docx":
                 doc = docx2txt.process(file_stream)
                 cleaned_doc = re.sub(r'\s+', ' ', doc.strip())
-                process_text(cleaned_doc, filename, 0,f"{user_id}", f"{chatbot_id}")
+                process_text(cleaned_doc, filename, 0,f"{user_id}", f"{chatbot_id}", f"{source_url}")
 
             elif file_extension == "xlsx":
                 # use pandas to read the excel file from the bytesIO steam
                 df = pd.read_excel(file_stream)
                 headers = ' '.join(df.columns) + '\n'
                 full_text = df.to_string(index=False, header=False)
-                process_excel_text(full_text, headers, filename,f"{user_id}", f"{chatbot_id}")
+                process_excel_text(full_text, headers, filename,f"{user_id}", f"{chatbot_id}", f"{source_url}")
 
             elif file_extension == "csv":
                 # use pandas to read the excel file from the bytesIO steam
@@ -787,7 +805,7 @@ def upload_file(chatbot_id):
                         df = pd.read_csv(file_stream, encoding=encoding)
                         headers = ' '.join(df.columns) + '\n'
                         full_text = df.to_string(index=False, header=False)
-                        process_excel_text(full_text, headers, filename,f"{user_id}", f"{chatbot_id}")
+                        process_excel_text(full_text, headers, filename,f"{user_id}", f"{chatbot_id}", f"{source_url}")
                         break
                     except UnicodeDecodeError:
                         continue
@@ -796,7 +814,7 @@ def upload_file(chatbot_id):
             
     return jsonify({"status": "success", "message": "Files uploaded successfully!"})
 
-def process_text(text, filename, page_num, user_id, chatbot_id):
+def process_text(text, filename, page_num, user_id, chatbot_id, source_url):
     # Process the text (i.e., break it into chunks and create embeddings)
     chunk_size = 750
     overlap = 100
@@ -812,7 +830,7 @@ def process_text(text, filename, page_num, user_id, chatbot_id):
         chunk_doc_id = f"{filename}_page{page_num}_start{start}:{end}"
 
         # Prepare data for Pinecone
-        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk})]
+        upsert_data = [(chunk_doc_id, embedding, {"filename": filename, "text": text_chunk, "source_url": source_url})]
         
         # Store the embeddings in Pinecone using 'upsert' method
         index.upsert(upsert_data, namespace=f"{user_id}{chatbot_id}")
@@ -876,7 +894,7 @@ def scrape_url(chatbot_id):
         g.db_conn.commit()
 
         # Process the text and put it in the vector database
-        process_text(text, url, 0, f"{user_id}", f"{chatbot_id}")
+        process_text(text, url, 0, f"{user_id}", f"{chatbot_id}", f"{url}")
 
         return redirect(url_for('admin', chatbot_id=chatbot_id))
 
@@ -885,6 +903,7 @@ def scrape_url(chatbot_id):
     except Exception as e:
         return jsonify({"status": "error", "message": f"Unexpected error: {str(e)}"})
 
+from azure.core.exceptions import ResourceNotFoundError
 
 @app.route('/<int:chatbot_id>/delete/<doc_id>', methods=['POST'])
 @login_required
@@ -896,8 +915,17 @@ def delete(chatbot_id, doc_id):
     g.db_conn.commit()
     if result:
         filename = result[0]
+        unique_filename = f"{user_id}_{chatbot_id}_{filename}"
         prefix = f"{filename}_"
         print(f"Deleted entry for ID {doc_id} from the database")
+
+        blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
+        blob_client = blob_service_client.get_blob_client(container_name, unique_filename)
+        try:
+            blob_client.delete_blob()
+            print(f"Blob deleted for filename {unique_filename}")
+        except ResourceNotFoundError:
+            print(f"Blob not found for filename {unique_filename}")
 
         namespace = f"{user_id}{chatbot_id}"
         list_url = f"https://{index_host}/vectors/list?namespace={namespace}&prefix={prefix}"

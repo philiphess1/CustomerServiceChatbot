@@ -107,28 +107,27 @@
                 botResponse(message);
             }
         }
-
         function appendSources(sources) {
             if (!sources || sources.length === 0) return '';
 
             let sourcesHTML = '';
-            const validSources = sources.filter(source => source.startsWith('http://') || source.startsWith('https://')); // Filter to only include URLs
+            const validSources = sources.filter(source => source.source_url.startsWith('http://') || source.source_url.startsWith('https://')); // Filter to only include URLs
 
             if (validSources.length > 0) {
-                sourcesHTML += '<div class="msg-sources"><br>Check it out:<br>';
+                sourcesHTML += '<div class="msg-sources"><br>Source:<br>';
                 validSources
-                    .slice(0, 1) // Get the first three URL sources
+                    .slice(0, 1) // Get the first URL source
                     .forEach((source) => {
-                        const hostname = (new URL(source)).hostname.replace('www.', '');
                         sourcesHTML += `
-                            <div class="source">
-                                <img src="https://www.google.com/s2/favicons?domain=${source}" alt="Website Icon">
-                                <a href="${source}" target="_blank">${hostname}</a>
+                            <div class="source" style="border: 1px solid #ccc; border-radius: 10px; overflow: auto; max-width: 280px; word-wrap: break-word;">
+                                <a href="${source.source_url}" target="_blank" style="display: block;">
+                                    <iframe src="${source.source_url}" width="100%" height="100" scrolling="no" style="border: none;"></iframe>
+                                </a>
+                                <div style="text-align: center; padding: 10px;">
+                                    <a href="${source.source_url}" target="_blank">${source.filename}</a>
+                                </div>
                             </div>
                         `;
-                        // <div class="iframe-container">
-                        //      <iframe src="${source}" width="80%" height="100" scrolling="no"></iframe>
-                        // </div>
                     });
                 sourcesHTML += '</div>';
             }
