@@ -66,7 +66,6 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 
 database_url = os.getenv('DATABASE_URL')
 
-environment = os.getenv("PINECONE_ENVIRONMENT")
 pinecone_api_key = os.getenv("PINECONE_API_KEY")
 index_name= os.getenv("PINECONE_INDEX")
 index_host = os.getenv("PINECONE_HOST")

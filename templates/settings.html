@@ -27,7 +27,6 @@
         <button class="btns" id="settings" title="Settings" onclick="openNav()"><img src="{{ url_for('static', filename='images/setting (1).png') }}" height="50" width="50" alt="settings"></button>
         <button class="btns" id="integrations" title="Integrations" onclick="openNav()"><img src="{{ url_for('static', filename='images/integration (1).png') }}" height="50" width="50" alt="integration"></button>
         <button class="btns" id="analytics" title="Analytics" onclick="openNav()"><img src="{{ url_for('static', filename='images/data-analytics (1).png') }}" height="50" width="50" alt="analytics"></button>
-        <button class="btns" id="usage" title="Usage" onclick="openNav()"><img src="{{ url_for('static', filename='images/usage-based-price (1).png') }}" height="50" width="50" alt="usage"></button>
     </div>
     <section id="sidepanel">
         <div id="mySidepanel" class="sidepanel">
@@ -36,7 +35,6 @@
             <a href="{{ url_for('settings', chatbot_id=chatbot_id) }}" id="settings" class="mgn">Settings</a>
             <a href="{{ url_for('integrations', chatbot_id=chatbot_id) }}" id="integrations" class="mgn">Integrations</a>
             <a href="{{ url_for('analytics', chatbot_id=chatbot_id) }}" id="analytics" class="mgn">Analytics</a>
-            <a href="#" id="usage">Usage</a>
         </div>
             
             
