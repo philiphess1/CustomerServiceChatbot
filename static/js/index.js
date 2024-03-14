@@ -107,6 +107,136 @@
                 botResponse(message);
             }
         }
+        // // Add an event listener to the send button to listen for clicks
+        // var sendButton = document.getElementById("send-button");
+        // sendButton.addEventListener("click", sendBotMessage);
+
+        // Function to send a message from the user
+        function sendBotMessage() {
+            var userInput = document.getElementById("user-input");
+            var message = userInput.value.trim();
+            if (message !== "") {
+                lastUserMessage = message;
+                appendMessage_determined("You", "right", message);
+                userInput.value = "";
+                botResponse(message);
+            }
+        }
+
+        // Function to handle question click
+        function handleQuestionClick() {
+            var message = this.textContent;
+            var response = this.getAttribute('data-response');
+            appendMessage_determined("You", "right", message); // Display user's message
+            appendMessage_determined("Bot", "left", response); // Display bot's response
+        }
+
+        // Add event listeners to the question elements
+        var suggestedQuestions = document.querySelectorAll('.suggested-question');
+        suggestedQuestions.forEach(function(question) {
+            question.addEventListener('click', handleQuestionClick);
+        });
+
+        function appendMessage_determined(name, side, text, sources) {
+            text = text.replace(/\n/g, '<br>');
+            text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            text = text.replace(/(\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)/g, '<a href="mailto:$1">$1</a>');
+            const chatboxBody = document.querySelector(".chatbox-body");
+            const sourcesHTML = appendSources(sources);
+            const msgHTML = `
+                <div class="msg ${side}-msg">
+                    <div class="msg-info">
+                        ${side === "left" ? `
+                        <div class="msg-info-name">
+                            <img src="/static/images/chatbot.svg" alt="Chatbot Icon" />
+                        </div>
+                        ` : ""}
+                    </div>
+                    ${side === "right" ? `
+                    <div class="msg-bubble">
+                        <div class="msg-text-user">${text}</div>
+                    </div>
+                    ` : ""}
+                    ${side === "left" ? `
+                    <div class="msg-bubble">
+                        <div class="msg-text">${text}</div>
+                        ${sourcesHTML}
+                    </div>
+                    ` : ""}
+                </div>
+                <div class="msg ${side}-msg">
+                    ${side === "left" ? `
+                    <div class="post" data-post-id="7712">
+                        <div class="post-ratings-container">
+                            <div class="post-rating">
+                                <button class="post-rating-button material-icons like-button">thumb_up</button>
+                            </div>
+                            <div class="post-rating">
+                                <button class="post-rating-button material-icons dislike-button">thumb_down</button>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ""}
+                </div>
+            `;
+            chatboxBody.insertAdjacentHTML("beforeend", msgHTML);
+            chatboxBody.scrollTop = chatboxBody.scrollHeight;
+        
+            
+
+            if (side === "left" && lastUserMessage.trim() !== "") {
+                storeQuestionAnswer(lastUserMessage, text);
+            }
+            if (side === "left") {
+            const messageElements = document.querySelectorAll('.msg-text');
+            const messageElement = messageElements[messageElements.length - 1];
+                const displayMessage = (text, index = 0, message = '') => {
+                    if (index < text.length) {
+                        message += text[index];
+                        index++;
+                        setTimeout(() => {
+                            messageElement.innerHTML = message;
+                            displayMessage(text, index, message);
+                        }, 20);
+                    }
+                };
+
+                displayMessage(text);
+                const likeButtons = chatboxBody.querySelectorAll(".like-button");
+                const dislikeButtons = chatboxBody.querySelectorAll(".dislike-button");
+                likeButtons.forEach(function(likeButton) {
+                    likeButton.addEventListener("click", function() {
+                        if (!likeButton.classList.contains("clicked")) {
+                            likeButton.classList.add("clicked");
+                            likeButton.style.color = "green";
+                            dislikeButtons.forEach(function(dislikeButton) {
+                                dislikeButton.classList.remove("clicked");
+                                dislikeButton.style.color = "#555555";
+                                dislikeButton.disabled = true; // Disable the dislike button
+                            });
+                            sendFeedback("Like", text, lastUserMessage);
+                            likeButton.disabled = true; // Disable the like button
+                        }
+                    });
+                });
+                dislikeButtons.forEach(function(dislikeButton) {
+                    dislikeButton.addEventListener("click", function() {
+                        if (!dislikeButton.classList.contains("clicked")) {
+                            dislikeButton.classList.add("clicked");
+                            dislikeButton.style.color = "#e65b5b";
+                            likeButtons.forEach(function(likeButton) {
+                                likeButton.classList.remove("clicked");
+                                likeButton.style.color = "#555555";
+                                likeButton.disabled = true; // Disable the like button
+                            });
+                            sendFeedback("Dislike", text, lastUserMessage);
+                            dislikeButton.disabled = true; // Disable the dislike button
+                        }
+                    });
+                });
+            }
+        }
+
         function appendSources(sources) {
             if (!sources || sources.length === 0) return '';
 

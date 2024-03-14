@@ -467,7 +467,19 @@ def chatbot(user_id, chatbot_id):
         'suggested_questions':row[13],
     }
 
-    return render_template('index.html', settings=settings, user_id=user_id)
+    g.cursor.execute("SELECT question, response FROM premade_questions WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id,))
+    questions = g.cursor.fetchall()
+    print(questions)
+    question_list = []
+    if questions:
+        for question in questions:
+            question_dict = {
+                "question": question[0],
+                "response": question[1],
+            }
+            question_list.append(question_dict)
+
+    return render_template('index.html', settings=settings, user_id=user_id, question_list=question_list)
 
 @app.route('/<int:user_id>/<int:chatbot_id>/chat', methods=['POST'])
 def chat(user_id, chatbot_id):

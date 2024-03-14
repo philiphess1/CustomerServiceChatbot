@@ -30,8 +30,8 @@
                 <div class="chatbox-body">
                     <!-- Chat messages go here -->
                     <div class="suggested-questions">
-                        {% for question in settings.suggested_questions %}
-                            <p class="suggested-question">{{ question }}</p>
+                        {% for q in question_list %}
+                            <p class="suggested-question" data-response="{{ q.response }}">{{ q.question }}</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -41,8 +41,8 @@
                     suggestedQuestions.forEach(function(question) {
                         question.addEventListener('click', function() {
                             var message = this.textContent;
-                            document.getElementById('user-input').value = message;
-                            sendUserMessage(message);
+                            var response = this.getAttribute('data-response');
+                            handleQuestionClick(response); 
                         });
                     });
                 </script>
