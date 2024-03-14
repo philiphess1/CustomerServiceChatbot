@@ -184,10 +184,10 @@
 
 
 
-    <img id="b" src="http://127.0.0.1:5000//static/images/{{ settings.widget_icon }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
+    <img id="b" src="https://eccoai-customization1-0-9r64er.herokuapp.com//static/images/{{ settings.widget_icon }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
     <div id="p" style="display:block;position:fixed;bottom:100px;right:15px;z-index:10000;background:#fff;border:1px solid #ccc;padding:10px;border-radius:5px;box-shadow:0 0 10px rgba(0,0,0,.1);">Welcome! How can I help you today?</div>
     <span id="c" style="display:none;position:fixed;bottom:128px;right:10px;z-index:10001;cursor:pointer;padding:2px 6px;border-radius:10px;background-color:#dadada;font-family: arial;color: #4e4e4e;">x</span>
-    <iframe src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}" id="e" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
+    <iframe src="https://eccoai-customization1-0-9r64er.herokuapp.com/{{ user_id }}/{{ chatbot_id }}" id="e" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
     <script>
         var p = document.getElementById('p'), c = document.getElementById('c'), b = document.getElementById('b');
         p.onmouseover = c.onmouseover = function() { c.style.display = 'block'; };
