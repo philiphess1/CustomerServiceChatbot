@@ -23,7 +23,6 @@ from dotenv import load_dotenv
 from io import BytesIO
 from PyPDF2 import PdfReader
 import docx2txt
-import pandas as pd
 import requests
 import re
 from bs4 import BeautifulSoup
@@ -31,12 +30,12 @@ from werkzeug.utils import secure_filename
 import psycopg2
 import bcrypt
 from flask_session import Session
-import pandas as pd
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Mail, Message
 import pickle
 import stripe
 from stripe.error import SignatureVerificationError
+from azure.core.exceptions import ResourceNotFoundError
 
 
 load_dotenv()
@@ -395,13 +394,11 @@ def create_chatbot():
         'font_style': 'Arial',  # Default font style
         'bot_temperature': 0.3,  # Default bot temperature
         'greeting_message': 'Hello! I am Ecco, your AI assistant. How can I help you today?',  # Default greeting message
-        'custom_prompt': """
-            As "Ecco", your role is to provide friendly and humorous customer support for our company. Your knowledge is confined to the context provided, and you should strive to deliver accurate information about our company based on this context. Be as detailed as possible without fabricating answers. Politely decline to respond to any inquiries that are not related to the provided documents or our company. Maintain your character at all times. Respond in the language used in the incoming message. Use simple formatting in your responses and speak as a member of our team, using "we" and "us" instead of "they". Include hyperlinks when necessary.
-
-            RESTRICTIONS:
-            Avoid using the phrase "Based on the given information".
-            Do not invent answers. If you are uncertain about a response, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and conclude your response there.
-            """,
+        'custom_prompt': """As "Ecco", your role is to provide friendly and humorous customer support for our company. Your knowledge is confined to the context provided, and you should strive to deliver accurate information about our company based on this context. Be as detailed as possible without fabricating answers. Politely decline to respond to any inquiries that are not related to the provided documents or our company. Maintain your character at all times. Respond in the language used in the incoming message. Use simple formatting in your responses and speak as a member of our team, using "we" and "us" instead of "they". Include hyperlinks when necessary. 
+        RESTRICTIONS:
+        Avoid using the phrase "Based on the given information".
+        Do not invent answers. If you are uncertain about a response, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and conclude your response there.
+        """,
         'dot_color': '#555555',
         'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
         'chatbot_title': 'EccoAI',
@@ -410,11 +407,10 @@ def create_chatbot():
         'chatbot_name': 'Chatbot',
         'primary_color': '#BFEF4B',
         'secondary_color': '#ffffff',
-        'suggested_questions': ['Question 1', 'Question 2', 'Question 3']  # Default suggested questions
     }
     g.cursor.execute("""
-            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color, suggested_questions)
-            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(custom_prompt)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(suggested_questions)s)
+            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color)
+            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(custom_prompt)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s)
             RETURNING id;
         """, {'user_id': user_id, **default_settings})
     chatbot_id = g.cursor.fetchone()[0]
@@ -444,7 +440,7 @@ def chatbot(user_id, chatbot_id):
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,suggested_questions FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -464,7 +460,6 @@ def chatbot(user_id, chatbot_id):
         'border_color': row[10],
         'primary_color':row[11],
         'secondary_color':row[12],
-        'suggested_questions':row[13],
     }
 
     g.cursor.execute("SELECT question, response FROM premade_questions WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id,))
@@ -492,7 +487,7 @@ def chat(user_id, chatbot_id):
     question_count = g.cursor.fetchone()[0]
 
     # Check if the user has exceeded their question limit
-    if user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and question_count >= 50:
+    if user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and question_count >= 100:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the beginner plan!"})
     elif user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and question_count >= 2500:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the intermediate plan!"})
@@ -755,7 +750,6 @@ def upload_file(chatbot_id):
         (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + float(store_file_size) > 1024):  # 1 GB is 1024 MB
          return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
 
-    source_url = ''
     for file in uploaded_files:
         if file.filename != '':
             filename = secure_filename(file.filename)
@@ -771,9 +765,6 @@ def upload_file(chatbot_id):
             blob_client.upload_blob(file, blob_type="BlockBlob", content_settings=ContentSettings(content_type='application/pdf'))
             source_url = blob_client.url
 
-    for file in uploaded_files:
-        if file.filename != '':
-            filename = secure_filename(file.filename)
             file_size = len(file.read())
 
             # Reset the file position to the beginning
@@ -802,28 +793,6 @@ def upload_file(chatbot_id):
                 cleaned_doc = re.sub(r'\s+', ' ', doc.strip())
                 process_text(cleaned_doc, filename, 0,f"{user_id}", f"{chatbot_id}", f"{source_url}")
 
-            elif file_extension == "xlsx":
-                # use pandas to read the excel file from the bytesIO steam
-                df = pd.read_excel(file_stream)
-                headers = ' '.join(df.columns) + '\n'
-                full_text = df.to_string(index=False, header=False)
-                process_excel_text(full_text, headers, filename,f"{user_id}", f"{chatbot_id}", f"{source_url}")
-
-            elif file_extension == "csv":
-                # use pandas to read the excel file from the bytesIO steam
-                encodings = ['utf-8', 'latin1', 'iso-8859-1', 'cp1252']
-                for encoding in encodings:
-                    try:
-                        df = pd.read_csv(file_stream, encoding=encoding)
-                        headers = ' '.join(df.columns) + '\n'
-                        full_text = df.to_string(index=False, header=False)
-                        process_excel_text(full_text, headers, filename,f"{user_id}", f"{chatbot_id}", f"{source_url}")
-                        break
-                    except UnicodeDecodeError:
-                        continue
-                    except pd.errors.EmptyDataError:
-                        return jsonify({"status": "error", "message": "File is empty or incorrectly formatted!"})
-            
     return jsonify({"status": "success", "message": "Files uploaded successfully!"})
 
 def process_text(text, filename, page_num, user_id, chatbot_id, source_url):
@@ -915,8 +884,6 @@ def scrape_url(chatbot_id):
     except Exception as e:
         return jsonify({"status": "error", "message": f"Unexpected error: {str(e)}"})
 
-from azure.core.exceptions import ResourceNotFoundError
-
 @app.route('/<int:chatbot_id>/delete/<doc_id>', methods=['POST'])
 @login_required
 def delete(chatbot_id, doc_id):
@@ -966,7 +933,7 @@ def delete(chatbot_id, doc_id):
 @login_required
 def settings(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,suggested_questions, popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color, popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     settings = {
@@ -983,8 +950,7 @@ def settings(chatbot_id):
         'border_color': row[10],
         'primary_color': row[11],
         'secondary_color': row[12],
-        'suggested_questions': row[13],
-        'popup_message': row[14],
+        'popup_message': row[13],
     }
 
     # Fetch the pre-made questions and answers
@@ -1019,6 +985,10 @@ def insert_new_premade_question_in_db(chatbot_id, question, response):
     params = (user_id, chatbot_id, question, response)
     g.cursor.execute(query, params)
     g.db_conn.commit()
+
+def question_exists_in_db(chatbot_id, question):
+    g.cursor.execute("SELECT 1 FROM premade_questions WHERE chatbot_id = %s AND question = %s;", (chatbot_id, question))
+    return g.cursor.fetchone() is not None
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() == 'png'
@@ -1062,11 +1032,10 @@ def update_chatbot_settings(chatbot_id):
     popup_message = request.form.get('popup_message')
     premade_questions = request.form.getlist('premade_questions[]')
     premade_responses = request.form.getlist('premade_responses[]')
-    print(f"Premade questions: {premade_questions}")
-    print(f"Premade responses: {premade_responses}")
 
     for question, response in zip(premade_questions, premade_responses):
-        insert_new_premade_question_in_db(chatbot_id, question, response)
+        if not question_exists_in_db(chatbot_id, question):
+            insert_new_premade_question_in_db(chatbot_id, question, response)
 
     # If a new logo was uploaded, override the existing logo URL
     # If a new logo was uploaded, use its URL, otherwise use the existing logo URL
@@ -1092,7 +1061,7 @@ def greeting_message(user_id, chatbot_id):
 @login_required
 def analytics(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT user_question, bot_response, feedback_type FROM feedback WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT user_question, bot_response, feedback_type, created_at FROM feedback WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id))
     rows = g.cursor.fetchall()
 
     if not rows:
@@ -1141,7 +1110,8 @@ def analytics(chatbot_id):
             data.append({
                 'user_question': row[0],
                 'bot_response': row[1],
-                'feedback_type': row[2]
+                'feedback_type': row[2],
+                'created_at': row[3].strftime('%Y-%m-%d %H:%M:%S')
             })
     else:
         data = []

@@ -19,6 +19,10 @@ h3 {
   color: #9d9d9d;
 }
 
+.premade-question {
+  margin-bottom: 20px;
+}
+
 .top-ribbon {
   background-color: #111;
   height: 101px;

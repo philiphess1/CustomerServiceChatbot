@@ -59,6 +59,7 @@
                     <th>User Question</th>
                     <th>Bot Response</th>
                     <th>Feedback</th>
+                    <th>Created At</th>
                     <!-- <th>Delete</th> -->
                 </tr>
                 {% for item in data %}
@@ -66,6 +67,7 @@
                         <td class="user-question">{{ item['user_question'] }}</td>
                         <td>{{ item['bot_response']|safe }}</td>
                         <td>{{ item['feedback_type'] }}</td>
+                        <td>{{ item['created_at'] }}</td>
                     </tr>
                 {% endfor %}
             </table>

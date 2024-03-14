@@ -51,7 +51,7 @@
                             <div class="upload-area" id="upload-area">
                                 <img src="{{ url_for('static', filename='images/cloud-upload.png') }}" height="200" width="200" alt="Upload">
                                 <label for="file" class="upload-label">Drag and drop files here or <span class="click-text" id="click-text">click</span> to choose a file:</label>
-                                <input type="file" id="file" name="file" required multiple onchange="updateFileSizeAndCount();" accept=".pdf, .xlsx, .docx, .csv">
+                                <input type="file" id="file" name="file" required multiple onchange="updateFileSizeAndCount();" accept=".pdf, .docx">
                                 <label id="file-label">Choose file(s)</label>
                             </div>
                             <div id="uploading">
