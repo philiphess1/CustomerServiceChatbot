@@ -33,7 +33,7 @@
                         const greetingMessage = data.greeting_message;
                         setTimeout(() => {
                             appendMessage("Chatbot", "left", greetingMessage);
-                        }, 1000); // Adjust the delay time as needed
+                        }, 800); // Adjust the delay time as needed
 
                         // Set the flag to true so the greeting won't be shown again
                         greetingShown = true;
@@ -197,7 +197,7 @@
                         setTimeout(() => {
                             messageElement.innerHTML = message;
                             displayMessage(text, index, message);
-                        }, 20);
+                        }, 14);
                     }
                 };
 

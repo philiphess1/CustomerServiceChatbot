@@ -396,7 +396,7 @@ def create_chatbot():
         'custom_prompt': """As "Ecco", your role is to provide friendly and humorous customer support for our company. Your knowledge is confined to the context provided, and you should strive to deliver accurate information about our company based on this context. Be as detailed as possible without fabricating answers. Politely decline to respond to any inquiries that are not related to the provided documents or our company. Maintain your character at all times. Respond in the language used in the incoming message. Use simple formatting in your responses and speak as a member of our team, using "we" and "us" instead of "they". Include hyperlinks when necessary. 
         RESTRICTIONS:
         Avoid using the phrase "Based on the given information".
-        Do not invent answers. If you are uncertain about a response, say "I'm not sure about this, could you please send us an email at contact@mycompany.com" and conclude your response there.
+        Do not invent answers. If you are uncertain about a response, say "I'm unsure about this. Could you please clarify or contact us for more information." and conclude your response there.
         """,
         'dot_color': '#555555',
         'logo': 'https://app.eccoai.org/static/images/ecco_icon.png',
@@ -406,10 +406,11 @@ def create_chatbot():
         'chatbot_name': 'Chatbot',
         'primary_color': '#BFEF4B',
         'secondary_color': '#ffffff',
+        'popup_message': 'Hello, I am here to answer your questions!'
     }
     g.cursor.execute("""
-            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color)
-            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(custom_prompt)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s)
+            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color,popup_message)
+            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(custom_prompt)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(popup_message)s)
             RETURNING id;
         """, {'user_id': user_id, **default_settings})
     chatbot_id = g.cursor.fetchone()[0]
@@ -439,7 +440,7 @@ def chatbot(user_id, chatbot_id):
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -459,6 +460,7 @@ def chatbot(user_id, chatbot_id):
         'border_color': row[10],
         'primary_color':row[11],
         'secondary_color':row[12],
+        'popup_message':row[13],
     }
 
     g.cursor.execute("SELECT question, response FROM premade_questions WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id,))
@@ -662,25 +664,28 @@ def admin(chatbot_id):
     documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]
 
     # Query for chatbot settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
         return "No settings found for the given user_id and chatbot_id", 404
 
     settings = {
-        'widget_icon': row[0],
-        'background_color': row[1],
-        'font_style': row[2],
-        'bot_temperature': row[3],
-        'greeting_message': row[4],
-        'custom_prompt': row[5],
-        'dot_color': row[6],
-        'logo': row[7],
-        'chatbot_title': row[8],
-        'title_color': row[9],
-        'border_color': row[10],
-    }
+            'widget_icon': row[0],
+            'background_color': row[1],
+            'font_style': row[2],
+            'bot_temperature': row[3],
+            'greeting_message': row[4],
+            'custom_prompt': row[5],
+            'dot_color': row[6],
+            'logo': row[7],
+            'chatbot_title': row[8],
+            'title_color': row[9],
+            'border_color': row[10],
+            'primary_color':row[11],
+            'secondary_color':row[12],
+            'popup_message':row[13],
+        }
 
     return render_template('admin.html', documents=documents, settings=settings, user_id=user_id, chatbot_id=chatbot_id)
 
