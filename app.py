@@ -327,11 +327,11 @@ def update_subscription():
             g.db_conn.commit()
 
             # Create a password reset link with the token
-            reset_link = url_for('reset_password', token=token, _external=True)
+            setup_link = url_for('reset_password', token=token, _external=True)
 
             # Send an email to the user with the reset link
             msg = Message('Password Update Requested', recipients=[customer_email])
-            msg.html = render_template('reset_password_email.html', reset_link=reset_link, name=customer_name)
+            msg.html = render_template('setup_account.html', setup_link=setup_link, name=customer_name)
             mail.send(msg)
 
         g.db_conn.commit()
