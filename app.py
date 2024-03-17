@@ -937,7 +937,7 @@ def delete(chatbot_id, doc_id):
 @login_required
 def settings(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color, popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color, popup_message, chatbot_name FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     settings = {
@@ -955,6 +955,7 @@ def settings(chatbot_id):
         'primary_color': row[11],
         'secondary_color': row[12],
         'popup_message': row[13],
+        'chatbot_name': row[14],
     }
 
     # Fetch the pre-made questions and answers
@@ -963,14 +964,14 @@ def settings(chatbot_id):
 
     return render_template('settings.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id, premade_questions=premade_questions)
 
-def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message):
+def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message, chatbot_name):
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s,popup_message = %s WHERE user_id = %s AND id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s,popup_message = %s, chatbot_name = %s WHERE user_id = %s AND id = %s;
     """
 
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message, user_id, chatbot_id)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message, chatbot_name, user_id, chatbot_id)) 
     g.db_conn.commit()
 
 @app.route('/delete_question', methods=['DELETE'])
@@ -1036,6 +1037,7 @@ def update_chatbot_settings(chatbot_id):
     popup_message = request.form.get('popup_message')
     premade_questions = request.form.getlist('premade_questions[]')
     premade_responses = request.form.getlist('premade_responses[]')
+    chatbot_name = request.form.get('chatbot_name')
 
     for question, response in zip(premade_questions, premade_responses):
         if not question_exists_in_db(chatbot_id, question):
@@ -1045,7 +1047,7 @@ def update_chatbot_settings(chatbot_id):
     # If a new logo was uploaded, use its URL, otherwise use the existing logo URL
     logo = logo_url if logo_url else get_existing_logo_url(chatbot_id)
 
-    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message)
+    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name)
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings', chatbot_id=chatbot_id))
@@ -1161,6 +1163,11 @@ def analytics_data():
 
     # Return the data as JSON
     return jsonify({'likes': likes, 'dislikes': dislikes, 'none': none})
+
+@app.errorhandler(401)
+def unauthorized_access(e):
+    # note that we set the 401 status explicitly
+    return render_template('error.html', message="Unauthorized access."), 401
 
 @app.errorhandler(404)
 def page_not_found(e):

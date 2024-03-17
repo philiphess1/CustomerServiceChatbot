@@ -88,6 +88,10 @@
                     <div class="settings-section">
                         <h3>Branding</h3>
 
+                        <label for="logo">Chatbot Name:</label><br>
+                        <input type="text" id="chatbot_name" name="chatbot_name" value="{{ settings['chatbot_name'] }}" maxlength="20"><br>
+                        <em><small>Must be no more than 20 characters.</small></em><br><br>
+
                         <label for="logo">Logo:</label><br>
                         <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" style="width: 100px; height: 100px;">
                         <input type="file" id="logo" name="logo" accept="image/*"><br>
