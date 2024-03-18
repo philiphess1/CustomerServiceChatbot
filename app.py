@@ -320,7 +320,7 @@ def update_subscription():
             setup_link = url_for('reset_password', token=token, _external=True)
 
             # Send an email to the user with the reset link
-            msg = Message('Password Update Requested', recipients=[customer_email])
+            msg = Message('Account Setup', recipients=[customer_email])
             msg.html = render_template('setup_account.html', setup_link=setup_link, name=customer_name)
             mail.send(msg)
 
