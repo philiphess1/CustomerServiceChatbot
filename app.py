@@ -398,11 +398,11 @@ def create_chatbot():
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
     user_plan = g.cursor.fetchone()[0]
 
-    if user_plan == 'beginner' and chatbot_count >= 1:
+    if user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and chatbot_count >= 1:
         return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the beginner plan!"})
-    elif user_plan == 'intermediate' and chatbot_count >= 3:
+    elif user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and chatbot_count >= 3:
         return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the intermediate plan!"})
-    elif user_plan == 'enterprise' and chatbot_count >= 5:
+    elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and chatbot_count >= 5:
         return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the enterprise plan!"})
 
     default_settings = {
