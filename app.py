@@ -265,6 +265,10 @@ def update_subscription():
     event = None
     payload = request.data
     sig_header = request.headers['STRIPE_SIGNATURE']
+    print(payload)
+    print(sig_header)
+    print(endpoint_secret)
+
 
     try:
         event = stripe.Webhook.construct_event(
