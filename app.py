@@ -258,8 +258,6 @@ def login():
             
     return render_template('login.html')
 
-stripe.api_key = os.getenv('STRIPE_API_KEY')
-
 @app.route('/subscription', methods=['POST'])
 def update_subscription():
     event = None
@@ -324,6 +322,11 @@ def update_subscription():
             msg.html = render_template('setup_account.html', setup_link=setup_link, name=customer_name)
             mail.send(msg)
 
+        # Get the renewal date from the subscription object
+        renewal_date = datetime.fromtimestamp(stripe_subscription['current_period_end'])
+
+        # Insert a new record into the usage table for the user, or update the existing record if it exists
+        g.cursor.execute("INSERT INTO usage (user_id, subscription_item_id, renewal_date) VALUES (%s, %s, %s) ON CONFLICT (user_id) DO UPDATE SET subscription_item_id = %s, renewal_date = %s", (user_id, subscription_item_id, renewal_date, subscription_item_id, renewal_date))
         g.db_conn.commit()
 
     elif event['type'] == 'customer.subscription.deleted':
@@ -339,9 +342,12 @@ def update_subscription():
         customer_id = subscription['customer']
         plan_id = subscription['items']['data'][0]['plan']['id']
 
-        g.cursor.execute("UPDATE users SET subscription_item_id = %s WHERE stripe_customer_id = %s", (plan_id, customer_id))
+        # Get the renewal date from the subscription object
+        renewal_date = datetime.fromtimestamp(subscription['current_period_end'])
+
+        # Update the user's plan and renewal date in the usage table
+        g.cursor.execute("UPDATE usage SET subscription_item_id = %s, renewal_date = %s WHERE user_id = (SELECT id FROM users WHERE stripe_customer_id = %s)", (plan_id, renewal_date, customer_id))
         g.db_conn.commit()
-    # ... handle other event types
     else:
       print('Unhandled event type {}'.format(event['type']))
 
@@ -354,8 +360,11 @@ def home():
     g.cursor.execute("SELECT id, chatbot_name, created_at FROM chatbot_settings WHERE user_id = %s", (current_user.id,))
     chatbots = g.cursor.fetchall()
 
-    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (current_user.id,))
-    count = g.cursor.fetchone()[0]
+    g.cursor.execute("SELECT total_questions, total_answers FROM usage WHERE user_id = %s", (current_user.id,))
+    result = g.cursor.fetchone()
+    total_questions = result[0]
+    total_answers = result[1]
+    total_count = total_questions + total_answers
 
     # Fetch the user's plan
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (current_user.id,))
@@ -375,7 +384,7 @@ def home():
     renewal_date = datetime.fromtimestamp(latest_subscription.current_period_end)
 
     # Pass the chatbot settings to the template
-    return render_template('home.html', chatbots=chatbots, count=count, user_id=current_user.id, user_plan=user_plan, renewal_date=renewal_date)
+    return render_template('home.html', chatbots=chatbots, count=total_count, user_id=current_user.id, user_plan=user_plan, renewal_date=renewal_date)
 
 @app.route('/create_chatbot', methods=['POST'])
 @login_required
@@ -499,7 +508,7 @@ def chat(user_id, chatbot_id):
     # Check if the user has exceeded their question limit
     if user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and question_count >= 100:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the beginner plan!"})
-    elif user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and question_count >= 2500:
+    elif user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and question_count >= 500:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the intermediate plan!"})
     elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and question_count >= 10000:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the enterprise plan!"})
@@ -653,6 +662,13 @@ def store_qa(user_id, chatbot_id):
             (question, answer, user_id, chatbot_id, None)
         )
         record_id = g.cursor.fetchone()[0]
+
+        # Update the usage table
+        g.cursor.execute(
+            "UPDATE usage SET total_questions = total_questions + 1, total_answers = total_answers + 1 WHERE user_id = %s",
+            (user_id,)
+        )
+
         g.db_conn.commit()
         return jsonify({"message": "Question and answer stored successfully!", "id": record_id})
     except Exception as e:
