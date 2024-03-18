@@ -16,6 +16,28 @@
   font-style: italic;
 }
 
+.button-home {
+  background-color: #5C6BC0;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 0;
+  line-height: 1;
+  text-decoration: none; /* Removes underline */
+  font-style: normal; /* Removes italics */
+  display: inline-block; /* Aligns the button horizontally */
+  margin-right: 20px;
+  font-weight: bold;
+}
+
+.button-home:hover {
+  background-color: #3F51B5;
+  color: #ffffff;
+}
 .company-name img {
   height: 101px; /* Adjust as needed */
   width: auto;

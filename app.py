@@ -923,7 +923,14 @@ def delete(chatbot_id, doc_id):
         if list_response.status_code == 200:
             ids_to_delete = [record['id'] for record in list_response.json().get('vectors', [])]
             if ids_to_delete:
-                delete_response = requests.post(delete_url, headers=headers, json={"ids": ids_to_delete})
+                delete_response = requests.post(
+                    delete_url, 
+                    headers=headers, 
+                    json={
+                        "ids": ids_to_delete,
+                        "namespace": namespace
+                    }
+                )
                 if delete_response.status_code == 200:
                     print(f"Deleted vectors with IDS {ids_to_delete} from Pinecone")
         else:
