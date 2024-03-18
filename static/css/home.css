@@ -216,6 +216,7 @@ p {
 
 /* New styles for dashboard metrics */
 .dashboard-metrics {
+    margin-left: 40px;
     display: flex;
     justify-content: space-around;
     align-items: center;
