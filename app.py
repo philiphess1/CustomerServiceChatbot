@@ -399,11 +399,14 @@ def create_chatbot():
     user_plan = g.cursor.fetchone()[0]
 
     if user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and chatbot_count >= 1:
-        return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the beginner plan!"})
+        flash("You have exceeded your chatbot limit for the beginner plan!")
+        return redirect(url_for('home'))
     elif user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and chatbot_count >= 3:
-        return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the intermediate plan!"})
+        flash("You have exceeded your chatbot limit for the intermediate plan!")
+        return redirect(url_for('home'))
     elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and chatbot_count >= 5:
-        return jsonify({"status": "error", "message": "You have exceeded your chatbot limit for the enterprise plan!"})
+        flash("You have exceeded your chatbot limit for the enterprise plan!")
+        return redirect(url_for('home'))
 
     default_settings = {
         'widget_icon_url': 'ecco_icon.png',  # Default widget icon URL
