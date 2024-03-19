@@ -777,8 +777,8 @@ def upload_file(chatbot_id):
     print(user_plan)
 
     # Check if the user has exceeded their file size limit
-    if (user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and total_file_size + float(store_file_size) > 10) or \
-        (user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and total_file_size + float(store_file_size) > 50) or \
+    if (user_plan == 'price_1OqKx9LO2ToUaMQEqSyrCogs' and total_file_size + float(store_file_size) > 5) or \
+        (user_plan == 'price_1OqKxQLO2ToUaMQE6al9uLEO' and total_file_size + float(store_file_size) > 25) or \
         (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + float(store_file_size) > 1024):  # 1 GB is 1024 MB
          return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
 
