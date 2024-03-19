@@ -7,15 +7,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.6/lottie.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        .flash-message {
-          color: #FF0000; /* Change color as needed */
-          font-size: 1em; /* Change font size as needed */
-          transition: opacity 0.5s; /* Change transition speed as needed */
-          text-align: center; /* Center the text */
-          margin-top: 20px; /* Add some space above the message */
-        }
-      </style>
 </head>
 <body>
     <div class="banner">
@@ -31,15 +22,6 @@
         <div id="myContainer" class="container">
             <div class="dashboard-metrics">
                 <div class="metric-box">
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            <div class="flashes">
-                            {% for message in messages %}
-                                <div class="flash-message">{{ message }}</div>
-                            {% endfor %}
-                            </div>
-                        {% endif %}
-                    {% endwith %}
                     {% if user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' %}
                         <p>{{count}}/100 Messages</p>
                     {% elif user_plan == 'price_1OqKkILO2ToUaMQE6dS3YLWO' %}
