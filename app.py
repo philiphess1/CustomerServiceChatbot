@@ -59,8 +59,8 @@ AZURE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=eccoaiassets
 connection_string = AZURE_CONNECTION_STRING
 container_name = os.getenv('AZURE_CONTAINER_NAME')
 
-stripe.api_key = os.getenv('STRIPE_API_KEY')
-endpoint_secret = os.getenv('ENDPOINT_SECRET')
+stripe.api_key = os.getenv('STRIPE_API_KEY_FOR_TESTING')
+endpoint_secret = os.getenv('ENDPOINT_SECRET_TESTING')
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -89,6 +89,12 @@ def get_custom_prompt(user_id, chatbot_id):
         cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
         row = cursor.fetchone()
         return row[0] if row else "Default prompt part"
+    
+def get_LLM(user_id, chatbot_id):
+    with g.db_conn.cursor() as cursor:
+        cursor.execute("SELECT LLM FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+        row = cursor.fetchone()
+        return row[0] if row else "gpt-3.5-turbo"
 
 
 # Initialize Flask-Login
@@ -284,7 +290,14 @@ def update_subscription():
         subscription = event['data']['object']
         customer_email = subscription['customer_details']['email']
         customer_id = subscription['customer']
-        customer_name = subscription['customer_details']['name']
+        custom_fields = subscription.get('custom_fields', [])
+        customer_name = None
+
+        for field in custom_fields:
+            if field['key'] == 'accountname':
+                customer_name = field['text']['value']
+                break
+            
         subscription_id = subscription['subscription']
         stripe_subscription = stripe.Subscription.retrieve(subscription_id)
         subscription_item_id = stripe_subscription['items']['data'][0]['plan']['id']
@@ -398,10 +411,10 @@ def create_chatbot():
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
     user_plan = g.cursor.fetchone()[0]
 
-    if user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and chatbot_count >= 1:
+    if user_plan == 'price_1P5wOkLO2ToUaMQET9MJeuff' and chatbot_count >= 1:
         flash("You have exceeded your chatbot limit for the beginner plan!")
         return redirect(url_for('home'))
-    elif user_plan == 'price_1OqKkILO2ToUaMQE6dS3YLWO' and chatbot_count >= 3:
+    elif user_plan == 'price_1P5wPSLO2ToUaMQEVNXdwIaA' and chatbot_count >= 3:
         flash("You have exceeded your chatbot limit for the intermediate plan!")
         return redirect(url_for('home'))
     elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and chatbot_count >= 5:
@@ -427,11 +440,12 @@ def create_chatbot():
         'chatbot_name': 'Chatbot',
         'primary_color': '#BFEF4B',
         'secondary_color': '#ffffff',
-        'popup_message': 'Hello, I am here to answer your questions!'
+        'popup_message': 'Hello, I am here to answer your questions!',
+        'LLM': 'gpt-3.5-turbo'
     }
     g.cursor.execute("""
-            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color,popup_message)
-            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(custom_prompt)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(popup_message)s)
+            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color, popup_message, LLM)
+            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(custom_prompt)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(popup_message)s, %(LLM)s)
             RETURNING id;
         """, {'user_id': user_id, **default_settings})
     chatbot_id = g.cursor.fetchone()[0]
@@ -461,7 +475,7 @@ def chatbot(user_id, chatbot_id):
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message, LLM FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -482,6 +496,7 @@ def chatbot(user_id, chatbot_id):
         'primary_color':row[11],
         'secondary_color':row[12],
         'popup_message':row[13],
+        'LLM': row[14]
     }
 
     g.cursor.execute("SELECT question, response FROM premade_questions WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id,))
@@ -509,9 +524,9 @@ def chat(user_id, chatbot_id):
     question_count = g.cursor.fetchone()[0]
 
     # Check if the user has exceeded their question limit
-    if user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and question_count >= 100:
+    if user_plan == 'price_1P5wOkLO2ToUaMQET9MJeuff' and question_count >= 100:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the beginner plan!"})
-    elif user_plan == 'price_1OqKkILO2ToUaMQE6dS3YLWO' and question_count >= 500:
+    elif user_plan == 'price_1P5wPSLO2ToUaMQEVNXdwIaA' and question_count >= 500:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the intermediate plan!"})
     elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and question_count >= 10000:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the enterprise plan!"})
@@ -524,7 +539,7 @@ def chat(user_id, chatbot_id):
 
     retriever = vectorstore.as_retriever(
             search_type = "similarity_score_threshold",
-            search_kwargs={'score_threshold': 0.7, 'k': 5},
+            search_kwargs={'score_threshold': 0.7, 'k': 3},
         )
 
     if f'memory_{session.sid}' in session:
@@ -541,10 +556,11 @@ def chat(user_id, chatbot_id):
 
     bot_temperature = get_bot_temperature(user_id, chatbot_id)
     custom_prompt = get_custom_prompt(user_id, chatbot_id)
+    model = get_LLM(user_id, chatbot_id)
 
     llm = ChatOpenAI(
         openai_api_key=openai_api_key,
-        model_name='gpt-3.5-turbo',
+        model_name=model,
         temperature=bot_temperature
     )
 
@@ -692,7 +708,7 @@ def admin(chatbot_id):
     documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]
 
     # Query for chatbot settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color, popup_message, LLM FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -713,6 +729,7 @@ def admin(chatbot_id):
             'primary_color':row[11],
             'secondary_color':row[12],
             'popup_message':row[13],
+            'LLM':row[14]
         }
 
     return render_template('admin.html', documents=documents, settings=settings, user_id=user_id, chatbot_id=chatbot_id)
@@ -722,7 +739,7 @@ def admin(chatbot_id):
 @login_required
 def integrations(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message, LLM FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
     if row is None:
         return "No settings found for the given user_id and chatbot_id", 404
@@ -742,6 +759,7 @@ def integrations(chatbot_id):
             'primary_color':row[11],
             'secondary_color':row[12],
             'popup_message':row[13],
+            'LLM': row[14]
         }
         popup_logic = "block"
         if settings['popup_message'] =="":
@@ -777,8 +795,8 @@ def upload_file(chatbot_id):
     print(user_plan)
 
     # Check if the user has exceeded their file size limit
-    if (user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and total_file_size + float(store_file_size) > 5) or \
-        (user_plan == 'price_1OqKkILO2ToUaMQE6dS3YLWO' and total_file_size + float(store_file_size) > 25) or \
+    if (user_plan == 'price_1P5wOkLO2ToUaMQET9MJeuff' and total_file_size + float(store_file_size) > 5) or \
+        (user_plan == 'price_1P5wPSLO2ToUaMQEVNXdwIaA' and total_file_size + float(store_file_size) > 25) or \
         (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + float(store_file_size) > 1024):  # 1 GB is 1024 MB
          return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
 
@@ -972,7 +990,11 @@ def delete(chatbot_id, doc_id):
 @login_required
 def settings(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color, popup_message, chatbot_name FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+
+    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
+    user_plan = g.cursor.fetchone()[0]
+
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color, popup_message, chatbot_name, LLM FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     settings = {
@@ -991,22 +1013,23 @@ def settings(chatbot_id):
         'secondary_color': row[12],
         'popup_message': row[13],
         'chatbot_name': row[14],
+        'LLM': row[15]
     }
 
     # Fetch the pre-made questions and answers
     g.cursor.execute("SELECT id, question, response FROM premade_questions WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id,))
     premade_questions = g.cursor.fetchall()
 
-    return render_template('settings.html', settings=settings, user_id=user_id, chatbot_id=chatbot_id, premade_questions=premade_questions)
+    return render_template('settings.html', settings=settings, user_id=user_id, user_plan=user_plan, chatbot_id=chatbot_id, premade_questions=premade_questions)
 
-def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message, chatbot_name):
+def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt,dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message, chatbot_name, llm):
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s,popup_message = %s, chatbot_name = %s WHERE user_id = %s AND id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s,popup_message = %s, chatbot_name = %s, LLM = %s WHERE user_id = %s AND id = %s;
     """
 
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message, chatbot_name, user_id, chatbot_id)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color,logo,chatbot_title,title_color,border_color,primary_color,secondary_color,popup_message, chatbot_name, llm, user_id, chatbot_id)) 
     g.db_conn.commit()
 
 @app.route('/delete_question', methods=['DELETE'])
@@ -1073,6 +1096,7 @@ def update_chatbot_settings(chatbot_id):
     premade_questions = request.form.getlist('premade_questions[]')
     premade_responses = request.form.getlist('premade_responses[]')
     chatbot_name = request.form.get('chatbot_name')
+    llm = request.form.get('bot_LLM')
 
     for question, response in zip(premade_questions, premade_responses):
         if not question_exists_in_db(chatbot_id, question):
@@ -1082,7 +1106,7 @@ def update_chatbot_settings(chatbot_id):
     # If a new logo was uploaded, use its URL, otherwise use the existing logo URL
     logo = logo_url if logo_url else get_existing_logo_url(chatbot_id)
 
-    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name)
+    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm)
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings', chatbot_id=chatbot_id))

@@ -95,7 +95,7 @@
 
                         <label for="logo">Logo:</label><br>
                         <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" style="width: 100px; height: 100px;">
-                        <input type="file" id="logo" name="logo" accept="image/*"><br>
+                        <input type="file" id="logo" name="logo" accept="image/*" {% if user_plan == 'price_1P5wOkLO2ToUaMQET9MJeuff' %}disabled{% endif %}><br>
                         
                         <br>
                         <label for="font_style">Font Style:</label>
@@ -106,7 +106,7 @@
                             {% endfor %}
                         </select><br><br>
                         <label>Widget Icon:</label><br>
-                        <img id="selected-icon" src="{{ url_for('static', filename='images/' + settings['widget_icon']) }}" alt="Selected Icon" height="150px" width="150px">
+                        <img id="selected-icon" src="{{ url_for('static', filename='images/' + settings['widget_icon']) }}" alt="Selected Icon" height="100px" width="100px">
                         <br>
                         <select id="icon-select" name="icon-select" style="width: 200px;">
                             <option value="{{settings['widget_icon']}}" selected data-icon="{{ url_for('static', filename='images/' + settings['widget_icon']) }}">Current</option>
@@ -139,6 +139,12 @@
                         <input type="range" id="bot_temperature" name="bot_temperature" min="0" max="1" step="0.1" value="{{ settings['bot_temperature'] }}">
                         <span>More Creative</span>
                     </div><br>
+
+                    <label for="bot_LLM">Assistant LLM:</label>
+                    <select id="bot_LLM" name="bot_LLM" {% if user_plan =='price_1P5wOkLO2ToUaMQET9MJeuff' %}disabled{% endif %}>
+                        <option value="gpt-3.5-turbo" {% if settings['bot_LLM'] == 'LLM1' %}selected{% endif %}>GPT 3.5 Turbo</option>
+                        <option value="gpt-4-turbo" {% if settings['bot_LLM'] == 'LLM2' %}selected{% endif %}>GPT 4.0 Turbo</option>
+                    </select><br><br>
 
                     <label for="greeting_message">Greeting Message:</label>
                     <textarea id="greeting_message" name="greeting_message" rows="4" cols="50" maxlength="500">{{ settings['greeting_message'] }}</textarea>
