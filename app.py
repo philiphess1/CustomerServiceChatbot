@@ -59,8 +59,8 @@ AZURE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=eccoaiassets
 connection_string = AZURE_CONNECTION_STRING
 container_name = os.getenv('AZURE_CONTAINER_NAME')
 
-stripe.api_key = os.getenv('STRIPE_API_KEY_FOR_TESTING')
-endpoint_secret = os.getenv('ENDPOINT_SECRET_TESTING')
+stripe.api_key = os.getenv('STRIPE_API_KEY')
+endpoint_secret = os.getenv('ENDPOINT_SECRET')
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
