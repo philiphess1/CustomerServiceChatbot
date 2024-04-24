@@ -291,10 +291,11 @@ def update_subscription():
         customer_email = subscription['customer_details']['email']
         customer_id = subscription['customer']
         custom_fields = subscription.get('custom_fields', [])
+        print(custom_fields)
         customer_name = None
 
         for field in custom_fields:
-            if field['key'] == 'accountname':
+            if field['key'] == 'name':
                 customer_name = field['text']['value']
                 break
             
