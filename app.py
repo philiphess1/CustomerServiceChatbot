@@ -350,7 +350,7 @@ def update_subscription():
         # Set the user's subscription_item_id to null in the database
         g.cursor.execute("UPDATE users SET subscription_item_id = NULL WHERE stripe_customer_id = %s", (customer_id,))
         g.db_conn.commit()
-        
+
     elif event['type'] == 'customer.subscription.updated':
         subscription = event['data']['object']
         customer_id = subscription['customer']
@@ -416,10 +416,10 @@ def create_chatbot():
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
     user_plan = g.cursor.fetchone()[0]
 
-    if user_plan == 'price_1P5wOkLO2ToUaMQET9MJeuff' and chatbot_count >= 1:
+    if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and chatbot_count >= 1:
         flash("You have exceeded your chatbot limit for the beginner plan!")
         return redirect(url_for('home'))
-    elif user_plan == 'price_1P5wPSLO2ToUaMQEVNXdwIaA' and chatbot_count >= 3:
+    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and chatbot_count >= 3:
         flash("You have exceeded your chatbot limit for the intermediate plan!")
         return redirect(url_for('home'))
     elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and chatbot_count >= 5:
@@ -529,9 +529,9 @@ def chat(user_id, chatbot_id):
     question_count = g.cursor.fetchone()[0]
 
     # Check if the user has exceeded their question limit
-    if user_plan == 'price_1P5wOkLO2ToUaMQET9MJeuff' and question_count >= 100:
+    if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and question_count >= 100:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the beginner plan!"})
-    elif user_plan == 'price_1P5wPSLO2ToUaMQEVNXdwIaA' and question_count >= 500:
+    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and question_count >= 500:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the intermediate plan!"})
     elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and question_count >= 10000:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the enterprise plan!"})
@@ -800,8 +800,8 @@ def upload_file(chatbot_id):
     print(user_plan)
 
     # Check if the user has exceeded their file size limit
-    if (user_plan == 'price_1P5wOkLO2ToUaMQET9MJeuff' and total_file_size + float(store_file_size) > 5) or \
-        (user_plan == 'price_1P5wPSLO2ToUaMQEVNXdwIaA' and total_file_size + float(store_file_size) > 25) or \
+    if (user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and total_file_size + float(store_file_size) > 5) or \
+        (user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and total_file_size + float(store_file_size) > 25) or \
         (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + float(store_file_size) > 1024):  # 1 GB is 1024 MB
          return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
 
