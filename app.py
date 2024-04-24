@@ -350,7 +350,7 @@ def update_subscription():
         # Set the user's subscription_item_id to null in the database
         g.cursor.execute("UPDATE users SET subscription_item_id = NULL WHERE stripe_customer_id = %s", (customer_id,))
         g.db_conn.commit()
-
+        
     elif event['type'] == 'customer.subscription.updated':
         subscription = event['data']['object']
         customer_id = subscription['customer']
@@ -361,9 +361,13 @@ def update_subscription():
 
         # Update the user's plan and renewal date in the usage table
         g.cursor.execute("UPDATE usage SET subscription_item_id = %s, renewal_date = %s WHERE user_id = (SELECT id FROM users WHERE stripe_customer_id = %s)", (plan_id, renewal_date, customer_id))
+        
+        # Update the subscription_item_id in the users table
+        g.cursor.execute("UPDATE users SET subscription_item_id = %s WHERE stripe_customer_id = %s", (plan_id, customer_id))
+        
         g.db_conn.commit()
     else:
-      print('Unhandled event type {}'.format(event['type']))
+        print('Unhandled event type {}'.format(event['type']))
 
     return jsonify(success=True)
 
