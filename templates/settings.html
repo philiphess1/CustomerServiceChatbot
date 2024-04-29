@@ -142,8 +142,8 @@
 
                     <label for="bot_LLM">Assistant LLM:</label>
                     <select id="bot_LLM" name="bot_LLM" {% if user_plan =='price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}>
-                        <option value="gpt-3.5-turbo" {% if settings['bot_LLM'] == 'LLM1' %}selected{% endif %}>GPT 3.5 Turbo</option>
-                        <option value="gpt-4-turbo" {% if settings['bot_LLM'] == 'LLM2' %}selected{% endif %}>GPT 4.0 Turbo</option>
+                        <option value="gpt-3.5-turbo" {% if settings['LLM'] == 'gpt-3.5-turbo' %}selected{% endif %}>GPT 3.5 Turbo</option>
+                        <option value="gpt-4-turbo" {% if settings['LLM'] == 'gpt-4-turbo' %}selected{% endif %}>GPT 4.0 Turbo</option>
                     </select><br><br>
 
                     <label for="greeting_message">Greeting Message:</label>
@@ -190,11 +190,6 @@
 
             
     </div>
-
-
-
-
-
     <img id="b" src="https://app.eccoai.org//static/images/{{ settings.widget_icon }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
     <div id="p" style="display:block;position:fixed;bottom:100px;right:15px;z-index:10000;background:#fff;border:1px solid #ccc;padding:10px;border-radius:5px;box-shadow:0 0 10px rgba(0,0,0,.1);">{{ settings['popup_message'] }}</div>
     <span id="c" style="display:none;position:fixed;bottom:128px;right:10px;z-index:10001;cursor:pointer;padding:2px 6px;border-radius:10px;background-color:#dadada;font-family: arial;color: #4e4e4e;">x</span>

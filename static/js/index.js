@@ -243,19 +243,23 @@
             let sourcesHTML = '';
             const validSources = sources.filter(source => source.source_url.startsWith('http://') || source.source_url.startsWith('https://')); // Filter to only include URLs
 
-            if (validSources.length > 0) {
-                sourcesHTML += '<div class="msg-sources"><br>Source:<br>';
-                validSources
-                    .slice(0, 1) // Get the first URL source
+            // Remove duplicates
+            const uniqueSources = Array.from(new Set(validSources.map(source => source.source_url)))
+                .map(source_url => {
+                    return validSources.find(source => source.source_url === source_url)
+                });
+
+            if (uniqueSources.length > 0) {
+                sourcesHTML += '<div class="msg-sources"><br>Sources:<br>';
+                uniqueSources
+                    .slice(0, 3) // Get the first URL source
                     .forEach((source) => {
                         sourcesHTML += `
-                            <div class="source" style="border: 1px solid #ccc; border-radius: 10px; overflow: auto; max-width: 280px; word-wrap: break-word;">
-                                <a href="${source.source_url}" target="_blank" style="display: block;">
-                                    <iframe src="${source.source_url}" width="100%" height="100" scrolling="no" style="border: none;"></iframe>
+                            <div class="source" style="border: 1px solid #ccc; border-radius: 10px; overflow: auto; max-width: 280px; word-wrap: break-word; margin-bottom: 10px;">
+                                <a href="${source.source_url}" target="_blank" style="display: block; padding: 10px; text-decoration: none; color: black;">
+                                    <img src="http://www.google.com/s2/favicons?domain=${source.source_url}" alt="Favicon" style="width: 24px; height: 24px; margin-right: 10px;">
+                                    ${source.source_url}
                                 </a>
-                                <div style="text-align: center; padding: 10px;">
-                                    <a href="${source.source_url}" target="_blank">${source.filename}</a>
-                                </div>
                             </div>
                         `;
                     });
@@ -427,7 +431,7 @@
         }
 
         document.getElementById('close-button').addEventListener('click', function() {
-            parent.closeChatbot();
+            window.parent.closeChatbot();
         });
 
         function botResponse(rawText) {

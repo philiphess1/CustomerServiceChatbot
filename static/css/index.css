@@ -192,6 +192,10 @@
             position: relative; /* Add this line */
         }
         
+        .source a:hover {
+            background-color: #f0f0f0;
+        }
+
         .right-msg .msg-bubble::after {
             content: "";
             position: absolute;
