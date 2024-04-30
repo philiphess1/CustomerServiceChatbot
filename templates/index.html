@@ -12,7 +12,6 @@
 </head>
 <body>
     <div class="widget">
-        <!-- <div class="widget-button" id="widget-button"></div> -->
         <div class="chatbot" id="chatbot">
             <div class="chatbox">
                 <div class="chatbox-header">
@@ -22,10 +21,10 @@
                         </div>
                         <div class="chatbox-top">{{ settings.chatbot_title }}</div> 
                     </span>
-                    <div class="chatbox-close">
+                    <!-- will need to write JS to inject close button on mobile -->
+                    <!-- <div class="chatbox-close">
                         <img id="close-button" class="close-button" src="{{ url_for('static', filename='images/down-arrow.svg') }}" alt="Close">
-                    </div>
-                    <!-- <div class="chatbox-close" id="chatbox-close">X</div> -->
+                    </div> -->
                 </div>
                 <div class="chatbox-body">
                     <!-- Chat messages go here -->

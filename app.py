@@ -518,6 +518,44 @@ def chatbot(user_id, chatbot_id):
 
     return render_template('index.html', settings=settings, user_id=user_id, question_list=question_list)
 
+from flask import render_template_string, Response
+
+@app.route('/<int:user_id>/<int:chatbot_id>/popup.js')
+def serve_js(user_id, chatbot_id):
+    # Query PostgreSQL to get the settings
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message, LLM FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    row = g.cursor.fetchone()
+
+    if row is None:
+        return "No settings found for the given user_id and chatbot_id", 404
+
+    settings = {
+        'widget_icon': row[0],
+        'background_color': row[1],
+        'font_style': row[2],
+        'bot_temperature': row[3],
+        'greeting_message': row[4],
+        'custom_prompt': row[5],
+        'dot_color': row[6],
+        'logo': row[7],
+        'chatbot_title': row[8],
+        'title_color': row[9],
+        'border_color': row[10],
+        'primary_color':row[11],
+        'secondary_color':row[12],
+        'popup_message':row[13],
+        'LLM': row[14]
+    }
+
+    # Load the template from the file
+    with open('templates/popup.js', 'r') as file:
+        template = file.read()
+
+    # Render the template with the settings
+    js_code = render_template_string(template, **settings)
+
+    return Response(js_code, mimetype='text/javascript')
+
 @app.route('/<int:user_id>/<int:chatbot_id>/chat', methods=['POST'])
 def chat(user_id, chatbot_id):
     # Get the user's plan
