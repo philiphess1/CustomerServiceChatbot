@@ -529,6 +529,8 @@ def serve_js(user_id, chatbot_id):
     if row is None:
         return "No settings found for the given user_id and chatbot_id", 404
 
+
+    #Pass in the integration page customization stuff like popup mesage and widget icon and not the settings
     settings = {
         'widget_icon': row[0],
         'background_color': row[1],
