@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session
+from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session, Response
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
 from langchain_pinecone import Pinecone
 from pinecone import Pinecone as PineconeClient
@@ -518,43 +518,128 @@ def chatbot(user_id, chatbot_id):
 
     return render_template('index.html', settings=settings, user_id=user_id, question_list=question_list)
 
-from flask import render_template_string, Response
-
 @app.route('/<int:user_id>/<int:chatbot_id>/popup.js')
 def serve_js(user_id, chatbot_id):
-    # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color,primary_color,secondary_color,popup_message, LLM FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    # Query PostgreSQL to get the widget_icon_url and popup_message
+    g.cursor.execute("SELECT widget_icon_url, popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
         return "No settings found for the given user_id and chatbot_id", 404
 
-
-    #Pass in the integration page customization stuff like popup mesage and widget icon and not the settings
+    # Pass in the widget_icon_url and popup_message
     settings = {
         'widget_icon': row[0],
-        'background_color': row[1],
-        'font_style': row[2],
-        'bot_temperature': row[3],
-        'greeting_message': row[4],
-        'custom_prompt': row[5],
-        'dot_color': row[6],
-        'logo': row[7],
-        'chatbot_title': row[8],
-        'title_color': row[9],
-        'border_color': row[10],
-        'primary_color':row[11],
-        'secondary_color':row[12],
-        'popup_message':row[13],
-        'LLM': row[14]
+        'popup_message': row[1]
     }
 
-    # Load the template from the file
-    with open('templates/popup.js', 'r') as file:
-        template = file.read()
+    # Generate the JavaScript code
+    js_code = f"""
+    // chatbot.js
 
-    # Render the template with the settings
-    js_code = render_template_string(template, **settings)
+    // Function to inject the chatbot GUI into the website
+    function injectChatbot() {{
+        console.log('injectChatbot function called');
+        var chatbotContainer = document.createElement('div');
+        chatbotContainer.id = 'chatbotContainer';
+        chatbotContainer.style.position = 'fixed';
+        chatbotContainer.style.bottom = '20px';
+        chatbotContainer.style.right = '20px';
+        chatbotContainer.style.zIndex = '9999';
+        chatbotContainer.style.backgroundColor = '#ffffff';
+        chatbotContainer.style.border = '1px solid #ccc';
+        chatbotContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+        
+        var chatbotIframe = document.createElement('iframe');
+        chatbotIframe.src = 'http://127.0.0.1:5000/{user_id}/{chatbot_id}';
+        chatbotIframe.width = '360.5';
+        chatbotIframe.height = '600';
+        chatbotIframe.style.border = 'none';
+        chatbotIframe.id = 'e';
+        chatbotIframe.style.display = 'None';
+        chatbotIframe.style.position = 'fixed';
+        chatbotIframe.style.bottom = '100px';
+        chatbotIframe.style.right = '0';
+        chatbotIframe.style.zIndex = '9999';
+        chatbotIframe.style.overflow = 'hidden';
+        
+        var toggleButton = document.createElement('img');
+        toggleButton.id = 'b';
+        toggleButton.src = 'https://app.eccoai.org//static/images/{settings["widget_icon"]}';
+        toggleButton.alt = 'Chat';
+        toggleButton.style.width = '80px';
+        toggleButton.style.height = '80px';
+        toggleButton.style.position = 'fixed';
+        toggleButton.style.bottom = '10px';
+        toggleButton.style.right = '10px';
+        toggleButton.style.zIndex = '1000';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.style.transition = 'transform 0.3s ease-in-out';
+
+        var welcomeMessage = document.createElement('div');
+        welcomeMessage.id = 'p';
+        welcomeMessage.textContent = '{settings["popup_message"]}';
+        welcomeMessage.style.display = 'block';
+        welcomeMessage.style.position = 'fixed';
+        welcomeMessage.style.bottom = '100px';
+        welcomeMessage.style.right = '15px';
+        welcomeMessage.style.zIndex = '10000';
+        welcomeMessage.style.background = '#fff';
+        welcomeMessage.style.border = '1px solid #ccc';
+        welcomeMessage.style.padding = '10px';
+        welcomeMessage.style.borderRadius = '5px';
+        welcomeMessage.style.boxShadow = '0 0 10px rgba(0,0,0,.1)';
+
+        var closeButton = document.createElement('span');
+        closeButton.id = 'c';
+        closeButton.style.display = 'none';
+        closeButton.style.position = 'fixed';
+        closeButton.style.bottom = '128px';
+        closeButton.style.right = '10px';
+        closeButton.style.zIndex = '10001';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.padding = '2px 6px';
+        closeButton.style.borderRadius = '10px';
+        closeButton.style.backgroundColor = '#dadada';
+        closeButton.style.fontFamily = 'arial';
+        closeButton.style.color = '#4e4e4e';
+        closeButton.textContent = 'X';
+
+        chatbotContainer.appendChild(welcomeMessage);
+        chatbotContainer.appendChild(closeButton);
+        chatbotContainer.appendChild(toggleButton);
+        chatbotContainer.appendChild(chatbotIframe);
+        document.body.appendChild(chatbotContainer);
+
+        var p=document.getElementById('p'),c=document.getElementById('c'),b=document.getElementById('b');
+        p.onmouseover=c.onmouseover=function(){{c.style.display='block'}};
+        p.onmouseout=function(){{c.style.display='none'}};
+        c.onclick=function(){{p.style.display=c.style.display='none'}};
+        b.addEventListener('mouseover', function() {{
+            this.style.transform = 'scale(1.1)';
+        }});
+        b.addEventListener('mouseout', function() {{
+            this.style.transform = 'scale(1)';
+        }});
+        b.addEventListener('click', function() {{
+            var iframe = document.getElementById('e');
+            if (iframe.style.display === 'none') {{
+                iframe.style.display = 'block';
+                p.style.display = 'none'; // hide the 'p' element
+            }} else {{
+                iframe.style.display = 'none';
+            }}
+        }});
+        function closeChatbot() {{
+            var iframe = document.getElementById('e');
+            iframe.style.display = 'none';
+        }}
+    }}
+    document.addEventListener('DOMContentLoaded', function() {{
+        console.log('DOMContentLoaded event fired');
+        injectChatbot();
+    }});
+    """
 
     return Response(js_code, mimetype='text/javascript')
 
