@@ -626,14 +626,22 @@ def serve_js(user_id, chatbot_id):
             this.style.transform = 'scale(1)';
         }});
         b.addEventListener('click', function() {{
-            var iframe = document.getElementById('e');
-            if (iframe.style.display === 'none') {{
-                iframe.style.display = 'block';
-                p.style.display = 'none'; // hide the 'p' element
-            }} else {{
-                iframe.style.display = 'none';
-            }}
-        }});
+        var iframe = document.getElementById('e');
+        if (iframe.style.display === 'none') {{
+            iframe.style.display = 'block';
+            iframe.style.opacity = 0;
+            iframe.style.transformOrigin = 'bottom right';  
+            iframe.style.transform = 'scale(0)'; // start from no size
+            iframe.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out'; // transition settings
+            setTimeout(function() {{
+                iframe.style.opacity = 1;
+                iframe.style.transform = 'scale(1)'; // grow to full size
+            }}, 0);
+            p.style.display = 'none'; // hide the 'p' element
+        }} else {{
+            iframe.style.display = 'none';
+        }}
+    }});
         function closeChatbot() {{
             var iframe = document.getElementById('e');
             iframe.style.display = 'none';
