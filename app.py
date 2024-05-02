@@ -521,7 +521,7 @@ def chatbot(user_id, chatbot_id):
 @app.route('/<int:user_id>/<int:chatbot_id>/popup.js')
 def serve_js(user_id, chatbot_id):
     # Query PostgreSQL to get the widget_icon_url and popup_message
-    g.cursor.execute("SELECT widget_icon_url, popup_message FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, popup_message, font_style FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -530,7 +530,8 @@ def serve_js(user_id, chatbot_id):
     # Pass in the widget_icon_url and popup_message
     settings = {
         'widget_icon': row[0],
-        'popup_message': row[1]
+        'popup_message': row[1],
+        'font_style': row[2]
     }
 
     # Generate the JavaScript code
@@ -554,12 +555,14 @@ def serve_js(user_id, chatbot_id):
         chatbotIframe.src = 'http://127.0.0.1:5000/{user_id}/{chatbot_id}';
         chatbotIframe.width = '360.5';
         chatbotIframe.height = '600';
+        chatbotIframe.style.borderRadius = '10px';
         chatbotIframe.style.border = 'none';
         chatbotIframe.id = 'e';
         chatbotIframe.style.display = 'None';
         chatbotIframe.style.position = 'fixed';
         chatbotIframe.style.bottom = '100px';
-        chatbotIframe.style.right = '0';
+        chatbotIframe.style.right = '10px';
+        chatbotIframe.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
         chatbotIframe.style.zIndex = '9999';
         chatbotIframe.style.overflow = 'hidden';
         
@@ -579,6 +582,7 @@ def serve_js(user_id, chatbot_id):
         var welcomeMessage = document.createElement('div');
         welcomeMessage.id = 'p';
         welcomeMessage.textContent = '{settings["popup_message"]}';
+        welcomeMessage.style.fontFamily = '{settings["font_style"]}';
         welcomeMessage.style.display = 'block';
         welcomeMessage.style.position = 'fixed';
         welcomeMessage.style.bottom = '100px';
