@@ -168,52 +168,80 @@ html, body {
     .sidenav a {font-size: 18px;}
   }
 
+  .webpage {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Aligns text to the left */
+    height: 73px; /* Adjust as needed */
+    background-color: rgb(255, 255, 255);
+    border-radius: 10px;
+    margin: 10px 0;
+    padding: 10px;
+  }
+  .webpage a {
+    text-decoration: none;
+    color: black;
+    font-size: 22px;
+    margin-left: 15px;
+  }
+
 .code-container {
   position: relative;
-  padding: 10px;
-  margin: 15px 0;
+  padding: 0 10px 10px 10px; /* Top padding set to 0 */
+  margin: 0 0 15px 100px; /* Top margin set to 0 */
   overflow-x: auto;
   overflow-y: auto; /* Add vertical scroll */
   max-height: 600px; /* Increase the height to 600px */
-  margin-left: 100px;
-  margin-right: 15px;
   border-radius: 10px; /* Add rounded edges */
 }
-
-.copy-btn {
+.copy-img {
     position: absolute;
-    top: 25px;
+    top: 15px;
     right: 15px;
+    width: 30px;
+    height: 30px;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  color: #313131;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  top: 18px;
+  right: 48px;
 }
 
 .code-container pre {
-    background-color: #111; /* Change this to match your website's color scheme */
-    border: 1px solid #ccc; /* Change this to match your website's color scheme */
-    padding: 10px;
-    margin: 10px 0;
-    overflow-x: auto;
+  /* existing styles */
+  border-radius: 10px; /* rounded corners */
+  line-height: 1.5; /* space between lines */
+  font-size: 18px; /* size of the text */
+  text-align: left; /* align text to the left */
+  padding: 10px; /* padding around the text */
+  background-color: none;
 }
 
-.code-container pre {
-    /* existing styles */
-    border-radius: 10px; /* rounded corners */
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* shadow effect */
-    line-height: 1.5; /* space between lines */
-    font-size: 14px; /* size of the text */
+:not(pre)>code[class*=language-], .code-container pre[class*=language-] {
+  background: #ffffff; /* Change the background color to pure white */
+  font-size: 20px; /* Increase the font size to 22px */
 }
 
 .code-container code {
     color: #fdfdfd; /* Change this to match your website's color scheme */
     font-family: Verdana, Geneva, Tahoma, sans-serif; /* Change this to match your website's typography */
+    font-size: 22px;
 
 }
 
 .instructions {
     font-family: Tahoma;
     margin-left: 100px; /* left margin of 100px */
+    margin-bottom: 5px;
 }
 body {
-  background-color: rgb(0, 0, 0);
+  background-color: #313131;
   color: rgb(237, 237, 237);
   font-family: Tahoma;
 }

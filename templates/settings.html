@@ -44,8 +44,8 @@
 
         <div id="settings-page">
             <div class="button-holder">
-            <button class="button-35 selected" onclick="showPage('styling-settings')">STYLING SETTINGS</button>
-            <button class="button-35" onclick="showPage('system-settings')">SYSTEM SETTINGS</button>
+            <button class="button-35 selected" onclick="showPage('styling-settings')">Styling Settings</button>
+            <button class="button-35" onclick="showPage('system-settings')">System Settings</button>
             <button class="button-35" onclick="showPage('faq-settings')">FAQ</button>
         </div>
         <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" enctype="multipart/form-data">
@@ -82,9 +82,8 @@
                         <em><small>Must be no more than 20 characters.</small></em><br><br>
                         
                         <label for="popup_message">Pop Up Message:</label><br>
-                        <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}">
+                        <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}" style="min-width: 300px;">
                         <br><em><small>Must be no more than 50 characters.</small></em><br>
-
                     </div>
                     <div class="settings-section">
                         <h3>Branding</h3>
@@ -190,40 +189,7 @@
 
             
     </div>
-    <img id="b" src="https://app.eccoai.org//static/images/{{ settings.widget_icon }}" alt="Chat" style="width: 80px; height: 80px; position: fixed; bottom: 10px; right: 10px; z-index: 1000; cursor: pointer; transition: transform 0.3s ease-in-out;">
-    <div id="p" style="display:block;position:fixed;bottom:100px;right:15px;z-index:10000;background:#fff;border:1px solid #ccc;padding:10px;border-radius:5px;box-shadow:0 0 10px rgba(0,0,0,.1);">{{ settings['popup_message'] }}</div>
-    <span id="c" style="display:none;position:fixed;bottom:128px;right:10px;z-index:10001;cursor:pointer;padding:2px 6px;border-radius:10px;background-color:#dadada;font-family: arial;color: #4e4e4e;">x</span>
-    <iframe src="https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}" id="e" frameborder="0" scrolling="no" width="400" height="700" style="display: none; position:fixed; bottom:80px; right:0; z-index:9999;"></iframe>
-    <script>
-        var p = document.getElementById('p'), c = document.getElementById('c'), b = document.getElementById('b');
-        p.onmouseover = c.onmouseover = function() { c.style.display = 'block'; };
-        p.onmouseout = function() { c.style.display = 'none'; };
-        c.onclick = function() { p.style.display = c.style.display = 'none'; };
-        b.addEventListener('mouseover', function() {
-            this.style.transform = 'scale(1.1)';
-        });
-        b.addEventListener('mouseout', function() {
-            this.style.transform = 'scale(1)';
-        });
-        b.addEventListener('click', function() {
-            var iframe = document.getElementById('e');
-            if (iframe.style.display === 'none') {
-                iframe.style.display = 'block';
-                p.style.display = 'none'; // hide the 'p' element
-            } else {
-                iframe.style.display = 'none';
-                p.style.display = 'block'; // show the 'p' element
-            }
-        });
-
-        function closeChatbot() {
-            var iframe = document.getElementById('e');
-            iframe.style.display = 'none';
-            p.style.display = 'block'; // show the 'p' element when the chatbot is closed
-        }
-    </script>
-
-    
+    <script type="text/javascript" src="http://127.0.0.1:5000/71/90/popup.js"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 </body>
 </html>
