@@ -48,6 +48,7 @@
             <img src="{{ url_for('static', filename='images/copy.png') }}" class="copy-img" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" onclick="copyCode(this)" style="cursor: pointer;">
             <span class="tooltip">Copy to Clipboard</span>
         </div>
+        <p style="color: #d3cece; margin-top: 5px;">Add this script just before the closing &lt;/body&gt; tag element of your HTML.</p>
     </div>
     <h2 class="instructions">Embedded Chat (iframe)</h2>
     <div class="code-container">
@@ -56,6 +57,7 @@
             <img src="{{ url_for('static', filename='images/copy.png') }}" class="copy-img" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" onclick="copyIframeCode(this)" style="cursor: pointer;">
             <span class="tooltip">Copy to Clipboard</span>
         </div>
+        <p style="color: #d3cece; margin-top: 5px;">Place this code wherever you'd like the iframe to appear on your website.</p>
     </div>
     <script src="{{ url_for('static', filename='js/integrations.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
