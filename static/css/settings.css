@@ -278,7 +278,7 @@ body {
 
 input[type="submit"] {
     margin-left: 100px;
-    background-color: rgb(178, 226, 75);
+    background-color: #5C6BC0;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -288,7 +288,7 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-  background-color: #3e8e41;
+  background-color: #3F51B5;
 }
 
 select#font_style {
@@ -387,7 +387,7 @@ textarea {
 
 .button-35 {
   align-items: center;
-  background-color: #000000;
+  background-color: #5C6BC0;
   border-radius: 12px;
   box-shadow: transparent 0 0 0 3px, rgba(18, 18, 18, .1) 0 6px 20px;
   box-sizing: border-box;
@@ -416,12 +416,12 @@ textarea {
 }
 
 .button-35:hover {
-  box-shadow: transparent 0 0 0 3px, rgba(18, 18, 18, .2) 0 6px 20px;
-  border: 4px solid #121212;
+  box-shadow: transparent 0 0 0 3px, rgba(96, 95, 95, 0.2) 0 6px 20px;
+  border: 4px solid #c8c4c4;
 }
 
 .button-35.selected {
-  border: 4px solid #121212;
+  border: 4px solid #ffffff;
 }
 
 .button-holder {

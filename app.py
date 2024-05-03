@@ -640,12 +640,20 @@ def serve_js(user_id, chatbot_id):
             }}, 0);
             p.style.display = 'none'; // hide the 'p' element
         }} else {{
-            iframe.style.display = 'none';
+            iframe.style.opacity = 0;
+            iframe.style.transform = 'scale(0)'; // shrink to no size
+            setTimeout(function() {{
+                iframe.style.display = 'none';
+            }}, 200); // after transition ends
         }}
-    }});
+        }});
         function closeChatbot() {{
             var iframe = document.getElementById('e');
-            iframe.style.display = 'none';
+            iframe.style.opacity = 0;
+            iframe.style.transform = 'scale(0)'; // shrink to no size
+            setTimeout(function() {{
+                iframe.style.display = 'none';
+            }}, 200); // after transition ends
         }}
     }}
     document.addEventListener('DOMContentLoaded', function() {{
