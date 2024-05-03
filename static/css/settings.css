@@ -235,7 +235,7 @@ body {
 .settings-container {
   display: flex;
   justify-content: space-between;
-  background-color: #fff; /* Moved from .settings-section */
+  background-color: #161616; /* Moved from .settings-section */
   border-radius: 5px; /* Moved from .settings-section */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Moved from .settings-section */
   border: 2px solid #c1c1c1; /* Moved from .settings-section */ /* Added to give some space around the sections */
@@ -250,7 +250,7 @@ body {
 .settings-section1 {
   margin-left: 100px;
   margin-bottom: 25px;
-  background-color: #fff;
+  background-color: #161616;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -455,3 +455,7 @@ body {
   overflow-x: hidden;
 }
 
+body {
+  background-color: rgb(0, 0, 0);
+  color: rgb(237, 237, 237);
+}

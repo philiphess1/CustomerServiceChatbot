@@ -212,3 +212,7 @@ html, body {
     font-family: Arial, sans-serif;
     margin-left: 100px; /* left margin of 100px */
 }
+body {
+  background-color: rgb(0, 0, 0);
+  color: rgb(237, 237, 237);
+}

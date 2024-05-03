@@ -584,6 +584,7 @@ def serve_js(user_id, chatbot_id):
         welcomeMessage.textContent = '{settings["popup_message"]}';
         welcomeMessage.style.fontFamily = '{settings["font_style"]}';
         welcomeMessage.style.display = 'block';
+        welcomeMessage.style.color = 'black';
         welcomeMessage.style.position = 'fixed';
         welcomeMessage.style.bottom = '100px';
         welcomeMessage.style.right = '15px';

@@ -65,7 +65,7 @@ body {
 }
 header {
     background-color: #333;
-    color: #fff;
+    color: #070707;
     padding: 20px;
     text-align: center;
 }
@@ -88,7 +88,7 @@ h3 {
     margin: 20px;
     padding: 40px;
     padding-top: 2px;
-    background-color: #fff;
+    background-color: #161616;
     border: 2px solid #c1c1c1;
     border-radius: 5px;
     margin-top: 50px;
@@ -118,7 +118,7 @@ input[type=file] {
     border: 1px dashed #ccc;
     padding: 20px;
     text-align: center;
-    background-color: #f5f5f5;
+    background-color: #161616;
     transition: background-color 0.3s ease-in-out;
 }
 .upload-area:hover {
@@ -144,7 +144,7 @@ input[type=submit]:hover {
 table {
     margin: 2px;
     padding: 20px;
-    background-color: #fff;
+    background-color: #161616;
     border-radius: 5px;
     width: 100%;
     border-collapse: collapse;
@@ -178,7 +178,7 @@ section {
 }
 
 #file-list div {
-    background-color: #fff;
+    background-color: #161616;
     border: 1px solid #ccc;
     margin-bottom: 5px;
     padding: 5px;
@@ -313,7 +313,7 @@ section {
     margin: 20px;
     padding: 20px;
     padding-top: 2px;
-    background-color: #fff;
+    background-color: #161616;
     border: 2px solid #c1c1c1;
     border-radius: 5px;
 }
@@ -560,4 +560,9 @@ section {
 #submit-button:disabled {
   background-color: lightblue;
   color: darkblue;
+}
+
+body {
+  background-color: rgb(0, 0, 0);
+  color: rgb(237, 237, 237);
 }
