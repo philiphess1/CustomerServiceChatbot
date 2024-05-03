@@ -255,7 +255,7 @@
                     .slice(0, 3) // Get the first URL source
                     .forEach((source) => {
                         sourcesHTML += `
-                            <div class="source" style="border: 1px solid #ccc; border-radius: 10px; overflow: auto; max-width: 280px; word-wrap: break-word; margin-bottom: 10px; background-color: lightgrey;">
+                            <div class="source" style="border: 1px solid #ccc; border-radius: 10px; overflow: auto; max-width: 280px; word-wrap: break-word; margin-bottom: 10px; background-color: white;">
                                 <a href="${source.source_url}" target="_blank" style="display: block; padding: 10px; text-decoration: none; color: black;">
                                     <img src="http://www.google.com/s2/favicons?domain=${source.source_url}" alt="Favicon" style="width: 24px; height: 24px; margin-right: 10px;">
                                     ${source.source_url}
