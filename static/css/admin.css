@@ -122,7 +122,7 @@ input[type=file] {
     transition: background-color 0.3s ease-in-out;
 }
 .upload-area:hover {
-    background-color: #ccdaf5;
+    background-color: #3e485d;
 }
 #upload-area.dragover {
     background-color: #ccdaf5;
@@ -161,10 +161,10 @@ th {
     border-bottom: 2px solid #9d9d9d;
 }
 tr:hover {
-    background-color: #e0e0e0;
+    background-color: #454545;
 }
 .final-row:hover{
-    background-color: #ffffff;
+    background-color: #454545;
 }
 .sub-column {
     color: #9d9d9d;
@@ -565,4 +565,5 @@ section {
 body {
   background-color: rgb(0, 0, 0);
   color: rgb(237, 237, 237);
+  font-family: Tahoma;
 }

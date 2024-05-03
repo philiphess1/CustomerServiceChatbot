@@ -55,7 +55,7 @@ for (var i = 0; i < btns.length; i++) {
     // If the id is the same as the page
     if (id === page) {
         // Change the background color of the button
-        btns[i].style.backgroundColor = '#444';
+        btns[i].style.backgroundColor = '#818181';
     }
 }
 

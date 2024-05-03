@@ -177,7 +177,7 @@ textarea#greeting_message {
   }
   
   .btns:hover {
-    background-color: #444;
+    background-color: #b8b8b8;
   }
 
 
@@ -262,13 +262,13 @@ body {
 .settings-section h3 {
     font-size: 20px;
     margin-bottom: 20px;
-    color: #333;
+    color: #a5a5a5;
 }
 
 .settings-section1 h3 {
   font-size: 20px;
   margin-bottom: 20px;
-  color: #333;
+  color: #a5a5a5;
 }
 
 .settings-section form label {
@@ -458,4 +458,5 @@ body {
 body {
   background-color: rgb(0, 0, 0);
   color: rgb(237, 237, 237);
+  font-family: Tahoma;
 }
