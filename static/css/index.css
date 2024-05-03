@@ -279,15 +279,15 @@
             font-weight: bold;
         }
 
-        .right-msg .msg-bubble {
-            background-color: #318aff;
-            color: white;
-            position: relative; /* Add this line */
-        }
-        
         .source a:hover {
             background-color: darkgrey;
         }
+
+        .right-msg .msg-bubble {
+            background-color: var(--user-bubble-color);
+            color: white;
+            position: relative; /* Add this line */
+        }       
 
         .right-msg .msg-bubble::after {
             content: "";
@@ -297,14 +297,14 @@
             width: 0;
             height: 0;
             border: 10px solid transparent;
-            border-left-color: #318aff;
+            border-left-color: var(--user-bubble-color);
             border-right: 0;
             margin-right: -10px;
             transform: rotate(270deg);
         }
         
         .left-msg .msg-bubble {
-            background-color: #ffffff;
+            background-color: var(--bot-bubble-color);
             color: black;
             position: relative; 
         }
@@ -317,7 +317,7 @@
             width: 0;
             height: 0;
             border: 10px solid transparent;
-            border-right-color: #ffffff;
+            border-right-color: var(--bot-bubble-color);
             border-left: 0;
             margin-left: -10px;
             transform: rotate(90deg);
