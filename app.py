@@ -557,7 +557,7 @@ def serve_js(user_id, chatbot_id):
         chatbotContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
         
         var chatbotIframe = document.createElement('iframe');
-        chatbotIframe.src = 'http://127.0.0.1:5000/{user_id}/{chatbot_id}';
+        chatbotIframe.src = 'https://app.eccoai.org/{user_id}/{chatbot_id}';
         chatbotIframe.width = '360.5';
         chatbotIframe.height = '600';
         chatbotIframe.style.borderRadius = '10px';

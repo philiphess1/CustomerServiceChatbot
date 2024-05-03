@@ -35,16 +35,16 @@
     <h2 class="instructions">Web Page</h2>
     <div class="code-container">
         <div class="webpage">
-            <a id="webpage-link">http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}/</a>
+            <a id="webpage-link">https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}</a>
         </div>
-        <a id="view-website-btn" href="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}" target="_blank">
+        <a id="view-website-btn" href="https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}" target="_blank">
             <img src="{{ url_for('static', filename='images/globe.png') }}" class="copy-img" style="cursor: pointer;"> <!-- Replace the button with an image -->
         </a>
     </div>
     <h2 class="instructions">Popup Chat</h2>
     <div class="code-container">
         <div class="webpage">
-            <pre><code id="chatbot-code" class="language-javascript">&lt;script type="text/javascript" src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}/popup.js"&gt;&lt;/script&gt;</code></pre>
+            <pre><code id="chatbot-code" class="language-javascript">&lt;script type="text/javascript" src="https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}/popup.js"&gt;&lt;/script&gt;</code></pre>
             <img src="{{ url_for('static', filename='images/copy.png') }}" class="copy-img" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" onclick="copyCode(this)" style="cursor: pointer;">
             <span class="tooltip">Copy to Clipboard</span>
         </div>
@@ -52,7 +52,7 @@
     <h2 class="instructions">Embedded Chat (iframe)</h2>
     <div class="code-container">
         <div class="webpage">
-            <pre><code id="iframe-code" class="language-html">&lt;iframe id="chatbot-iframe" src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}" width="100%" height="700" style="visibility: hidden; border: none;" onload="this.style.visibility='visible';" allow="autoplay; clipboard-read; clipboard-write"&gt;&lt;/iframe&gt;</code></pre>
+            <pre><code id="iframe-code" class="language-html">&lt;iframe id="chatbot-iframe" src="https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}" width="100%" height="700" style="visibility: hidden; border: none;" onload="this.style.visibility='visible';" allow="autoplay; clipboard-read; clipboard-write"&gt;&lt;/iframe&gt;</code></pre>
             <img src="{{ url_for('static', filename='images/copy.png') }}" class="copy-img" onmouseover="showTooltip(this)" onmouseout="hideTooltip(this)" onclick="copyIframeCode(this)" style="cursor: pointer;">
             <span class="tooltip">Copy to Clipboard</span>
         </div>
@@ -60,9 +60,5 @@
     <script src="{{ url_for('static', filename='js/integrations.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js"></script>
-
-
-    
-
 </body>
 </html>
