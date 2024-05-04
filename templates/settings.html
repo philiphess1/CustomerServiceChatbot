@@ -55,34 +55,45 @@
                     <div class="tooltip-container">
                         <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
                         <div class="tooltip-text">Change the styling settings below to match your ideal branding, then click the save button.</div>
-                    </div>   
+                    </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                    <div class="alert {{ category }}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
                 </div>         
                 <div class="settings-container">
                     <div class="settings-section">
                         <h3>Styling</h3>
                         
                         <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}">
-                        <label for="title_color">Title Font Color.</label>
+                        <label for="title_color">Title Font Color</label>
                         <br><br>
                         
                         <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}">
-                        <label for="border_color">Banner Backround Color.</label>
+                        <label for="border_color">Banner Backround Color</label>
                         <br><br>
 
                         <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}">
-                        <label for="background_color">Chatbot Background Color.</label>
+                        <label for="background_color">Chatbot Background Color</label>
                         <br><br>
                         
                         <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}">
-                        <label for="dot_color">Dot Animation Color.</label>
+                        <label for="dot_color">Dot Animation Color</label>
                         <br><br>
 
                         <input type="color" id="bot_bubble_color" name="bot_bubble_color" value="{{ settings['bot_bubble_color'] }}">
-                        <label for="bot_bubble_color">Bot Text Bubble Color.</label>
+                        <label for="bot_bubble_color">Bot Text Bubble Color</label>
                         <br><br>
                 
                         <input type="color" id="user_bubble_color" name="user_bubble_color" value="{{ settings['user_bubble_color'] }}">
-                        <label for="user_bubble_color">User Text Bubble Color.</label>
+                        <label for="user_bubble_color">User Text Bubble Color</label>
                         <br><br>
                         
                         <label for="chatbot_title">Chatbot Title:</label>
@@ -102,10 +113,12 @@
 
                         <label for="logo">Logo:</label><br>
                         <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" style="width: 100px; height: 100px;">
+                        <br>
                         <input type="file" id="logo" name="logo" accept="image/png" {% if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}><br>
                         
                         <br>
                         <label for="font_style">Font Style:</label>
+                        <br>
                         <select id="font_style" name="font_style">
                             {% set font_options = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Trebuchet MS', 'Comic Sans MS', 'Palatino Linotype', 'Arial Black', 'Book Antiqua', 'Garamond', 'Courier', 'Franklin Gothic Medium', 'Copperplate', 'Century Gothic', 'Rockwell', 'Baskerville', 'Californian FB', 'Candara', 'Consolas', 'Ebrima', 'Cambria', 'MS Gothic', 'MS Mincho'] %}
                             {% for font in font_options %}
@@ -158,7 +171,7 @@
                     <em><small>Must be no more than 250 characters.</small></em><br><br>
 
                     <label for="custom_prompt">Custom Prompt:</label>
-                    <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000">{{ settings['custom_prompt'] }}</textarea>
+                    <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000" style="resize: none;">{{ settings['custom_prompt'] }}</textarea>
                     <em><small>Must be no more than 1000 characters.</small></em><br><br>
                 </div>
             </div>
@@ -177,17 +190,15 @@
                         <div class="premade-question" data-saved="true" id="question_{{ id }}">
                             <input type="hidden" name="premade_question_ids[]" value="{{ id }}">
                             <label for="premade_question_{{ loop.index }}">Question:</label>
-                            <input type="text" id="premade_question_{{ loop.index }}" name="premade_questions[]" value="{{ question }}" required readonly>
+                            <textarea id="premade_question_{{ loop.index }}" name="premade_questions[]" required readonly>{{ question }}</textarea>
                             <label for="premade_response_{{ loop.index }}">Response:</label>
-                            <input type="text" id="premade_response_{{ loop.index }}" name="premade_responses[]" value="{{ response }}" required readonly>
-                            <button type="button" class="delete-premade-question">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                            <textarea id="premade_response_{{ loop.index }}" name="premade_responses[]" required readonly>{{ response }}</textarea>
+                            <button type="button" class="delete-premade-question">Delete</button>
                         </div>
                         {% endfor %}
                     </div>
                     <br>
-                    <button type="button" id="add-premade-question">Add another question</button>
+                    <button type="button" id="add-premade-question">Add Question</button>
                 </div>
             </div> 
             <input type="submit" value="Save Settings">          

@@ -19,8 +19,49 @@ h3 {
   color: #9d9d9d;
 }
 
-.premade-question {
-  margin-bottom: 20px;
+ul.select2-results__options li {
+  color: black;
+}
+
+#faq-settings label {
+  display: block;
+  font-family: Arial, sans-serif;
+  margin-bottom: 5px;
+}
+
+#faq-settings input[type="text"] {
+  width: 80%; /* Adjust as needed */
+  padding: 5px; /* Adjust as needed */
+}
+
+.delete-premade-question {
+  color: white;
+  background-color: red;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#add-premade-question {
+  color: rgb(0, 0, 0);
+  background-color: #BFEF4B;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#add-premade-question:hover {
+  background-color: darkgreen;
+}
+
+.delete-premade-question:hover {
+  background-color: darkred;
 }
 
 .button-home {
@@ -57,6 +98,18 @@ h3 {
   font-size: 40px;
 }
 
+.premade-question {
+  padding: 10px;
+  background-color: #dcdcdc;
+  border: #111 1px solid;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.premade-question label {
+  color: #000000;
+}
+
 .company-name {
   margin-right: 10px;
   font-family: Arial, sans-serif; 
@@ -81,6 +134,15 @@ textarea {
   resize: none;
   width: 100%;
   height: 100px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.premade-question textarea {
+  font-family: Arial, sans-serif;
+  resize: none;
+  width: 100%;
+  height: 50px;
   padding: 10px;
   box-sizing: border-box;
 }
@@ -368,12 +430,6 @@ input#background_color {
   margin-left: 8px;
 }
 
-.info-bundle {
-  display: flex;
-  /* justify-content: space-between; */
-  align-items: center;
-}
-
 .subpage {
   display: none;
 }
@@ -460,4 +516,49 @@ body {
   background-color: #313131;
   color: rgb(237, 237, 237);
   font-family: Tahoma;
+}
+
+.info-bundle {
+  display: flex;
+  align-items: center;
+}
+
+.info-content {
+  display: flex;
+  align-items: center;
+}
+
+.flash-messages {
+  display: flex;
+  justify-content: center;
+  width: auto;
+  pointer-events: none;
+  padding-top: 20px;
+  margin-left: 20px;
+}
+
+.alert {
+  pointer-events: auto;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 15px;
+  padding: 15px;
+  opacity: 0.9;
+  transition: opacity 0.8s;
+  animation: fadeout 10s forwards;
+}
+
+.alert.error {
+  background-color: red;
+}
+
+.alert.success {
+  background-color: #BFEF4B;
+  color: black;
+}
+
+@keyframes fadeout {
+  from { opacity: 0.9; }
+  to   { opacity: 0; }
 }

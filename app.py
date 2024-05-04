@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session, Response
+from flask import Flask, render_template, request, redirect, url_for, jsonify, g, flash, session, Response, get_flashed_messages
 from flask_login import login_required, LoginManager, login_user, UserMixin, logout_user, current_user
 from langchain_pinecone import Pinecone
 from pinecone import Pinecone as PineconeClient
@@ -36,7 +36,6 @@ import pickle
 import stripe
 from stripe.error import SignatureVerificationError
 from azure.core.exceptions import ResourceNotFoundError
-
 
 load_dotenv()
 
@@ -1169,22 +1168,44 @@ def get_existing_logo_url(chatbot_id):
 
 @app.route('/<int:chatbot_id>/update_chatbot_settings', methods=['POST'])
 def update_chatbot_settings(chatbot_id):
+    user_id = current_user.id
     # Process the logo file first, if it exists
     logo_url = None  # Default to None in case no logo is uploaded
     if 'logo' in request.files:
         file = request.files['logo']
         if file.filename != '' and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            # You might want to generate a unique filename here to avoid overwrites
-            # For example, append a timestamp or a unique ID to the filename
-            
+
+            # Modify the filename to include the user_id and chatbot_id
+            unique_filename = f"{user_id}_{chatbot_id}_{filename}"
+
+            # Create a blob client using the unique file name as the name for the blob
             blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-            blob_client = blob_service_client.get_blob_client(container=container_name, blob=filename)
+            blob_client = blob_service_client.get_blob_client(container=container_name, blob=unique_filename)
+
+            # Check if the file already exists in the blob storage
+            try:
+                blob_client.get_blob_properties()
+                flash('Please upload a different logo.', 'error')
+                return redirect(url_for('settings', chatbot_id=chatbot_id))
+            except ResourceNotFoundError:
+                # The file does not exist in the blob storage, so we can upload it
+                pass
 
             blob_client.upload_blob(file, blob_type="BlockBlob", content_settings=ContentSettings(content_type='image/png', content_disposition='inline'))
 
             logo_url = blob_client.url
-            # If you're using a unique filename, make sure to update the logo URL with the new filename
+
+            # Delete the old logo
+            old_logo_url = get_existing_logo_url(chatbot_id)
+            if old_logo_url:
+                old_logo_filename = old_logo_url.split('/')[-1]
+                old_logo_blob_client = blob_service_client.get_blob_client(container=container_name, blob=old_logo_filename)
+                try:
+                    old_logo_blob_client.delete_blob()
+                except ResourceNotFoundError:
+                    # The old logo file does not exist in the blob storage, so we can ignore this error
+                    pass
     
     # Process the rest of the form data
     widget_icon = request.form.get('icon-select')

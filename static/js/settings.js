@@ -173,9 +173,9 @@ document.getElementById('add-premade-question').addEventListener('click', functi
     question.className = 'premade-question';
     question.innerHTML = `
         <label for="premade_question_${index}">Question:</label>
-        <input type="text" id="premade_question_${index}" name="premade_questions[]" required>
+        <textarea id="premade_question_${index}" name="premade_questions[]" required></textarea>
         <label for="premade_response_${index}">Response:</label>
-        <input type="text" id="premade_response_${index}" name="premade_responses[]" required>
+        <textarea id="premade_response_${index}" name="premade_responses[]" required></textarea>
         <button type="button" class="delete-premade-question">
             <i class="fas fa-trash"></i>
         </button>
