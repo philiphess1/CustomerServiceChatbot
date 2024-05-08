@@ -36,6 +36,7 @@ import pickle
 import stripe
 from stripe.error import SignatureVerificationError
 from azure.core.exceptions import ResourceNotFoundError
+import json
 
 load_dotenv()
 
@@ -585,7 +586,7 @@ def serve_js(user_id, chatbot_id):
 
         var welcomeMessage = document.createElement('div');
         welcomeMessage.id = 'p';
-        welcomeMessage.textContent = '{settings["popup_message"]}';
+        welcomeMessage.textContent = {json.dumps(settings["popup_message"])};
         welcomeMessage.style.fontFamily = '{settings["font_style"]}';
         welcomeMessage.style.display = 'block';
         welcomeMessage.style.color = 'black';
