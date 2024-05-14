@@ -64,12 +64,12 @@ var myChart = new Chart(ctx, {
         datasets: [{
             data: [0, 0, 0], // Initialize with 0, will be updated with fetched data
             backgroundColor: [
-                'rgba(75, 192, 192, 0.2)',
+                'rgba(144, 238, 144, 0.2)',
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(128, 128, 128, 0.2)' // Add a color for 'None' feedback
             ],
             borderColor: [
-                'rgba(75, 192, 192, 1)',
+                'rgba(144, 238, 144, 1)',
                 'rgba(255, 99, 132, 1)',
                 'rgba(128, 128, 128, 1)' // Add a color for 'None' feedback
             ],

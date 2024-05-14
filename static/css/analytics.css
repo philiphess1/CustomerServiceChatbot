@@ -175,11 +175,11 @@ h3 {
 
 /* Styles for table rows based on feedback type */
 .like {
-    background-color: lightgreen;
+    background-color: darkgreen;
 }
 
 .dislike {
-    background-color: lightcoral;
+    background-color: darkred;
 }
 
 .flex-container {

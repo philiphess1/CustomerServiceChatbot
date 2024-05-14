@@ -222,7 +222,8 @@
             width: 100%;
             font-family: 'Roboto', sans-serif;
             font-style: italic; 
-            color: grey; 
+            color: grey;
+            padding-bottom: 5px;
         }
 
         .powered-by img {
