@@ -729,11 +729,11 @@ def chat(user_id, chatbot_id):
         return document_separator.join(doc_strings)
     
     
-    _template = """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
+    _template = """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language. Do not alter the question if it's a simple phrase like "Okay!", "Cool!", "Sounds Good!", or "Thanks!".
 
     Chat History:
     {chat_history}
-    Follow Up Input: {question}
+    Follow Up Question: {question}
     Standalone question:"""
     CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_template)
 
