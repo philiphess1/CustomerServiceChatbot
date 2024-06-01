@@ -13,6 +13,9 @@
         <a href="https://www.eccoai.org/">
             <img src="{{ url_for('static', filename='images/Ecco_logo.png') }}" alt="Ecco Logo" style="height: 75px;">
         </a>
+        <p class="welcome">
+            Welcome, {{name}}!
+        </p>
         <div style="margin-right: 50px;">
             <a href="https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM" class="billing_link">Billing</a>
             <button class="button_logout" onclick="location.href='https://www.eccoai.org/'">Logout</button>

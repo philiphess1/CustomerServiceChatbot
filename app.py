@@ -389,8 +389,10 @@ def home():
     user_plan = g.cursor.fetchone()[0]
 
     # Fetch the user's Stripe customer ID
-    g.cursor.execute("SELECT stripe_customer_id FROM users WHERE id = %s", (current_user.id,))
-    stripe_customer_id = g.cursor.fetchone()[0]
+    g.cursor.execute("SELECT stripe_customer_id, name FROM users WHERE id = %s", (current_user.id,))
+    result = g.cursor.fetchone()
+    stripe_customer_id = result[0]
+    name = result[1] if result[1] else 'User'
 
     # Fetch the subscriptions from Stripe
     subscriptions = stripe.Subscription.list(customer=stripe_customer_id)
@@ -402,7 +404,7 @@ def home():
     renewal_date = datetime.fromtimestamp(latest_subscription.current_period_end)
 
     # Pass the chatbot settings to the template
-    return render_template('home.html', chatbots=chatbots, count=total_count, user_id=current_user.id, user_plan=user_plan, renewal_date=renewal_date)
+    return render_template('home.html', chatbots=chatbots, count=total_count, user_id=current_user.id, user_plan=user_plan, renewal_date=renewal_date,name=name)
 
 @app.route('/create_chatbot', methods=['POST'])
 @login_required

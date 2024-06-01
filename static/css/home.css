@@ -285,3 +285,13 @@ p {
     margin: 20px 0;
     width: calc(100% - 40px); /* Full width minus padding */
 }
+
+.welcome {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    margin-top: -10px;
+    padding: 0;
+    color: #ffffff;
+}
