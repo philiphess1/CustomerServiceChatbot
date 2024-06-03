@@ -485,7 +485,7 @@ def chatbot(user_id, chatbot_id):
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, LLM, bot_bubble_color, user_bubble_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, LLM, bot_bubble_color, user_bubble_color, include_email_form FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -508,7 +508,8 @@ def chatbot(user_id, chatbot_id):
         'popup_message': row[13],
         'LLM': row[14],
         'bot_bubble_color': row[15],  # Added bot_bubble_color
-        'user_bubble_color': row[16]  # Added user_bubble_color
+        'user_bubble_color': row[16],  # Added user_bubble_color
+        'include_email_form': row[17]
     }
 
     g.cursor.execute("SELECT question, response FROM premade_questions WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id,))
@@ -670,6 +671,20 @@ def serve_js(user_id, chatbot_id):
     """
 
     return Response(js_code, mimetype='text/javascript')
+
+@app.route('/<int:user_id>/<int:chatbot_id>/save-email', methods=['POST'])
+def save_email(user_id, chatbot_id):
+    email = request.form.get('email')
+
+    # Validate the email
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    if not re.match(email_regex, email):
+        return jsonify({'message': 'Invalid email format'}), 400
+
+    # Insert the email into the database
+    g.cursor.execute("INSERT INTO emails (user_id, chatbot_id, email) VALUES (%s, %s, %s)", (user_id, chatbot_id, email))
+    g.db_conn.commit()
+    return jsonify({'message': 'Email saved successfully!'})
 
 @app.route('/<int:user_id>/<int:chatbot_id>/chat', methods=['POST'])
 def chat(user_id, chatbot_id):
@@ -1101,7 +1116,7 @@ def settings(chatbot_id):
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
     user_plan = g.cursor.fetchone()[0]
 
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, LLM, bot_bubble_color, user_bubble_color FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, LLM, bot_bubble_color, user_bubble_color, include_email_form FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     settings = {
@@ -1122,7 +1137,8 @@ def settings(chatbot_id):
         'chatbot_name': row[14],
         'LLM': row[15],
         'bot_bubble_color': row[16],  # Added bot_bubble_color
-        'user_bubble_color': row[17]  # Added user_bubble_color
+        'user_bubble_color': row[17],  # Added user_bubble_color
+        'include_email_form': row[18]
     }
 
     # Fetch the pre-made questions and answers
@@ -1131,14 +1147,14 @@ def settings(chatbot_id):
 
     return render_template('settings.html', settings=settings, user_id=user_id, user_plan=user_plan, chatbot_id=chatbot_id, premade_questions=premade_questions)
 
-def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color):
+def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form):
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s, popup_message = %s, chatbot_name = %s, LLM = %s, bot_bubble_color = %s, user_bubble_color = %s WHERE user_id = %s AND id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, custom_prompt = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s, popup_message = %s, chatbot_name = %s, LLM = %s, bot_bubble_color = %s, user_bubble_color = %s, include_email_form = %s WHERE user_id = %s AND id = %s;
     """
 
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, user_id, chatbot_id)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form, user_id, chatbot_id)) 
     g.db_conn.commit()
 
 @app.route('/delete_question', methods=['DELETE'])
@@ -1230,6 +1246,7 @@ def update_chatbot_settings(chatbot_id):
     llm = request.form.get('bot_LLM')
     bot_bubble_color = request.form.get('bot_bubble_color')
     user_bubble_color = request.form.get('user_bubble_color')
+    include_email_form = request.form.get('include_email_form')
 
     for question, response in zip(premade_questions, premade_responses):
         if not question_exists_in_db(chatbot_id, question):
@@ -1239,7 +1256,7 @@ def update_chatbot_settings(chatbot_id):
     # If a new logo was uploaded, use its URL, otherwise use the existing logo URL
     logo = logo_url if logo_url else get_existing_logo_url(chatbot_id)
 
-    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color)
+    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, custom_prompt, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form)
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings', chatbot_id=chatbot_id))

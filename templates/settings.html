@@ -98,11 +98,16 @@
                         
                         <label for="chatbot_title">Chatbot Title:</label>
                         <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}" maxlength="20"><br>
-                        <em><small>Must be no more than 20 characters.</small></em><br><br>
+                        <em><small>Must be no more than 20 characters.</small></em>
+                        <br><br>
                         
                         <label for="popup_message">Pop Up Message:</label><br>
                         <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}" style="min-width: 300px;">
-                        <br><em><small>Must be no more than 50 characters.</small></em><br>
+                        <br><em><small>Must be no more than 50 characters.</small></em>
+                        <br><br>
+
+                        <label for="include_email_form">Include Email Form:</label>
+                        <input type="checkbox" id="include_email_form" name="include_email_form" {% if settings['include_email_form'] %}checked{% endif %}>
                     </div>
                     <div class="settings-section">
                         <h3>Branding</h3>

@@ -28,6 +28,70 @@
             align-items: center;
         }
 
+        #email-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            z-index: 10000;
+            font-family: Arial, sans-serif;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        #email-form {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #email-popup label,
+        #email-popup input[type="email"],
+        #email-popup input[type="submit"] {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        #email-popup label {
+            flex: 0;
+        }
+
+        #email-popup input[type="submit"] {
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            flex: 0.2;
+        }
+
+        #email-popup input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #email-error {
+            color: red;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            #email-form {
+                flex-direction: column;
+            }
+
+            #email-popup label,
+            #email-popup input[type="email"],
+            #email-popup input[type="submit"] {
+                margin: 10px 0;
+            }
+        }
         /* .chatbot {
             position: fixed;
             bottom: 15px;
@@ -92,7 +156,6 @@
         }
 
         .chatbox-top {
-            overflow-y: scroll;
             width: 190px;
             background-color: var(--border-color);
             font-family: var(--font-family);

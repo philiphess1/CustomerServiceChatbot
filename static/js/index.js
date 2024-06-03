@@ -3,6 +3,85 @@
         var lastUserMessage = "";
         var greetingShown = false;
 
+        // Function to show the email popup form
+        function showEmailPopup() {
+            // Get the current URL path
+            var path = window.location.pathname;
+
+            // Split the path into segments
+            var segments = path.split('/');
+
+            // The user ID should be the first segment after the leading empty segment
+            var userId = segments[1];
+
+            // The chatbot ID should be the second segment
+            var chatbotId = segments[2];
+
+            var popup = document.createElement('div');
+            popup.id = 'email-popup';
+            popup.innerHTML = `
+                <form id="email-form">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <input type="submit" value="Submit">
+                </form>
+                <p id="email-error" style="color: red; display: none;">Invalid email format. Please try again.</p>
+            `;
+            document.body.appendChild(popup);
+
+            // Create an overlay over the widget
+            var widgetOverlay = document.createElement('div');
+            widgetOverlay.id = 'widget-overlay';
+            widgetOverlay.style.position = 'absolute';
+            widgetOverlay.style.width = '100%';
+            widgetOverlay.style.height = '100%';
+            widgetOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            document.querySelector('.widget').appendChild(widgetOverlay);
+
+            // Handle form submission
+            document.getElementById('email-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                var email = document.getElementById('email').value;
+
+                // Validate the email
+                var emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+                if (!emailRegex.test(email)) {
+                    // Show the error message
+                    document.getElementById('email-error').style.display = 'block';
+                    return;
+                }
+
+                fetch('/' + userId + '/' + chatbotId + '/save-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'email=' + encodeURIComponent(email)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data.message);
+                    // Close the popup and remove the overlay
+                    popup.remove();
+                    widgetOverlay.remove();
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                    // Show the error message
+                    document.getElementById('email-error').style.display = 'block';
+                });
+            });
+        }
+
+        if (settings.include_email_form) {
+            showEmailPopup();
+        }
+
         function showGreetingMessage() {
             // If the greeting has already been shown, don't show it again
             if (greetingShown) {
