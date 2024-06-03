@@ -682,7 +682,7 @@ def chat(user_id, chatbot_id):
     question_count = g.cursor.fetchone()[0]
 
     # Check if the user has exceeded their question limit
-    if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and question_count >= 100:
+    if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and question_count >= 50:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the beginner plan!"})
     elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and question_count >= 500:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the intermediate plan!"})
