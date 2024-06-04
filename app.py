@@ -675,6 +675,8 @@ def serve_js(user_id, chatbot_id):
 @app.route('/<int:user_id>/<int:chatbot_id>/save-email', methods=['POST'])
 def save_email(user_id, chatbot_id):
     email = request.form.get('email')
+    sessionid = session.sid
+    # ip_address = request.remote_addr  # Get the client's IP address
 
     # Validate the email
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -682,7 +684,7 @@ def save_email(user_id, chatbot_id):
         return jsonify({'message': 'Invalid email format'}), 400
 
     # Insert the email into the database
-    g.cursor.execute("INSERT INTO emails (user_id, chatbot_id, email) VALUES (%s, %s, %s)", (user_id, chatbot_id, email))
+    g.cursor.execute("INSERT INTO emails (user_id, chatbot_id, email, sessionid) VALUES (%s, %s, %s, %s)", (user_id, chatbot_id, email, sessionid))
     g.db_conn.commit()
     return jsonify({'message': 'Email saved successfully!'})
 
@@ -847,11 +849,13 @@ def store_qa(user_id, chatbot_id):
     data = request.json
     question = data.get('question')
     answer = data.get('answer')
+    session_id = session.sid
+
     
     try:
         g.cursor.execute(
-            "INSERT INTO feedback (user_question, bot_response, user_id, chatbot_id, feedback_type) VALUES (%s, %s, %s, %s, %s) RETURNING id",
-            (question, answer, user_id, chatbot_id, None)
+            "INSERT INTO feedback (user_question, bot_response, user_id, chatbot_id, sessionid, feedback_type) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
+            (question, answer, user_id, chatbot_id, session_id, None)
         )
         record_id = g.cursor.fetchone()[0]
 
