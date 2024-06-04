@@ -799,7 +799,8 @@ def chat(user_id, chatbot_id):
     final_chain = loaded_memory | standalone_question | retrieved_documents | answer
 
     inputs = {"question": user_message}
-    result = final_chain.invoke(inputs)
+    config = {"metadata": {"session_id": session.sid}}
+    result = final_chain.invoke(inputs, config=config)
     print(result)
     memory.save_context(inputs, {"answer": result["answer"].content})
 
