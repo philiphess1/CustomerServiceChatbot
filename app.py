@@ -676,7 +676,7 @@ def serve_js(user_id, chatbot_id):
 def save_email(user_id, chatbot_id):
     email = request.form.get('email')
     sessionid = session.sid
-    # ip_address = request.remote_addr  # Get the client's IP address
+    ip_address = request.remote_addr  # Get the client's IP address
 
     # Validate the email
     email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
@@ -684,7 +684,7 @@ def save_email(user_id, chatbot_id):
         return jsonify({'message': 'Invalid email format'}), 400
 
     # Insert the email into the database
-    g.cursor.execute("INSERT INTO emails (user_id, chatbot_id, email, sessionid) VALUES (%s, %s, %s, %s)", (user_id, chatbot_id, email, sessionid))
+    g.cursor.execute("INSERT INTO emails (user_id, chatbot_id, email, sessionid, ip_address) VALUES (%s, %s, %s, %s, %s)", (user_id, chatbot_id, email, sessionid, ip_address))
     g.db_conn.commit()
     return jsonify({'message': 'Email saved successfully!'})
 
