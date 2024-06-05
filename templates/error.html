@@ -5,9 +5,16 @@
     <link rel="stylesheet" type="text/css" href="/static/css/error.css">
 </head>
 <body>
-    <h1>Oops!</h1>
-    <p>Error: {{ message }}</p>
-    <button><a href="/login">Go back to login</a></button>
+    <div class="banner">
+        <a href="https://www.eccoai.org/">
+            <img src="{{ url_for('static', filename='images/Ecco_logo.png') }}" alt="Ecco Logo" style="height: 75px;">
+        </a>
+    </div>
+    <div class="error">
+        <h1>Oops!</h1>
+        <p style="color: aliceblue;">Error: {{ message }}</p>
+        <button class="button_logout" onclick="location.href='/login'">Go back to login</button>
+    </div>
     
 </body>
 </html>
