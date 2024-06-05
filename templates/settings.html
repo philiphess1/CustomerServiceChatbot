@@ -1,7 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+{% extends "base.html" %}
+
+{% block styles %}
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Settings</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -10,36 +9,9 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-</head>
-<body>
-    <div class="top-ribbon">
-        <a href="{{ url_for('home') }}" class="button-home">HOME</a>
-        <span class="company-name">
-            <a href="https://www.eccoai.org/">
-                <img src="{{ url_for('static', filename='images/logoword2.png') }}" alt="Company Logo">
-            </a>
-        </span>
-    </div>
-    <div class="sidenav">
-        <button class="openbtn" onclick="openNav()">&#9776;</button>
-        <button class="btns" id="admin" title="Documents" onclick="openNav()"><img src="{{ url_for('static', filename='images/paper (1).png') }}" height="50" width="50" alt="Documents"></button>
-        <button class="btns" id="settings" title="Settings" onclick="openNav()"><img src="{{ url_for('static', filename='images/setting (1).png') }}" height="50" width="50" alt="settings"></button>
-        <button class="btns" id="integrations" title="Integrations" onclick="openNav()"><img src="{{ url_for('static', filename='images/integration (1).png') }}" height="50" width="50" alt="integration"></button>
-        <button class="btns" id="analytics" title="Analytics" onclick="openNav()"><img src="{{ url_for('static', filename='images/data-analytics (1).png') }}" height="50" width="50" alt="analytics"></button>
-    </div>
-    <section id="sidepanel">
-        <div id="mySidepanel" class="sidepanel">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="{{ url_for('admin', chatbot_id=chatbot_id) }}" id="admin" class="mgn-top">Documents</a>
-            <a href="{{ url_for('settings', chatbot_id=chatbot_id) }}" id="settings" class="mgn">Settings</a>
-            <a href="{{ url_for('integrations', chatbot_id=chatbot_id) }}" id="integrations" class="mgn">Integrations</a>
-            <a href="{{ url_for('analytics', chatbot_id=chatbot_id) }}" id="analytics" class="mgn">Analytics</a>
-        </div>
-            
-            
-    </section>
+{% endblock %}
+
+{% block content %}
     <div id="settings-box">
 
         <div id="settings-page">
@@ -51,7 +23,7 @@
         <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" enctype="multipart/form-data">
             <div id="styling-settings" class="subpage">
                 <div class="info-bundle">
-                    <h2 class="instructions"><b>Chatbot Settings</b></h2>
+                    <h2 class="mt-4"><b>Chatbot Settings</h2>
                     <div class="tooltip-container">
                         <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
                         <div class="tooltip-text">Change the styling settings below to match your ideal branding, then click the save button.</div>
@@ -149,7 +121,7 @@
             </div>  
             <div id="system-settings" class="subpage">
                 <div class="info-bundle">
-                    <h2 class="instructions"><b>System Settings</b></h2>
+                    <h2 class="mt-4"><b>System Settings</b></h2>
                     <div class="tooltip-container">
                         <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
                         <div class="tooltip-text">Change the system preferences below to curate the bot experience you desire, then click the save button.</div>
@@ -182,7 +154,7 @@
             </div>
             <div id="faq-settings" class="subpage">
                 <div class="info-bundle">
-                    <h2 class="instructions"><b>FAQ Settings</b></h2>
+                    <h2 class="mt-4"><b>FAQ Settings</b></h2>
                     <div class="tooltip-container">
                         <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
                         <div class="tooltip-text">Use this section to have predefined questions and answers to give the user a precise answer to the most common questions for your needs.</div>
@@ -209,7 +181,9 @@
             <input type="submit" value="Save Settings">          
         </form>           
     </div>
+{% endblock %}
+
+{% block scripts %}
     <script type="text/javascript" src="https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}/popup.js"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
-</body>
-</html>
+{% endblock %}

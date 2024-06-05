@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,15 +35,23 @@
         </div>
             
             
-    </section>
-  
-    <!-- Upload form -->
+    </section> -->
+
+{% extends "base.html" %}
+
+{% block styles %}
+    <title>Documents Panel</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+{% endblock %}
+
+{% block content %}
     <div class="main-container">
         <div class="left-container">
             <section class="upload-section" id="document-upload">
                 <section>
-                    
-                    
                     <form class="form" class="form_1" action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
                         <h2>Upload Documents</h2>
                         <div id="form-content">
@@ -105,61 +113,64 @@
 
                 <section >
                     <div class="file-list">
-                    <h2>Existing Documents</h2>
-                    <table>
-                        <thead>
-                            <tr class="final-row">
-                                <th></th>
-                                <th>Name</th>
-                                <th>Size</th>
-                                <th>Date added</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for document in documents %}
-                                {% set file_extension = document.name.split('.').pop().lower() %}
-                                {% if file_extension in ['pdf', 'csv', 'docx', 'xlsx'] %}
-                                    {% set file_icon = file_extension %}
-                                {% elif 'csv' in file_extension %}
-                                    {% set file_icon = 'csv' %}
-                                {% elif 'xls' in file_extension %}
-                                    {% set file_icon = 'xlsx' %}
-                                {% elif 'doc' in file_extension %}
-                                    {% set file_icon = 'docx' %}
-                                {% elif document.name.startswith('http') %}
-                                    {% set file_icon = 'url' %}
-                                {% else %}
-                                    {% set file_icon = 'file' %}
-                                {% endif %}
-
-                                <tr>
-                                    <td><img src="{{ url_for('static', filename='images/' + file_icon + '.png') }}" height="30" width="30" alt="{{ file_icon }}-icon"></td>
-                                    <td>
-                                        {% if document.name|length > 50 %}
-                                            {{ document.name[:25] }}...{{ document.name[-20:] }}
-                                        {% else %}
-                                            {{ document.name }}
-                                        {% endif %}
-                                    </td>
-                                    <td class="sub-column">{{ document.size }} Mb</td>
-                                    <td class="sub-column">{{ document.date_added.strftime('%m/%d/%Y') }}</td>
-                                    <td>
-                                        <div class="bin-container">
-                                            <form action="/{{ chatbot_id }}/delete/{{ document.id }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">
-                                                <input class ="bin" type="image" src="{{ url_for('static', filename='images/bin (1).png') }}" alt="Submit">
-                                            </form>
-                                        </div>
-                                    </td>
+                        <h2>Existing Documents</h2>
+                        <table>
+                            <thead>
+                                <tr class="final-row">
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Date added</th>
+                                    <th></th>
                                 </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {% for document in documents %}
+                                    {% set file_extension = document.name.split('.').pop().lower() %}
+                                    {% if file_extension in ['pdf', 'csv', 'docx', 'xlsx'] %}
+                                        {% set file_icon = file_extension %}
+                                    {% elif 'csv' in file_extension %}
+                                        {% set file_icon = 'csv' %}
+                                    {% elif 'xls' in file_extension %}
+                                        {% set file_icon = 'xlsx' %}
+                                    {% elif 'doc' in file_extension %}
+                                        {% set file_icon = 'docx' %}
+                                    {% elif document.name.startswith('http') %}
+                                        {% set file_icon = 'url' %}
+                                    {% else %}
+                                        {% set file_icon = 'file' %}
+                                    {% endif %}
+
+                                    <tr>
+                                        <td><img src="{{ url_for('static', filename='images/' + file_icon + '.png') }}" height="30" width="30" alt="{{ file_icon }}-icon"></td>
+                                        <td>
+                                            {% if document.name|length > 50 %}
+                                                {{ document.name[:25] }}...{{ document.name[-20:] }}
+                                            {% else %}
+                                                {{ document.name }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="sub-column">{{ document.size }} Mb</td>
+                                        <td class="sub-column">{{ document.date_added.strftime('%m/%d/%Y') }}</td>
+                                        <td>
+                                            <div class="bin-container">
+                                                <form action="/{{ chatbot_id }}/delete/{{ document.id }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this document?');">
+                                                    <input class ="bin" type="image" src="{{ url_for('static', filename='images/bin (1).png') }}" alt="Submit">
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </section>
             </section>
         </div>
-        <script type="text/javascript" src="https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}/popup.js"></script>  
-        <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
-</body>
-</html>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript" src="https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}/popup.js"></script>  
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

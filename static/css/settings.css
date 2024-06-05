@@ -1,31 +1,9 @@
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-h1 {
-  margin: 0;
-  font-size: 36px;
-}
-h2 {
-  text-align: center;
-  margin-top: 50px;
-  font-size: 28px;
-  font-weight: normal;
-}
-h3 {
-  margin: 10px 0 10px 0;
-  font-size: 16px;
-  color: #9d9d9d;
-}
-
 ul.select2-results__options li {
   color: black;
 }
 
 #faq-settings label {
   display: block;
-  font-family: Arial, sans-serif;
   margin-bottom: 5px;
 }
 
@@ -64,40 +42,6 @@ ul.select2-results__options li {
   background-color: darkred;
 }
 
-.button-home {
-  background-color: #5C6BC0;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-bottom: 0;
-  line-height: 1;
-  text-decoration: none; /* Removes underline */
-  font-style: normal; /* Removes italics */
-  display: inline-block; /* Aligns the button horizontally */
-  margin-right: 20px;
-  font-weight: bold;
-}
-
-.button-home:hover {
-  background-color: #3F51B5;
-  color: #ffffff;
-}
-
-.top-ribbon {
-  background-color: #111;
-  height: 101px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 20px;
-  color: white;
-  font-size: 40px;
-}
-
 .premade-question {
   padding: 10px;
   background-color: #dcdcdc;
@@ -110,27 +54,14 @@ ul.select2-results__options li {
   color: #000000;
 }
 
-.company-name {
-  margin-right: 10px;
-  font-family: Arial, sans-serif; 
-  font-weight: bold;
-  font-style: italic;
-}
-
-.company-name img {
-  height: 101px; /* Adjust as needed */
-  width: auto;
-}
 
 
 label[for="custom_prompt"] {
   display: block;
-  font-family: Arial, sans-serif;
   margin-bottom: 10px;
 }
 
 textarea {
-  font-family: Arial, sans-serif;
   resize: none;
   width: 100%;
   height: 100px;
@@ -139,7 +70,6 @@ textarea {
 }
 
 .premade-question textarea {
-  font-family: Arial, sans-serif;
   resize: none;
   width: 100%;
   height: 50px;
@@ -149,130 +79,16 @@ textarea {
 
 label[for="greeting_message"] {
   display: block;
-  font-family: Arial, sans-serif;
   margin-bottom: 10px;
 }
 
 textarea#greeting_message {
-  font-family: Arial, sans-serif;
   resize: none;
   width: 100%;
   height: 50px;
   padding: 10px;
   box-sizing: border-box;
 }
-
-.sidepanel {
-    height: 100%; /* Specify a height */
-    width: 0; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Stay on top */
-    top: 0;
-    left: 0;
-    background-color: #111; /* Black*/
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 60px; /* Place content 60px from the top */
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidepanel */
-    font-family: Tahoma;
-  }
-  
-  /* The sidepanel links */
-.sidepanel a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 32px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-  height: 46px;
-  padding-top: 30px;
-  border-bottom: 1px solid #818181;
-}
-
-  .mgn-top {
-    margin-top: 42px;
-  }
-  
-  /* When you mouse over the navigation links, change their color */
-  .sidepanel a:hover {
-    color: #f1f1f1;
-  }
-  
-  /* Position and style the close button (top right corner) */
-  .sidepanel .closebtn {
-    position: absolute;
-    top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;
-  }
-  .closebtn {
-    border-bottom: none;
-    margin-top: 20px;
-    height: 65px;
-    width: 50px;
-  }
-  
-  /* Style the button that is used to open the sidepanel */
-  .openbtn {
-    font-size: 32px;
-    cursor: pointer;
-    background-color: #111;
-    color: rgb(255, 255, 255);
-    padding: 20px 26px;
-    border: none;
-    height: 50;
-    width: 50;
-  }
-  
-  .openbtn:hover {
-    background-color: #444;
-  }
-
-  .btns {
-    font-size: 50px;
-    cursor: pointer;
-    background-color: #111;
-    color: rgb(255, 255, 255);
-    padding: 15px 15px 10px 15px;
-    border: none;
-  }
-  
-  .btns:hover {
-    background-color: #b8b8b8;
-  }
-
-
-    /* The sidepanel menu ***************************************************************************************************/
-  .sidenav {
-    height: 100%; /* Full-height: remove this if you want "auto" height */
-    width: 80px; /* Set the width of the sidebar */
-    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-    z-index: 1; /* Stay on top */
-    top: 0; /* Stay at the top */
-    left: 0;
-    background-color: #111; /* Black */
-    overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 20px;
-  }
-  
-  /* The navigation menu links */
-  .sidenav a {
-    padding: 6px 8px 6px 16px;
-    text-decoration: none;
-    font-size: 25px;
-    color: #818181;
-    display: block;
-  }
-  
-  /* When you mouse over the navigation links, change their color */
-  .sidenav a:hover {
-    color: #f1f1f1;
-  }  /* Style page content */
-  .main {
-    margin-left: 160px; /* Same as the width of the sidebar */
-    padding: 0px 10px;
-  }
   
   /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
   @media screen and (max-height: 450px) {
@@ -280,20 +96,7 @@ textarea#greeting_message {
     .sidenav a {font-size: 18px;}
   }
 
-  body {
-    font-family: Arial, sans-serif;
-}
 
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-}
-
-.instructions {
-    font-family: Arial, sans-serif;
-    margin-left: 100px; /* left margin of 100px */
-    text-align: left;
-}
 .settings-container {
   display: flex;
   justify-content: space-between;
@@ -301,7 +104,6 @@ body {
   border-radius: 5px; /* Moved from .settings-section */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Moved from .settings-section */
   border: 2px solid #c1c1c1; /* Moved from .settings-section */ /* Added to give some space around the sections */
-  margin-left: 100px;
   margin-bottom: 25px;
 }
 
@@ -311,7 +113,6 @@ body {
   min-width: 380px;
 }
 .settings-section1 {
-  margin-left: 100px;
   margin-bottom: 25px;
   background-color: #161616;
   padding: 20px;
@@ -340,7 +141,6 @@ body {
 }
 
 input[type="submit"] {
-    margin-left: 100px;
     background-color: #5C6BC0;
     color: white;
     padding: 10px 20px;
@@ -348,6 +148,7 @@ input[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    margin-bottom: 40px;
 }
 
 input[type="submit"]:hover {
@@ -388,8 +189,7 @@ input#background_color {
 #settings-box{
   display: flex;
   justify-content: space-between;
-  flex-basis: 68%;
-  margin-left: 120px;
+  flex-basis: 75%;
 }
 
 .tooltip-container {
@@ -426,7 +226,7 @@ input#background_color {
   cursor: pointer;
   height: 20px;
   width: 20px;
-  margin-top: 33px;
+  margin-top: 16px;
   margin-left: 8px;
 }
 
@@ -452,7 +252,6 @@ textarea {
   cursor: pointer;
   display: inline-flex;
   flex: 1 1 auto;
-  font-family: Inter,sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   justify-content: center;
@@ -484,7 +283,6 @@ textarea {
 .button-holder {
   justify-content: space-between;
   margin-top: 20px;
-  margin-left: 270px;
 }
 
 .range-container {
@@ -509,13 +307,8 @@ textarea {
 }
 
 body {
-  overflow-x: hidden;
-}
-
-body {
   background-color: #313131;
   color: rgb(237, 237, 237);
-  font-family: Tahoma;
 }
 
 .info-bundle {
