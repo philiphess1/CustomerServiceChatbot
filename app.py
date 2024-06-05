@@ -826,6 +826,30 @@ def chat(user_id, chatbot_id):
     print(response_dict)
     return jsonify(response_dict)
 
+@app.route('/<int:chatbot_id>/conversations')
+@login_required
+def get_conversations(chatbot_id):
+    user_id = current_user.id
+    g.cursor.execute(
+        "SELECT user_question, bot_response, feedback_type, created_at, sessionid FROM feedback WHERE user_id = %s AND chatbot_id = %s ORDER BY created_at DESC;",
+        (user_id, chatbot_id)
+    )
+
+    rows = g.cursor.fetchall()
+    conversations = {}
+    for row in rows:
+        session_id = row[4]
+        if session_id not in conversations:
+            conversations[session_id] = []
+        conversations[session_id].append({
+            'user_question': row[0],
+            'bot_response': row[1],
+            'feedback_type': row[2],
+            'created_at': row[3]
+        })
+
+    return render_template('conversations.html', chatbot_id=chatbot_id, conversations=conversations)
+
 @app.route('/<int:user_id>/<int:chatbot_id>/store_feedback', methods=['POST'])
 def store_feedback(user_id, chatbot_id):
     data = request.json
