@@ -189,9 +189,8 @@ input#background_color {
 #settings-box{
   display: flex;
   justify-content: space-between;
-  flex-basis: 75%;
+  width: 90%;
 }
-
 .tooltip-container {
   position: relative;
   display: inline-block;
@@ -336,7 +335,7 @@ body {
   font-weight: bold;
   font-size: 14px;
   border-radius: 15px;
-  padding: 15px;
+  padding: 10px;
   opacity: 0.9;
   transition: opacity 0.8s;
   animation: fadeout 10s forwards;
@@ -344,11 +343,13 @@ body {
 
 .alert.error {
   background-color: red;
+  margin-bottom: 4px;
 }
 
 .alert.success {
   background-color: #BFEF4B;
   color: black;
+  margin-bottom: 4px;
 }
 
 @keyframes fadeout {

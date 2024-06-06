@@ -21,6 +21,8 @@
             popup.id = 'email-popup';
             popup.innerHTML = `
                 <form id="email-form">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
                     <input type="submit" value="Submit">
@@ -41,6 +43,7 @@
             // Handle form submission
             document.getElementById('email-form').addEventListener('submit', function(event) {
                 event.preventDefault();
+                var name = document.getElementById('name').value;
                 var email = document.getElementById('email').value;
 
                 // Validate the email
@@ -56,7 +59,7 @@
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: 'email=' + encodeURIComponent(email)
+                    body: 'name=' + encodeURIComponent(name) + '&email=' + encodeURIComponent(email)
                 })
                 .then(response => {
                     if (!response.ok) {

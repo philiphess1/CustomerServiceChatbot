@@ -24,10 +24,6 @@
             <div id="styling-settings" class="subpage">
                 <div class="info-bundle">
                     <h2 class="mt-4"><b>Chatbot Settings</h2>
-                    <div class="tooltip-container">
-                        <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
-                        <div class="tooltip-text">Change the styling settings below to match your ideal branding, then click the save button.</div>
-                    </div>
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             <div class="flash-messages">
@@ -122,10 +118,6 @@
             <div id="system-settings" class="subpage">
                 <div class="info-bundle">
                     <h2 class="mt-4"><b>System Settings</b></h2>
-                    <div class="tooltip-container">
-                        <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
-                        <div class="tooltip-text">Change the system preferences below to curate the bot experience you desire, then click the save button.</div>
-                    </div>   
                 </div>  
                 <div class="settings-section1">
                     <h3>Settings</h3>
@@ -155,10 +147,6 @@
             <div id="faq-settings" class="subpage">
                 <div class="info-bundle">
                     <h2 class="mt-4"><b>FAQ Settings</b></h2>
-                    <div class="tooltip-container">
-                        <img src="{{ url_for('static', filename='images/info-button.png') }}" alt="Info" class="info-button">
-                        <div class="tooltip-text">Use this section to have predefined questions and answers to give the user a precise answer to the most common questions for your needs.</div>
-                    </div>
                 </div>
                 <div class="settings-section1">
                     <h3>Pre-made Questions</h3>
@@ -184,6 +172,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="https://app.eccoai.org/{{ user_id }}/{{ chatbot_id }}/popup.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:5000/{{ user_id }}/{{ chatbot_id }}/popup.js"></script>
     <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 {% endblock %}

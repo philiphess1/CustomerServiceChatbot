@@ -37,6 +37,7 @@ import stripe
 from stripe.error import SignatureVerificationError
 from azure.core.exceptions import ResourceNotFoundError
 import json
+from openai import OpenAI
 
 load_dotenv()
 
@@ -560,7 +561,7 @@ def serve_js(user_id, chatbot_id):
         chatbotContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
         
         var chatbotIframe = document.createElement('iframe');
-        chatbotIframe.src = 'https://app.eccoai.org/{user_id}/{chatbot_id}';
+        chatbotIframe.src = 'http://127.0.0.1:5000/{user_id}/{chatbot_id}';
         chatbotIframe.width = '360.5';
         chatbotIframe.height = '600';
         chatbotIframe.style.borderRadius = '10px';
@@ -576,7 +577,7 @@ def serve_js(user_id, chatbot_id):
         
         var toggleButton = document.createElement('img');
         toggleButton.id = 'b';
-        toggleButton.src = 'https://app.eccoai.org//static/images/{settings["widget_icon"]}';
+        toggleButton.src = 'http://127.0.0.1:5000//static/images/{settings["widget_icon"]}';
         toggleButton.alt = 'Chat';
         toggleButton.style.width = '80px';
         toggleButton.style.height = '80px';
@@ -674,6 +675,7 @@ def serve_js(user_id, chatbot_id):
 
 @app.route('/<int:user_id>/<int:chatbot_id>/save-email', methods=['POST'])
 def save_email(user_id, chatbot_id):
+    name = request.form.get('name')
     email = request.form.get('email')
     sessionid = session.sid
     ip_address = request.remote_addr  # Get the client's IP address
@@ -684,7 +686,7 @@ def save_email(user_id, chatbot_id):
         return jsonify({'message': 'Invalid email format'}), 400
 
     # Insert the email into the database
-    g.cursor.execute("INSERT INTO emails (user_id, chatbot_id, email, sessionid, ip_address) VALUES (%s, %s, %s, %s, %s)", (user_id, chatbot_id, email, sessionid, ip_address))
+    g.cursor.execute("INSERT INTO emails (user_id, chatbot_id, email, sessionid, ip_address, name) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, chatbot_id, email, sessionid, ip_address, name))
     g.db_conn.commit()
     return jsonify({'message': 'Email saved successfully!'})
 
@@ -876,11 +878,20 @@ def store_qa(user_id, chatbot_id):
     answer = data.get('answer')
     session_id = session.sid
 
-    
     try:
+        # Fetch the name, email, and ip_address from the emails table
         g.cursor.execute(
-            "INSERT INTO feedback (user_question, bot_response, user_id, chatbot_id, sessionid, feedback_type) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
-            (question, answer, user_id, chatbot_id, session_id, None)
+            "SELECT name, email, ip_address FROM emails WHERE user_id = %s AND chatbot_id = %s AND sessionid = %s",
+            (user_id, chatbot_id, session_id)
+        )
+        result = g.cursor.fetchone()
+        name = result[0] if result else None
+        email = result[1] if result else None
+        ip_address = result[2] if result else None
+
+        g.cursor.execute(
+            "INSERT INTO feedback (user_question, bot_response, user_id, chatbot_id, sessionid, feedback_type, name, email, ip_address) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+            (question, answer, user_id, chatbot_id, session_id, None, name, email, ip_address)
         )
         record_id = g.cursor.fetchone()[0]
 
@@ -1301,52 +1312,68 @@ def greeting_message(user_id, chatbot_id):
         greeting_message = row[0]
     return jsonify(greeting_message=greeting_message)
 
+
+
 @app.route('/<int:chatbot_id>/analytics')
 @login_required
 def analytics(chatbot_id):
     user_id = current_user.id
-    g.cursor.execute("SELECT user_question, bot_response, feedback_type, created_at FROM feedback WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT user_question, bot_response, feedback_type, created_at, email, ip_address, sessionid, name FROM feedback WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id))
     rows = g.cursor.fetchall()
+
+    # Fetch the total number of questions and responses from the usage table
+    g.cursor.execute("SELECT total_questions, total_answers, subscription_item_id FROM usage WHERE user_id = %s;", (user_id,))
+    usage_row = g.cursor.fetchone()
+    total_questions_responses = usage_row[0] + usage_row[1]
+    subscription_item_id = usage_row[2]
+
+    # Determine the user's plan based on the subscription item id
+    plans = {
+        'price_1P9FIULO2ToUaMQEmx2wG1qC': 50,
+        'price_1OuIu1LO2ToUaMQE7Prun5Xt': 500,
+        'price_1OqKxhLO2ToUaMQEqRFU0dh9': 10000
+    }
+    user_plan = plans.get(subscription_item_id, 0)
+
+    # Calculate the remaining percentage and round to two decimal places
+    remaining_percentage = round(((total_questions_responses) / user_plan) * 100, 2) if user_plan else 0
 
     if not rows:
         return render_template('analytics.html', data=[], common_topics=None, chatbot_id=chatbot_id)
 
-    questions = [row[0] for row in rows]
+    questions_and_responses = [row[0] + ' ' + row[1] for row in rows]
+    emails = [row[4] for row in rows if row[4] is not None]
+    unique_email_count = len(set(emails))
 
-    # Use TfidfVectorizer to convert text data to a matrix of TF-IDF features
-    vectorizer = TfidfVectorizer(stop_words='english')
-    X = vectorizer.fit_transform(questions)
+    session_ids = [row[6] for row in rows if row[6] is not None]
+    unique_session_count = len(set(session_ids))
 
-    common_topics = []
-    if X.shape[1] > 3:  # Check if there are more than 3 features
-        # Use TruncatedSVD for dimensionality reduction
-        svd = TruncatedSVD(n_components=3)
-        normalizer = Normalizer(copy=False)
-        lsa = make_pipeline(svd, normalizer)
 
-        X_lsa = lsa.fit_transform(X)
+    #!!!!!!!!!!!!!!!!!!!!
+    # If you want to use the OpenAI API to get common topics, uncomment the code below
+    #!!!!!!!!!!!!!!!!!!!!
+    # client = OpenAI(
+    #     api_key=openai_api_key
+    # )
 
-        # Apply KMeans clustering to find topics
-        num_clusters = 3
-        kmeans = KMeans(n_clusters=num_clusters, random_state=42)
-        kmeans.fit(X_lsa)
+    # Combine all questions and responses into a single string
+    all_text = ' '.join(questions_and_responses)
 
-        # Get the top terms for each cluster
-        terms = vectorizer.get_feature_names_out()
-        original_space_centroids = svd.inverse_transform(kmeans.cluster_centers_)
-        order_centroids = original_space_centroids.argsort()[:, ::-1]
+    # if all_text:
+    #     completion = client.chat.completions.create(
+    #         model="gpt-3.5-turbo",
+    #         messages=[
+    #             {"role": "system", "content": "You are a helpful assistant, skilled in analyzing a list of topics and providing 5 common topics from that list. When providing the topics, only list the topics without any additional text."},
+    #             {"role": "user", "content": f"Create a list of 3 common topics from the following text. They must be no longer than 1 word. Make the list of topics in a numbered order: {all_text}."}
+    #         ]
+    #     )
+    #     topics = completion.choices[0].message.content.replace('- ', '')
+    #     common_topics = topics.split('\n')
+    # else:
+    #     common_topics = ["No questions asked yet"]
+    common_topics = ["No questions asked yet"]
 
-        seen = set()
-
-        for i in range(num_clusters):
-            for ind in order_centroids[i, :5]:  # Choose top 5 terms per cluster
-                term = terms[ind]
-                if term not in seen:
-                    # Count how many questions contain the term
-                    term_count = sum(1 for question in questions if term in question)
-                    if term_count >= 2:
-                        common_topics.append(term)
-                    seen.add(term)
+    print(f"Common topics: {common_topics}")
 
     data = []
     if rows:
@@ -1355,13 +1382,16 @@ def analytics(chatbot_id):
                 'user_question': row[0],
                 'bot_response': row[1],
                 'feedback_type': row[2],
-                'created_at': row[3].strftime('%Y-%m-%d %H:%M:%S')
+                'created_at': row[3].strftime('%Y-%m-%d %H:%M:%S'),
+                'email': row[4],
+                'ip_address': row[5],
+                'sessionid': row[6],
+                'name': row[7]
             })
     else:
         data = []
 
-    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id)
-
+    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id, unique_email_count=unique_email_count, unique_session_count=unique_session_count, remaining_percentage=remaining_percentage)
 
 #!!!!!!!!!!!!!!!!!!!!
 #route not being used
