@@ -23,3 +23,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    var sessionLinks = document.querySelectorAll('.session-link');
+
+    sessionLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            var selectedId = this.dataset.sessionId;
+            var convo = document.getElementById(selectedId);
+
+            if (convo) {
+                var individualConvos = document.querySelectorAll('.individual-convo');
+                individualConvos.forEach(function(convo) {
+                    convo.style.display = 'none';
+                });
+
+                convo.style.display = 'block';
+            }
+        });
+    });
+});
