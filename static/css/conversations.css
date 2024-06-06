@@ -92,6 +92,6 @@ h1 {
     background-color: #161616;
     display: none;
 }
-/* #RKHBsu2pfiSD3u4vUcyqknJ54GgCKPv1AsY9YfHpsDI {
-    display: none;
-} */
+.card {
+    margin-bottom: 20px;
+}

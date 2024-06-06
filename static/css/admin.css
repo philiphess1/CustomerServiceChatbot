@@ -18,7 +18,7 @@ h1 {
 }
 h2 {
     text-align: center;
-    margin: 50px;
+    margin: 15px;
     font-size: 28px;
     font-weight: normal;
 }
@@ -28,13 +28,16 @@ h3 {
     color: #9d9d9d;
 }
 .form {
-    padding: 40px;
-    padding-top: 2px;
-    background-color: #161616;
-    border: 2px solid #c1c1c1;
-    border-radius: 5px;
-    margin-top: 50px;
-    position: relative;
+  padding: 10px 40px; /* top/bottom padding is 10px, left/right padding is 40px */
+  background-color: #161616;
+  border: 2px solid #c1c1c1;
+  border-radius: 5px;
+  margin-top: 20px;
+  position: relative;
+}
+
+.form:not(.form_1) {
+  padding-bottom: 20px; /* Adjust this value to the padding you want */
 }
 
 .form_1{
@@ -55,6 +58,11 @@ input[type=file] {
     display: none;
     margin-bottom: 10px;
 }
+
+.upload-section {
+  margin-left: 0;
+}
+
 .upload-area {
     border: 1px dashed #ccc;
     padding: 20px;
@@ -110,16 +118,10 @@ tr:hover {
 .sub-column {
     color: #9d9d9d;
 }
-section {
-    margin: 20px auto;
-    max-width: 800px;
-    margin-left: 70px;
-}
 .section {
-  margin: 20px auto;
-  width: 770px;
-  margin-left: 50px;
+    margin-top: 20px;
 }
+
 #file-list {
     margin-top: 10px;
 }
@@ -166,12 +168,13 @@ section {
 }
 
 #url-area{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px;
-    padding: 3px;
-    border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  padding: 3px;
+  border-radius: 5px;
+  flex-grow: 1;
 }
 
 #url-input{
@@ -182,15 +185,13 @@ section {
 #url{
     border: 1px solid #a3a3a3;
     border-radius: 5px;
-    margin-bottom: 8px;
     margin-left: 5px;
     width: 400px;
-    margin-top: 30px;
 }
 
 .url-label{
     margin-left: 5px;
-    margin-top: 30px;
+    margin-bottom: 0;
 }
 
 .url-button {
@@ -200,9 +201,8 @@ section {
   border-radius: 5px;
   padding: 10px;
   cursor: pointer;
-  margin-left: 50px;
+  margin-left: 35px;
   transition: background-color 0.3s ease;
-  margin-top: 30px;
 }
 
 .url-button:hover {
@@ -257,7 +257,6 @@ section {
     background-color: #e0e0e0;
 }
 .file-list {
-    margin: 20px;
     padding: 20px;
     padding-top: 2px;
     background-color: #161616;
@@ -387,13 +386,4 @@ section {
 body {
   background-color: #313131;
   color: rgb(237, 237, 237);
-}
-
-.right-container {
-  width: 45vh;
-  height: 100vh;
-  position: fixed;
-  right: 0;
-  top: 0;
-  background-color: rgb(42, 42, 42);
 }
