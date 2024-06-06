@@ -49,3 +49,42 @@ body{margin-top:20px;}
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.user-box {
+    margin: 11px;
+    border-bottom: 1px solid #ccc;
+
+}
+
+.border-right {
+    border-right: 1px solid #ccc;
+    background-color: #151515;
+    color: #dee2e6;
+}
+
+.message-box-header {
+    background-color: #141414;
+    /* display: none; */
+}
+
+.session-conversation {
+    background-color: #212121;
+    color: rgb(237, 237, 237);
+    /* display: none; */
+}
+
+body {
+    background-color: #313131;
+    /* color: rgb(237, 237, 237); */
+}
+.card{
+    background-color: #161616;
+    border: 2px solid #ccc;
+    border-radius: 2px;
+}
+
+h1 {
+    font-size: 1.5em;
+    margin: 0;
+    padding: 0;
+    color: #dee2e6;
+}

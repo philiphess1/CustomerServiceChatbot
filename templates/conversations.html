@@ -18,18 +18,20 @@
 						</div>
 					</div>
                     {% for session_id in conversations.keys() %}
+                <div class="user-box">
                     <a href="#{{ session_id }}" class="list-group-item list-group-item-action border-0 session-link" data-session-id="{{ session_id }}">
                             <div class="d-flex align-items-start">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="rounded-circle mr-1" alt="Session ID" width="40" height="40">
+                                <img src="{{ url_for('static', filename='images/user-icon.png') }}" class="rounded-circle mr-1" alt="Session ID" width="36px" height="36px" style="margin-right: 4px;">
                                 <div class="flex-grow-1 ml-3 overflow-hidden">
                                     {{ session_id }}
                                     <div class="small"><span class="fas fa-circle chat-online"></span> Online</div>
                                 </div>
                             </div>
                         </a>
+                </div>
                     {% endfor %}
                 </div>
-                <div class="col-12 col-lg-7 col-xl-9">
+                <div class="col-12 col-lg-7 col-xl-9 message-box-header">
                     {% for session_id, session_conversations in conversations.items() %}
                     <div id="{{ session_id }}" class="py-2 px-4 border-bottom d-none d-lg-block session-conversation">
                             <div class="d-flex align-items-center py-1">
