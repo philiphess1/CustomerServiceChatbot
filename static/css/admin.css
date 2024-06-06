@@ -113,6 +113,12 @@ tr:hover {
 section {
     margin: 20px auto;
     max-width: 800px;
+    margin-left: 70px;
+}
+.section {
+  margin: 20px auto;
+  width: 770px;
+  margin-left: 50px;
 }
 #file-list {
     margin-top: 10px;
@@ -381,4 +387,13 @@ section {
 body {
   background-color: #313131;
   color: rgb(237, 237, 237);
+}
+
+.right-container {
+  width: 45vh;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+  background-color: rgb(42, 42, 42);
 }
