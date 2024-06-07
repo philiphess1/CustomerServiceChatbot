@@ -129,43 +129,6 @@ def load_user(user_id):
         return AuthenticatedUser(id=user_data[0])
     return None
 
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form['email']
-        code = request.form['code']
-
-        # Check if the invitation exists
-        g.cursor.execute("SELECT email FROM invitations WHERE email = %s AND code = %s", (email, code))
-        if not g.cursor.fetchone():
-            flash('Invalid email or code', 'error')
-            return redirect(url_for('signup'))
-
-        # Check if user already exists
-        g.cursor.execute("SELECT id FROM users WHERE username = %s OR email = %s", (username, email))
-        if g.cursor.fetchone():
-            flash('Username or email already exists', 'error')
-            return redirect(url_for('signup'))
-
-        # Hash the password
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        hashed_password = hashed_password.decode('utf-8')
-
-        # Insert new user into the database
-        g.cursor.execute("INSERT INTO users (username, password, email) VALUES (%s, %s, %s)", (username, hashed_password, email))
-        g.db_conn.commit()
-
-        # Delete the used invitation
-        g.cursor.execute("DELETE FROM invitations WHERE email = %s", (email,))
-        g.db_conn.commit()
-
-        flash('Account created successfully!', 'success')
-        return redirect(url_for('login'))
-
-    return render_template('signup.html')
-
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
@@ -293,12 +256,7 @@ def update_subscription():
         customer_id = subscription['customer']
         custom_fields = subscription.get('custom_fields', [])
         print(custom_fields)
-        customer_name = None
-
-        for field in custom_fields:
-            if field['key'] == 'name':
-                customer_name = field['text']['value']
-                break
+        customer_name = event['data']['object']['customer_details']['name']
             
         subscription_id = subscription['subscription']
         stripe_subscription = stripe.Subscription.retrieve(subscription_id)
