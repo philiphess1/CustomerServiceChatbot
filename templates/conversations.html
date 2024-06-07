@@ -55,7 +55,7 @@
                                             <img src="{{ url_for('static', filename='images/user-icon.png') }}" class="rounded-circle mr-1" alt="User Question" width="40" height="40">
                                             <!-- <div class="text-muted small text-nowrap mt-2">{{ conversation.created_at }}</div> -->
                                         </div>
-                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3" style="margin-right: 8px;">
+                                        <div class="flex-shrink-1 bg-light rounded py-2 px-3 mr-3" style="margin-right: 8px;" title="Created at: {{ conversation.created_at }}">
                                             <div class="font-weight-bold mb-1">User Question</div>
                                             {{ conversation.user_question }}
                                         </div>
@@ -63,7 +63,7 @@
                 
                                     <div class="chat-message-left pb-4">
                                         <div>
-                                            <img src="{{ url_for('static', filename='images/user-icon.png') }}" class="rounded-circle mr-1" alt="Bot Response" width="40" height="40">
+                                            <img src="{{ url_for('static', filename='images/logoicon.png') }}" class="rounded-circle mr-1" alt="Bot Response" width="40" height="40">
                                             <!-- <div class="text-muted small text-nowrap mt-2">{{ conversation.created_at }}</div> -->
                                         </div>
                                         <div class="flex-shrink-1 bg-light rounded py-2 px-3 ml-3" style="margin-left: 8px;">

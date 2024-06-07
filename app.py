@@ -38,6 +38,7 @@ from stripe.error import SignatureVerificationError
 from azure.core.exceptions import ResourceNotFoundError
 import json
 from openai import OpenAI
+from collections import defaultdict
 
 load_dotenv()
 
@@ -1349,7 +1350,14 @@ def analytics(chatbot_id):
     else:
         data = []
 
-    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id, unique_email_count=unique_email_count, unique_session_count=unique_session_count, remaining_percentage=remaining_percentage)
+    date_count = defaultdict(int)
+
+    if rows:
+        for row in rows:
+            date = row[3].strftime('%m/%d') 
+            date_count[date] += 1  
+
+    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id, unique_email_count=unique_email_count, unique_session_count=unique_session_count, remaining_percentage=remaining_percentage, date_count=json.dumps(date_count))
 
 #!!!!!!!!!!!!!!!!!!!!
 #route not being used
