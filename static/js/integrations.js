@@ -44,3 +44,7 @@ function hideTooltip(element) {
     var tooltip = element.nextElementSibling;
     tooltip.style.display = "none";
 }
+function copyCode(element) {
+    var code = document.getElementById('chatbot-code').innerText;
+    navigator.clipboard.writeText(code);
+}
