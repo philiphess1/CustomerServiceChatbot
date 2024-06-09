@@ -6915,7 +6915,7 @@ textarea.form-control-lg {
   border: 0 !important;
 }
 
-.stretched-link::after {
+/* .stretched-link::after {
   position: absolute;
   top: 0;
   right: 0;
@@ -6924,7 +6924,7 @@ textarea.form-control-lg {
   z-index: 1;
   content: "";
   margin-top: 2px;
-}
+} */
 
 .text-truncate {
   overflow: hidden;
