@@ -41,6 +41,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 convo.style.display = 'block';
+
+                // Hide the "no-conversation-message" element
+                var noConversationMessage = document.getElementById('no-conversation-message');
+                if (noConversationMessage) {
+                    noConversationMessage.style.display = 'none';
+                }
             }
         });
     });
