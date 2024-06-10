@@ -813,7 +813,7 @@ def chat(user_id, chatbot_id):
 def get_conversations(chatbot_id):
     user_id = current_user.id
     g.cursor.execute(
-        "SELECT user_question, bot_response, feedback_type, created_at, sessionid FROM feedback WHERE user_id = %s AND chatbot_id = %s ORDER BY created_at DESC;",
+        "SELECT user_question, bot_response, feedback_type, created_at, sessionid, email, name FROM feedback WHERE user_id = %s AND chatbot_id = %s ORDER BY created_at DESC;",
         (user_id, chatbot_id)
     )
 
@@ -827,8 +827,11 @@ def get_conversations(chatbot_id):
             'user_question': row[0],
             'bot_response': row[1],
             'feedback_type': row[2],
-            'created_at': row[3]
+            'created_at': row[3],
+            'email': row[5],
+            'name': row[6]
         })
+    print(conversations)
 
     return render_template('conversations.html', chatbot_id=chatbot_id, conversations=conversations)
 
