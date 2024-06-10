@@ -40,6 +40,34 @@
             widgetOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
             document.querySelector('.widget').appendChild(widgetOverlay);
 
+            // Fetch the session data
+            fetch('/' + userId + '/' + chatbotId + '/get-session-data', {
+                method: 'GET',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // If an email is already associated with the session ID
+                if (data.email) {
+                    // Hide the form
+                    document.getElementById('email-popup').style.display = 'none';
+
+                    // Remove the overlay
+                    var widgetOverlay = document.getElementById('widget-overlay');
+                    if (widgetOverlay) {
+                        widgetOverlay.parentNode.removeChild(widgetOverlay);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+
+// The rest of your code...
             // Handle form submission
             document.getElementById('email-form').addEventListener('submit', function(event) {
                 event.preventDefault();

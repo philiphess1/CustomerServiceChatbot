@@ -632,6 +632,27 @@ def serve_js(user_id, chatbot_id):
 
     return Response(js_code, mimetype='text/javascript')
 
+@app.route('/<int:user_id>/<int:chatbot_id>/get-session-data')
+def get_session_data(user_id, chatbot_id):
+
+    sessionid = session.sid
+
+    # Fetch the email from the database where the sessionid matches
+    g.cursor.execute("SELECT email, name FROM emails WHERE sessionid = %s;", (sessionid,))
+    row = g.cursor.fetchone()
+
+    if row is None:
+        return jsonify({'message': 'No data found for the given session ID'}), 404
+
+    # Pass in the email
+    settings = {
+        'email': row[0],
+        'name': row[1]
+    }
+    print(settings)
+
+    return jsonify(settings)
+
 @app.route('/<int:user_id>/<int:chatbot_id>/save-email', methods=['POST'])
 def save_email(user_id, chatbot_id):
     name = request.form.get('name')
