@@ -118,7 +118,7 @@ textarea#greeting_message {
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: 1000px;
+  max-width: Auto;
   min-width: 800px;
   border: 2px solid #c1c1c1;
 }
