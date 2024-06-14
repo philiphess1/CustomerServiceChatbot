@@ -61,8 +61,8 @@ AZURE_CONNECTION_STRING="DefaultEndpointsProtocol=https;AccountName=eccoaiassets
 connection_string = AZURE_CONNECTION_STRING
 container_name = os.getenv('AZURE_CONTAINER_NAME')
 
-stripe.api_key = os.getenv('STRIPE_API_KEY_FOR_TESTING')
-endpoint_secret = os.getenv('ENDPOINT_SECRET_TESTING')
+stripe.api_key = os.getenv('STRIPE_API_KEY')
+endpoint_secret = os.getenv('ENDPOINT_SECRET')
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -107,6 +107,20 @@ login_manager.init_app(app)
 class AuthenticatedUser(UserMixin):
     def __init__(self, id):
         self.id = id
+
+@app.context_processor
+def inject_user_name():
+    if current_user.is_authenticated:
+        user_id = current_user.id
+        g.cursor.execute("""
+        SELECT u."name"
+        FROM public.users u
+        WHERE u.id = %s;
+        """, (user_id,))
+        user_name = g.cursor.fetchone()
+        if user_name:
+            return {'name': user_name[0]}  # Assuming the name is in the first column
+    return {'name': None}
 
 @app.before_request
 def before_request():
@@ -909,8 +923,6 @@ def admin(chatbot_id):
     documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]
 
     return render_template('admin.html', documents=documents, user_id=user_id, chatbot_id=chatbot_id)
-
-
 @app.route('/<int:chatbot_id>/integrations')
 @login_required
 def integrations(chatbot_id):
