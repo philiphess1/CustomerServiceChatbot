@@ -1393,6 +1393,8 @@ def analytics(chatbot_id):
 
     date_count = defaultdict(int)
 
+    
+
     if rows:
         for row in rows:
             date = row[3].strftime('%m/%d') 

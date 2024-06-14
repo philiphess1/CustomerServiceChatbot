@@ -117,10 +117,10 @@
         <div class="col-xl-6">
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="fas fa-chart-bar me-1"></i>
+                    <i class="fas fa-chart-pie me-1"></i>
                     Feedback From Users (like and dislike stuffffff)
                 </div>
-                <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                <div class="card-body"><canvas id="myPieChart" width="100%" height="40"></canvas></div>
             </div>
         </div>
     </div>
@@ -261,6 +261,47 @@
                     e.preventDefault(); // Prevent the default input behavior
                     showUpgradePopup();
                 });
+            }
+        });
+
+        var rows = document.querySelectorAll('.question-row');
+        var counts = {like: 0, dislike: 0, none: 0};
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            if (row.classList.contains('like')) {
+                counts.like++;
+            } else if (row.classList.contains('dislike')) {
+                counts.dislike++;
+            } else if (!row.classList.contains('like') && !row.classList.contains('dislike')) {
+                counts.none++;
+            }
+        }
+        console.log(counts);
+        var ctx = document.getElementById("myPieChart");
+        var myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ["Like","Dislike", "No Feedback"],
+                datasets: [{
+                    data: [counts.like, counts.dislike, counts.none],
+                    backgroundColor: ['#28a745', '#dc3545', 'grey'],
+                }],
+            },
+            options: {
+                onClick: function(evt, item) {
+                    if (item.length > 0) {
+                        var label = this.data.labels[item[0]._index];
+                        for (var i = 0; i < rows.length; i++) {
+                            var row = rows[i];
+                            if (row.classList.contains(label.toLowerCase())) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        }
+                    }
+                }
             }
         });
         </script>
