@@ -4257,6 +4257,20 @@ textarea.form-control-lg {
   background-color: var(--bs-card-cap-bg);
   border-top: var(--bs-card-border-width) solid var(--bs-card-border-color);
 }
+
+.footer-link {
+  text-decoration: none;
+  color: inherit; /* Keeps the text color the same as if it were not wrapped in an <a> */
+}
+
+.fa-angle-right {
+  transition: transform 0.3s ease-in-out; /* Smooth transition for both hover and returning to original state */
+}
+
+.footer-link:hover .fa-angle-right {
+  transform: translateX(5px); /* Moves the content to the right */
+}
+
 .card-footer:last-child {
   border-radius: 0 0 var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius);
 }

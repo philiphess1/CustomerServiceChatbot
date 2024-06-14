@@ -15,7 +15,7 @@
     <div class="row">
         <!-- Leads Collected Card Example -->
         <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card border-left-primary shadow h-100 pt-2">
                 <div class="card-body">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
@@ -28,11 +28,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- I dont think I like this but leaving it here to remember we need to add something -->
-            <div class="card-footer d-flex align-items-center justify-content-between bg-light rounded px-3">
-                <a class="small text-black stretched-link" href="#">View Details</a>
-                <div class="small text-black"><i class="fas fa-angle-right"></i></div>
+                <a href="{{ url_for('get_conversations', chatbot_id=chatbot_id) }}" class="footer-link">
+                    <div class="card-footer d-flex align-items-center justify-content-between bg-light px-3">
+                        <span class="small text-black">View Details</span>
+                        <div class="small text-black"><i class="fas fa-angle-right"></i></div>
+                    </div>
+                </a>
             </div>
         </div>
 
@@ -126,7 +127,7 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-table me-1"></i>
-            DataTable Example
+            Questions and Answers
         </div>
         <div class="card-body">
             <table id="datatablesSimple">
@@ -162,76 +163,105 @@
 {% endblock %}
 
 {% block scripts %}
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <script src="{{ url_for('static', filename='js/chart-area-demo.js') }}"></script>
         <script src="{{ url_for('static', filename='js/chart-bar-demo.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
         <script src="{{ url_for('static', filename='js/datatables-simple-demo.js') }}"></script>
-        <script>var date_count = JSON.parse('{{ date_count | safe }}');
-                // Set new default font family and font color to mimic Bootstrap's default styling
-                Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-                Chart.defaults.global.defaultFontColor = '#292b2c';
+        <script>
+            var date_count = JSON.parse('{{ date_count | safe }}');
+            // Set new default font family and font color to mimic Bootstrap's default styling
+            Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+            Chart.defaults.global.defaultFontColor = '#292b2c';
 
-                var labels = Object.keys(date_count);
-                var data = Object.values(date_count);
+            var labels = Object.keys(date_count);
+            var data = Object.values(date_count);
 
-                var maxValue = Math.max(...data);
-                var yAxisMax = Math.ceil(maxValue * 1.2);
+            var maxValue = Math.max(...data);
+            var yAxisMax = Math.ceil(maxValue * 1.2);
 
-                // Calculate the maximum value for the y-axis
-                // var yAxisMax = maxValue * 1.2;  // 20% more than the maximum value
+            // Calculate the maximum value for the y-axis
+            // var yAxisMax = maxValue * 1.2;  // 20% more than the maximum value
 
 
-                // Area Chart Example
-                var ctx = document.getElementById("myAreaChart");
-                var myLineChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                    label: "Sessions",
-                    lineTension: 0.3,
-                    backgroundColor: "rgba(2,117,216,0.2)",
-                    borderColor: "rgba(2,117,216,1)",
-                    pointRadius: 5,
-                    pointBackgroundColor: "rgba(2,117,216,1)",
-                    pointBorderColor: "rgba(255,255,255,0.8)",
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: "rgba(2,117,216,1)",
-                    pointHitRadius: 50,
-                    pointBorderWidth: 2,
-                    data: data,
-                    }],
-                },
-                options: {
-                    scales: {
-                    xAxes: [{
-                        time: {
-                        unit: 'date'
-                        },
-                        gridLines: {
-                        display: false
-                        },
-                        ticks: {
-                        maxTicksLimit: 7
-                        }
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            min: 0,
-                            max: yAxisMax,
-                            maxTicksLimit: 5
-                        },
-                        gridLines: {
-                        color: "rgba(0, 0, 0, .125)",
-                        }
-                    }],
+            // Area Chart Example
+            var ctx = document.getElementById("myAreaChart");
+            var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                label: "Sessions",
+                lineTension: 0.3,
+                backgroundColor: "rgba(2,117,216,0.2)",
+                borderColor: "rgba(2,117,216,1)",
+                pointRadius: 5,
+                pointBackgroundColor: "rgba(2,117,216,1)",
+                pointBorderColor: "rgba(255,255,255,0.8)",
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                pointHitRadius: 50,
+                pointBorderWidth: 2,
+                data: data,
+                }],
+            },
+            options: {
+                scales: {
+                xAxes: [{
+                    time: {
+                    unit: 'date'
                     },
-                    legend: {
+                    gridLines: {
                     display: false
+                    },
+                    ticks: {
+                    maxTicksLimit: 7
                     }
+                }],
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        max: yAxisMax,
+                        maxTicksLimit: 5
+                    },
+                    gridLines: {
+                    color: "rgba(0, 0, 0, .125)",
+                    }
+                }],
+                },
+                legend: {
+                display: false
                 }
+            }
+            });
+        </script>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to show upgrade popup
+            function showUpgradePopup() {
+                alert("Please upgrade to view more questions.");
+                // You can replace the above alert with a more sophisticated modal/popup implementation
+            }
+
+            // Using event delegation for both the page size selector and pagination links
+            document.body.addEventListener('click', function(e) {
+                if (e.target.matches('.datatable-selector')) {
+                    e.preventDefault(); // Prevent the default select behavior
+                    showUpgradePopup();
+                } else if (e.target.matches('.datatable-pagination-list-item-link')) {
+                    e.preventDefault(); // Prevent the default link behavior
+                    showUpgradePopup();
+                }
+            });
+
+            // Check if the .datatable-input element exists before adding the event listener
+            var searchInput = document.querySelector('.datatable-input');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function(e) {
+                    e.preventDefault(); // Prevent the default input behavior
+                    showUpgradePopup();
                 });
+            }
+        });
         </script>
 {% endblock %}
