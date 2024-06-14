@@ -455,7 +455,7 @@ def delete_chatbot(chatbot_id):
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('home'))
+    return redirect("https://eccoai.org")
 
 @app.route('/<int:user_id>/<int:chatbot_id>')
 def chatbot(user_id, chatbot_id):

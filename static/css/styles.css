@@ -11126,6 +11126,17 @@ body {
   background-color: #343a40;
 }
 
+.home-button {
+    background-color: rgb(178, 226, 75);
+    color: #fff;
+    transition: background-color 0.3s ease;
+  }
+  
+.home-button:hover {
+    background-color: rgb(158, 206, 55); /* Slightly darker shade for hover effect */
+    color: #fff;
+  }
+
 .sb-sidenav-light {
   background-color: #f8f9fa;
   color: #212529;
