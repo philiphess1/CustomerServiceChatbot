@@ -251,14 +251,19 @@ def update_subscription():
         raise e
 
     # Handle the event
+    # Handle the event
     if event['type'] == 'checkout.session.completed':
         subscription = event['data']['object']
         customer_email = subscription['customer_details']['email']
         customer_id = subscription['customer']
         custom_fields = subscription.get('custom_fields', [])
         print(custom_fields)
-        customer_name = event['data']['object']['customer_details']['name']
-            
+        customer_name = None
+
+        for field in custom_fields:
+            if field['key'] == 'name':
+                customer_name = field['text']['value']
+                break
         subscription_id = subscription['subscription']
         stripe_subscription = stripe.Subscription.retrieve(subscription_id)
         subscription_item_id = stripe_subscription['items']['data'][0]['plan']['id']
