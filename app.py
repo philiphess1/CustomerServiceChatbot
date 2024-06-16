@@ -676,6 +676,26 @@ def serve_js(user_id, chatbot_id):
         console.log('DOMContentLoaded event fired');
         injectChatbot();
     }});
+
+    window.addEventListener('message', function(event) {{
+    // Check if the message is from a trusted source
+    if (event.origin === "https://eccoai-customization-2--t0rfrt.herokuapp.com") {{
+        // Perform actions based on the message
+        if (event.data === "closeIframe") {{
+            var iframe = document.getElementById('e');
+            var widget = document.getElementById('b');
+            iframe.style.opacity = 0;
+            iframe.style.transform = 'scale(0)'; // shrink to no size
+            setTimeout(function() {{
+                iframe.style.display = 'none'; // hide the iframe
+                // Reappear logic for the widget
+                widget.style.opacity = 1;
+                widget.style.transform = 'scale(1)';
+                widget.style.display = 'block'; // Adjust display style as needed
+            }}, 200)); // after transition ends
+        }}
+    }}
+    }}));
     """
 
     return Response(js_code, mimetype='text/javascript')

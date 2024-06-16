@@ -67,7 +67,7 @@
                 console.error('There has been a problem with your fetch operation:', error);
             });
 
-// The rest of your code...
+            // The rest of your code...
             // Handle form submission
             document.getElementById('email-form').addEventListener('submit', function(event) {
                 event.preventDefault();
@@ -541,17 +541,8 @@
         }
 
         document.getElementById('chatboxCloseButton').addEventListener('click', function() {
-            var iframe = parent.document.getElementById('e');
-            var widget = parent.document.getElementById('b');
-            iframe.style.opacity = 0;
-            iframe.style.transform = 'scale(0)'; // shrink to no size
-            setTimeout(function() {
-                iframe.style.display = 'none';
-                // Reappear logic for the widget
-                widget.style.opacity = 1;
-                widget.style.transform = 'scale(1)';
-                widget.style.display = 'block'; // or 'flex', 'inline-block', etc., depending on your layout
-            }, 200); // after transition ends
+            // Send a message to the parent window to close the iframe
+            window.parent.postMessage("closeIframe", "*");
         });
 
         function botResponse(rawText) {
