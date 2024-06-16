@@ -40,6 +40,14 @@
             widgetOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
             document.querySelector('.widget').appendChild(widgetOverlay);
 
+            // Check URL and segments
+            console.log("Current path:", path);
+            console.log("Segments:", segments);
+            console.log("UserID:", userId);
+            console.log("ChatbotID:", chatbotId);
+
+            // Before fetch, check the URL being requested
+            console.log("Fetching session data from URL:", '/' + userId + '/' + chatbotId + '/get-session-data');
             // Fetch the session data
             fetch('/' + userId + '/' + chatbotId + '/get-session-data', {
                 method: 'GET',
@@ -51,6 +59,7 @@
                 return response.json();
             })
             .then(data => {
+                console.log("Data received:", data);
                 // If an email is already associated with the session ID
                 if (data.email) {
                     // Hide the form
