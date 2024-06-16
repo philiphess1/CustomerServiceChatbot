@@ -692,10 +692,10 @@ def serve_js(user_id, chatbot_id):
                 widget.style.opacity = 1;
                 widget.style.transform = 'scale(1)';
                 widget.style.display = 'block'; // Adjust display style as needed
-            }}, 200)); // after transition ends
+            }}, 200); // after transition ends
         }}
     }}
-    }}));
+    }});
     """
 
     return Response(js_code, mimetype='text/javascript')
