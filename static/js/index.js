@@ -540,8 +540,18 @@
             });
         }
 
-        document.getElementById('close-button').addEventListener('click', function() {
-            window.parent.closeChatbot();
+        document.getElementById('chatboxCloseButton').addEventListener('click', function() {
+            var iframe = parent.document.getElementById('e');
+            var widget = parent.document.getElementById('b');
+            iframe.style.opacity = 0;
+            iframe.style.transform = 'scale(0)'; // shrink to no size
+            setTimeout(function() {
+                iframe.style.display = 'none';
+                // Reappear logic for the widget
+                widget.style.opacity = 1;
+                widget.style.transform = 'scale(1)';
+                widget.style.display = 'block'; // or 'flex', 'inline-block', etc., depending on your layout
+            }, 200); // after transition ends
         });
 
         function botResponse(rawText) {
@@ -575,4 +585,3 @@
                 appendMessage("Chatbot", "left", "An error occurred while processing your request");
             });
         }
-        

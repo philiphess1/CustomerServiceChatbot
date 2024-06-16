@@ -539,23 +539,47 @@ def serve_js(user_id, chatbot_id):
         chatbotContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
         
         var chatbotIframe = document.createElement('iframe');
-        chatbotIframe.src = 'http://127.0.0.1:5000/{user_id}/{chatbot_id}';
+        chatbotIframe.src = 'https://eccoai-customization-2--t0rfrt.herokuapp.com/{user_id}/{chatbot_id}';
         chatbotIframe.width = '360.5';
         chatbotIframe.height = '600';
-        chatbotIframe.style.borderRadius = '10px';
         chatbotIframe.style.border = 'none';
         chatbotIframe.id = 'e';
         chatbotIframe.style.display = 'None';
         chatbotIframe.style.position = 'fixed';
-        chatbotIframe.style.bottom = '100px';
-        chatbotIframe.style.right = '10px';
         chatbotIframe.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
         chatbotIframe.style.zIndex = '9999';
         chatbotIframe.style.overflow = 'hidden';
+
+        // Adjust styles based on window size
+        function adjustIframeStyleForWindowSize() {{
+            if (window.innerWidth <= 480) {{
+                // Styles for iPhone or similar devices
+                chatbotIframe.style.width = '100vw';
+                chatbotIframe.style.height = '100vh';
+                chatbotIframe.style.bottom = '0';
+                chatbotIframe.style.right = '0';
+                chatbotIframe.style.borderRadius = '0';
+                chatbotIframe.style.position = 'fixed';
+            }} else {{
+                // Default styles for larger devices
+                chatbotIframe.style.width = '360.5px';
+                chatbotIframe.style.height = '600px';
+                chatbotIframe.style.bottom = '100px';
+                chatbotIframe.style.right = '10px';
+                chatbotIframe.style.borderRadius = '10px';
+                chatbotIframe.style.position = 'fixed';
+            }}
+        }}
+
+        // Run the function on initial load
+        adjustIframeStyleForWindowSize();
+
+        // Add an event listener to run the function whenever the window is resized
+        window.addEventListener('resize', adjustIframeStyleForWindowSize);
         
         var toggleButton = document.createElement('img');
         toggleButton.id = 'b';
-        toggleButton.src = 'http://127.0.0.1:5000//static/images/{settings["widget_icon"]}';
+        toggleButton.src = 'https://eccoai-customization-2--t0rfrt.herokuapp.com//static/images/{settings["widget_icon"]}';
         toggleButton.alt = 'Chat';
         toggleButton.style.width = '80px';
         toggleButton.style.height = '80px';
@@ -614,6 +638,9 @@ def serve_js(user_id, chatbot_id):
             this.style.transform = 'scale(1)';
         }});
         b.addEventListener('click', function() {{
+        if (window.matchMedia('(max-width: 480px)').matches) {{
+            this.style.display = 'none';
+        }}
         var iframe = document.getElementById('e');
         if (iframe.style.display === 'none') {{
             iframe.style.display = 'block';
@@ -634,6 +661,7 @@ def serve_js(user_id, chatbot_id):
             }}, 200); // after transition ends
         }}
         }});
+
         function closeChatbot() {{
             var iframe = document.getElementById('e');
             iframe.style.opacity = 0;
@@ -643,6 +671,7 @@ def serve_js(user_id, chatbot_id):
             }}, 200); // after transition ends
         }}
     }}
+
     document.addEventListener('DOMContentLoaded', function() {{
         console.log('DOMContentLoaded event fired');
         injectChatbot();
