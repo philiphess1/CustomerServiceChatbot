@@ -51,6 +51,7 @@
             // Fetch the session data
             fetch('/' + userId + '/' + chatbotId + '/get-session-data', {
                 method: 'GET',
+                credentials: 'include' // Include this line to ensure cookies are sent with the request
             })
             .then(response => {
                 if (!response.ok) {
