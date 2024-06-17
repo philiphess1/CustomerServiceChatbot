@@ -106,3 +106,8 @@ h1 {
 #session_id:hover{
     background-color: rgb(13, 132, 255);
 }
+#session_id{
+    padding: 3px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
