@@ -39,6 +39,7 @@ from azure.core.exceptions import ResourceNotFoundError
 import json
 from openai import OpenAI
 from collections import defaultdict
+from datetime import timedelta
 
 load_dotenv()
 
@@ -887,19 +888,20 @@ def get_conversations(chatbot_id):
 
     rows = g.cursor.fetchall()
     conversations = {}
+
     for row in rows:
         session_id = row[4]
         if session_id not in conversations:
             conversations[session_id] = []
+        created_at = row[3] - timedelta(hours=4)  # Subtract 4 hours
         conversations[session_id].append({
             'user_question': row[0],
             'bot_response': row[1],
             'feedback_type': row[2],
-            'created_at': row[3],
+            'created_at': created_at.strftime('%I:%M %p %m/%d/%y'),
             'email': row[5],
             'name': row[6]
         })
-    print(conversations)
 
     return render_template('conversations.html', chatbot_id=chatbot_id, conversations=conversations)
 
@@ -1427,11 +1429,12 @@ def analytics(chatbot_id):
     data = []
     if rows:
         for row in rows:
+            created_at = row[3] - timedelta(hours=4)  # Subtract 4 hours
             data.append({
                 'user_question': row[0],
                 'bot_response': row[1],
                 'feedback_type': row[2],
-                'created_at': row[3].strftime('%Y-%m-%d %H:%M:%S'),
+                'created_at': created_at.strftime('%I:%M %p\n%m/%d/%y'),  # Changed format here
                 'email': row[4],
                 'ip_address': row[5],
                 'sessionid': row[6],
@@ -1439,10 +1442,9 @@ def analytics(chatbot_id):
             })
     else:
         data = []
-
     date_count = defaultdict(int)
 
-    
+
 
     if rows:
         for row in rows:

@@ -103,6 +103,10 @@ h1 {
     align-items: center;
     height: 100%;
 }
+.time {
+    max-width: 40px;
+    word-wrap: break-word;
+}
 #session_id:hover{
     background-color: rgb(13, 132, 255);
 }
