@@ -31,6 +31,14 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', function(e) {
             e.preventDefault();
 
+            // Remove the 'selected' class from all links
+            sessionLinks.forEach(function(otherLink) {
+                otherLink.style.backgroundColor = ''; // Reset the background color
+            });
+
+            // Add the 'selected' class to the clicked link
+            this.style.backgroundColor = 'rgb(13, 132, 255)'; 
+
             var selectedId = this.dataset.sessionId;
             var convo = document.getElementById(selectedId);
 

@@ -19,7 +19,7 @@
 					</div>
                     {% for session_id, session_conversations in conversations.items() %}
                         <div class="user-box">
-                            <a href="#{{ session_id }}" id="session_id" class="list-group-item list-group-item-action border-0 session-link" data-session-id="{{ session_id }}">
+                            <a href="#{{ session_id }}" id="session_id" class="list-group-item list-group-item-action border-0 session-link {{ session_id }}" data-session-id="{{ session_id }}">
                                 <div class="d-flex align-items-start">
                                     <img src="{{ url_for('static', filename='images/user-icon.png') }}" class="rounded-circle mr-1" alt="Session ID" width="36px" height="36px" style="margin-right: 4px;">
                                     <div class="flex-grow-1 ml-3 overflow-hidden">
