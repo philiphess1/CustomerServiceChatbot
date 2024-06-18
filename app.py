@@ -40,12 +40,22 @@ import json
 from openai import OpenAI
 from collections import defaultdict
 from datetime import timedelta
+from urllib.parse import urlparse
+import redis
 
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SESSION_TYPE'] = 'filesystem'
+
 app.config['SECRET_KEY'] = 'your_secret_key_here'
+
+url = urlparse(os.environ.get('REDISCLOUD_URL'))
+
+r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
+
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_REDIS'] = r
+
 Session(app)
 
 app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT')
