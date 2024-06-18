@@ -56,6 +56,7 @@ r = redis.Redis(host=url.hostname, port=url.port, password=url.password)
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_REDIS'] = r
 app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 
 Session(app)
 
