@@ -1463,7 +1463,19 @@ def analytics(chatbot_id):
             date = row[3].strftime('%m/%d') 
             date_count[date] += 1  
 
-    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id, unique_email_count=unique_email_count, unique_session_count=unique_session_count, remaining_percentage=remaining_percentage, date_count=json.dumps(date_count))
+    print(user_id)
+    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s;", (user_id,))
+    user_plan = g.cursor.fetchone()
+    user_plan = user_plan[0]
+    if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC':
+        user_plan = 'free'
+    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt':
+        user_plan = 'starter'
+    elif user_plan == 'price_1P5wPSLO2ToUaMQEVNXdwIaA':
+        user_plan = 'enterprise'
+    print(user_plan)
+
+    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id, unique_email_count=unique_email_count, unique_session_count=unique_session_count, remaining_percentage=remaining_percentage, date_count=json.dumps(date_count), user_plan=user_plan)
 
 #!!!!!!!!!!!!!!!!!!!!
 #route not being used

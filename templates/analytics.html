@@ -160,6 +160,21 @@
             </table>
         </div>
     </div>
+    <!-- <h3>
+        Create popup box using HTML and CSS
+    </h3>
+    <button id="myButton">Click me</button>
+    <div id="myPopup" class="popup">
+        <div class="popup-content">
+            <h1 style="color: green">
+                Nah Bro you got to buy this Shit to get through!
+            </h1>
+            <p>Dont tell me you broke!😂😂😂</p>
+            <button id="closePopup">
+                Close
+            </button>
+        </div>
+    </div> -->
 {% endblock %}
 
 {% block scripts %}
@@ -235,13 +250,38 @@
             }
             });
         </script>
+        <script type="text/javascript">
+            var userPlan = "{{ user_plan }}";
+        </script>
         <script>
+            myButton.addEventListener(
+                "click",
+                function () {
+                    if (userPlan == 'starter') {
+                        myPopup.classList.add("show");
+                    }
+                }
+            );
+            closePopup.addEventListener(
+                "click",
+                function () {
+                    myPopup.classList.remove("show");
+                }
+            );
+            window.addEventListener(
+                "click",
+                function (event) {
+                    if (event.target == myPopup) {
+                        myPopup.classList.remove("show");
+                    }
+                }
+            );
         document.addEventListener('DOMContentLoaded', function() {
             // Function to show upgrade popup
-            function showUpgradePopup() {
-                alert("Please upgrade to view more questions.");
-                // You can replace the above alert with a more sophisticated modal/popup implementation
-            }
+            // function showUpgradePopup() {
+            //     alert("Please upgrade to view more questions.");
+            //     // You can replace the above alert with a more sophisticated modal/popup implementation
+            // }
 
             // Using event delegation for both the page size selector and pagination links
             document.body.addEventListener('click', function(e) {
@@ -305,4 +345,37 @@
             }
         });
         </script>
+        <style>
+            .popup {
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(
+                    0,
+                    0,
+                    0,
+                    0.4
+                );
+                display: none;
+            }
+            .popup-content {
+                background-color: white;
+                margin: 10% auto;
+                padding: 20px;
+                border: 1px solid #888888;
+                width: 30%;
+                font-weight: bolder;
+            }
+            .popup-content button {
+                display: block;
+                margin: 0 auto;
+            }
+            .show {
+                display: block;
+            }
+        </style>
 {% endblock %}
