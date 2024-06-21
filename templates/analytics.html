@@ -28,7 +28,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="{{ url_for('get_conversations', chatbot_id=chatbot_id) }}" class="footer-link">
+                <a href="{{ url_for('get_conversations', chatbot_id=chatbot_id) }}" class="footer-link" id="viewDetailsLink">
                     <div class="card-footer d-flex align-items-center justify-content-between bg-light px-3">
                         <span class="small text-black">View Details</span>
                         <div class="small text-black"><i class="fas fa-angle-right"></i></div>
@@ -160,21 +160,27 @@
             </table>
         </div>
     </div>
-    <!-- <h3>
-        Create popup box using HTML and CSS
-    </h3>
-    <button id="myButton">Click me</button>
-    <div id="myPopup" class="popup">
-        <div class="popup-content">
-            <h1 style="color: green">
-                Nah Bro you got to buy this Shit to get through!
-            </h1>
-            <p>Dont tell me you broke!😂😂😂</p>
-            <button id="closePopup">
-                Close
-            </button>
+
+    <a id="myButton">Click me</a>
+<div id="myPopup" class="popup">
+    <div class="popup-content" style="display: flex; flex-direction: column; justify-content: flex-end;">
+        <p id="closePopup" class="close"></p>
+        <h4>
+            <b>To view this feature upgrade your plan</b>
+        </h4>
+        <p>With the starter account you will receive:</p>
+        <ol style="line-height: 1.8; font-size: 1.25em; margin-left: 20px; list-style-type: decimal;">
+            <li style="list-style: none;">1.) 3 Chatbots</li>
+            <li style="list-style: none;">2.) 25 MB Storage</li>
+            <li style="list-style: none;">3.) Lead Collection</li>
+            <li style="list-style: none;">4.) Analytics</li>
+            <li style="list-style: none;">5.) Chat GPT 4.0</li>
+        </ol>
+        <div style="display: flex; justify-content: center; align-items: center; border: none; width: 100%;">
+            <a href="https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM" role="button" class="btn upgrade-button" style="width: 100%; background-color: rgb(18, 158, 18); color: #ffffff;"><b>Upgrade your plan</b></a>
         </div>
-    </div> -->
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -254,6 +260,18 @@
             var userPlan = "{{ user_plan }}";
         </script>
         <script>
+            var viewDetailsLink = document.getElementById('viewDetailsLink');
+
+            viewDetailsLink.addEventListener(
+                "click",
+                function (event) {
+                    if (userPlan == 'starter') {
+                        event.preventDefault();
+                        myPopup.classList.add("show");
+                    }
+                }
+            );
+
             myButton.addEventListener(
                 "click",
                 function () {
@@ -262,12 +280,14 @@
                     }
                 }
             );
+
             closePopup.addEventListener(
                 "click",
                 function () {
                     myPopup.classList.remove("show");
                 }
             );
+
             window.addEventListener(
                 "click",
                 function (event) {
@@ -361,14 +381,17 @@
                     0.4
                 );
                 display: none;
+                box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+                
             }
             .popup-content {
-                background-color: white;
+                background-color: #ffffff;
                 margin: 10% auto;
                 padding: 20px;
-                border: 1px solid #888888;
                 width: 30%;
-                font-weight: bolder;
+                border-radius: 15px;
+                /* background-color: #313131; */
+                color: #3a3a3a;
             }
             .popup-content button {
                 display: block;
@@ -376,6 +399,14 @@
             }
             .show {
                 display: block;
+            }
+            .upgrade-button:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(60, 185, 60, 0.5);
+            }
+
+            .upgrade-button:hover {
+                background-color: rgb(80, 205, 80);
             }
         </style>
 {% endblock %}
