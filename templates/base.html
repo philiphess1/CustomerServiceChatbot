@@ -61,9 +61,12 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                                 Questions
                             </a>
-                            <a class="nav-link" href="{{ url_for('get_conversations', chatbot_id=chatbot_id) }}">
+                            <a class="nav-link" href="{{ url_for('get_conversations', chatbot_id=chatbot_id) }}" id="conversations_nav">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Conversations
+                                {% if subscription_item_id == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' %}
+                                    <i class="fas fa-lock" style="margin-left: 5px;"></i>
+                                {% endif %}
                             </a>
                         </div>
                     </div>
@@ -77,10 +80,59 @@
                 <main>
                     <div class="container-fluid px-4">
                         {% block content %}{% endblock %}
+                        <div id="myPopup" class="popup">
+                            <div class="popup-content" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                                <p id="closePopup" class="close"></p>
+                                <h4>
+                                    <b>To view this feature upgrade your plan</b>
+                                </h4>
+                                <p>With the starter account you will receive:</p>
+                                <ol style="line-height: 1.8; font-size: 1.25em; margin-left: 20px; list-style-type: decimal;">
+                                    <li style="list-style: none;">1.) 3 Chatbots</li>
+                                    <li style="list-style: none;">2.) 25 MB Storage</li>
+                                    <li style="list-style: none;">3.) Lead Collection</li>
+                                    <li style="list-style: none;">4.) Analytics</li>
+                                    <li style="list-style: none;">5.) Chat GPT 4.0</li>
+                                </ol>
+                                <div style="display: flex; justify-content: center; align-items: center; border: none; width: 100%;">
+                                    <a href="https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM" role="button" class="btn upgrade-button" style="width: 100%; background-color: rgb(18, 158, 18); color: #ffffff;"><b>Upgrade your plan</b></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </main>
             </div>
         </div>
+        <script>
+            var userPlan = "{{ subscription_item_id }}";
+            var viewDetailsLink = document.getElementById('conversations_nav');
+
+            viewDetailsLink.addEventListener(
+                "click",
+                function (event) {
+                    if (userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
+                        event.preventDefault();
+                        myPopup.classList.add("show");
+                    }
+                }
+            );
+
+            closePopup.addEventListener(
+                "click",
+                function () {
+                    myPopup.classList.remove("show");
+                }
+            );
+
+            window.addEventListener(
+                "click",
+                function (event) {
+                    if (event.target == myPopup) {
+                        myPopup.classList.remove("show");
+                    }
+                }
+            );
+        </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     {% block scripts %}{% endblock %}

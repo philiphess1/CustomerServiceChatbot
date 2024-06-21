@@ -122,18 +122,18 @@ class AuthenticatedUser(UserMixin):
         self.id = id
 
 @app.context_processor
-def inject_user_name():
+def inject_user_details():
     if current_user.is_authenticated:
         user_id = current_user.id
         g.cursor.execute("""
-        SELECT u."name"
+        SELECT u."name", u."subscription_item_id"
         FROM public.users u
         WHERE u.id = %s;
         """, (user_id,))
-        user_name = g.cursor.fetchone()
-        if user_name:
-            return {'name': user_name[0]}  # Assuming the name is in the first column
-    return {'name': None}
+        user_details = g.cursor.fetchone()
+        if user_details:
+            return {'name': user_details[0], 'subscription_item_id': user_details[1]}  # Assuming the name is in the first column and subscription_item_id in the second
+    return {'name': None, 'subscription_item_id': None}
 
 @app.before_request
 def before_request():
@@ -1463,19 +1463,16 @@ def analytics(chatbot_id):
             date = row[3].strftime('%m/%d') 
             date_count[date] += 1  
 
-    print(user_id)
-    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s;", (user_id,))
-    user_plan = g.cursor.fetchone()
-    user_plan = user_plan[0]
-    if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC':
-        user_plan = 'free'
-    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt':
-        user_plan = 'starter'
-    elif user_plan == 'price_1P5wPSLO2ToUaMQEVNXdwIaA':
-        user_plan = 'enterprise'
-    print(user_plan)
+    print(subscription_item_id)
+    if subscription_item_id == 'price_1P9FIULO2ToUaMQEmx2wG1qC':
+        subscription_item_id = 'free'
+    elif subscription_item_id == 'price_1OuIu1LO2ToUaMQE7Prun5Xt':
+        subscription_item_id = 'starter'
+    elif subscription_item_id == 'price_1P5wPSLO2ToUaMQEVNXdwIaA':
+        subscription_item_id = 'enterprise'
+    print(subscription_item_id)
 
-    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id, unique_email_count=unique_email_count, unique_session_count=unique_session_count, remaining_percentage=remaining_percentage, date_count=json.dumps(date_count), user_plan=user_plan)
+    return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id, unique_email_count=unique_email_count, unique_session_count=unique_session_count, remaining_percentage=remaining_percentage, date_count=json.dumps(date_count), subscription_item_id=subscription_item_id)
 
 #!!!!!!!!!!!!!!!!!!!!
 #route not being used
