@@ -1463,15 +1463,6 @@ def analytics(chatbot_id):
             date = row[3].strftime('%m/%d') 
             date_count[date] += 1  
 
-    print(subscription_item_id)
-    if subscription_item_id == 'price_1P9FIULO2ToUaMQEmx2wG1qC':
-        subscription_item_id = 'free'
-    elif subscription_item_id == 'price_1OuIu1LO2ToUaMQE7Prun5Xt':
-        subscription_item_id = 'starter'
-    elif subscription_item_id == 'price_1P5wPSLO2ToUaMQEVNXdwIaA':
-        subscription_item_id = 'enterprise'
-    print(subscription_item_id)
-
     return render_template('analytics.html', data=data, common_topics=common_topics, chatbot_id=chatbot_id, unique_email_count=unique_email_count, unique_session_count=unique_session_count, remaining_percentage=remaining_percentage, date_count=json.dumps(date_count), subscription_item_id=subscription_item_id)
 
 #!!!!!!!!!!!!!!!!!!!!

@@ -64,7 +64,7 @@
                             <a class="nav-link" href="{{ url_for('get_conversations', chatbot_id=chatbot_id) }}" id="conversations_nav">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Conversations
-                                {% if subscription_item_id == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' %}
+                                {% if subscription_item_id == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}
                                     <i class="fas fa-lock" style="margin-left: 5px;"></i>
                                 {% endif %}
                             </a>
@@ -105,9 +105,9 @@
         </div>
         <script>
             var userPlan = "{{ subscription_item_id }}";
-            var viewDetailsLink = document.getElementById('conversations_nav');
+            var viewConversationsLink = document.getElementById('conversations_nav');
 
-            viewDetailsLink.addEventListener(
+            viewConversationsLink.addEventListener(
                 "click",
                 function (event) {
                     if (userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
