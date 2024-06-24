@@ -1384,11 +1384,15 @@ def analytics(chatbot_id):
     g.cursor.execute("SELECT user_question, bot_response, feedback_type, created_at, email, ip_address, sessionid, name FROM feedback WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id))
     rows = g.cursor.fetchall()
 
+    # Fetch the subscription item id from the users table
+    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s;", (user_id,))
+    user_row = g.cursor.fetchone()
+    subscription_item_id = user_row[0]
+
     # Fetch the total number of questions and responses from the usage table
-    g.cursor.execute("SELECT total_questions, total_answers, subscription_item_id FROM usage WHERE user_id = %s;", (user_id,))
+    g.cursor.execute("SELECT total_questions, total_answers FROM usage WHERE user_id = %s;", (user_id,))
     usage_row = g.cursor.fetchone()
     total_questions_responses = usage_row[0] + usage_row[1]
-    subscription_item_id = usage_row[2]
 
     # Determine the user's plan based on the subscription item id
     plans = {
