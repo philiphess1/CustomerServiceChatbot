@@ -552,7 +552,7 @@ def serve_js(user_id, chatbot_id):
         chatbotContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
         
         var chatbotIframe = document.createElement('iframe');
-        chatbotIframe.src = 'https://eccoai-customization-2--t0rfrt.herokuapp.com/{user_id}/{chatbot_id}';
+        chatbotIframe.src = 'http://127.0.0.1:5000/{user_id}/{chatbot_id}';
         chatbotIframe.width = '360.5';
         chatbotIframe.height = '600';
         chatbotIframe.style.border = 'none';
@@ -592,7 +592,7 @@ def serve_js(user_id, chatbot_id):
         
         var toggleButton = document.createElement('img');
         toggleButton.id = 'b';
-        toggleButton.src = 'https://eccoai-customization-2--t0rfrt.herokuapp.com//static/images/{settings["widget_icon"]}';
+        toggleButton.src = 'http://127.0.0.1:5000//static/images/{settings["widget_icon"]}';
         toggleButton.alt = 'Chat';
         toggleButton.style.width = '80px';
         toggleButton.style.height = '80px';
@@ -692,7 +692,7 @@ def serve_js(user_id, chatbot_id):
 
     window.addEventListener('message', function(event) {{
     // Check if the message is from a trusted source
-    if (event.origin === "https://eccoai-customization-2--t0rfrt.herokuapp.com") {{
+    if (event.origin === "http://127.0.0.1:5000") {{
         // Perform actions based on the message
         if (event.data === "closeIframe") {{
             var iframe = document.getElementById('e');
@@ -795,6 +795,7 @@ def chat(user_id, chatbot_id):
     bot_temperature = get_bot_temperature(user_id, chatbot_id)
     custom_prompt = get_custom_prompt(user_id, chatbot_id)
     model = get_LLM(user_id, chatbot_id)
+    print(f"Model: {model}")
 
     llm = ChatOpenAI(
         openai_api_key=openai_api_key,
