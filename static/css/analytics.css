@@ -40,3 +40,11 @@
 .upgrade-button:hover {
     background-color: rgb(80, 205, 80);
 }
+#conditional_upgrade {
+    display: none;
+}
+.upgrade_button{
+    color: blue;
+    cursor: pointer;
+    font-style: underline;
+}

@@ -130,6 +130,11 @@
             Questions and Answers
         </div>
         <div class="card-body">
+            <div class="upgrade-container" id="upgrade-container" style="display: none;">
+                <p><b><a class="upgrade_button" onclick="window.open('https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM', '_blank');">Upgrade</a> your plan to see all questions and answers</b></p>
+                <!-- <button onclick="window.open('https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM', '_blank');">Upgrade</button> -->
+            </div>
+            
             <table id="datatablesSimple">
                 <thead>
                     <tr>
@@ -256,28 +261,29 @@
                 function (event) {
                     if (event.target == myPopup) {
                         myPopup.classList.remove("show");
+                        event.target.classList.remove("disabled"); // This line adds the "disabled" class to myPopup
                     }
                 }
             );
         document.addEventListener('DOMContentLoaded', function() {
-            // Using event delegation for both the page size selector and pagination links
-            document.body.addEventListener('click', function(e) {
-                if (e.target.matches('.datatable-selector')) {
-                    e.preventDefault(); // Prevent the default select behavior
-                    showUpgradePopup();
-                } else if (e.target.matches('.datatable-pagination-list-item-link')) {
-                    e.preventDefault(); // Prevent the default link behavior
-                    showUpgradePopup();
-                }
-            });
-
-            // Check if the .datatable-input element exists before adding the event listener
-            var searchInput = document.querySelector('.datatable-input');
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function(e) {
-                    e.preventDefault(); // Prevent the default input behavior
-                    showUpgradePopup();
+            if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC') {
+                document.body.addEventListener('click', function(e) {
+                    if (e.target.matches('.datatable-selector, .datatable-pagination-list-item-link')) {
+                        myPopup.classList.add("show");
+                        // Disable the clicked element
+                        e.target.disabled = true;
+                        // Optionally, add a class to visually indicate the element is disabled
+                        e.target.classList.add("disabled");
+                    }
                 });
+                // Check if the .datatable-input element exists before adding the event listener
+                var searchInput = document.querySelector('.datatable-input');
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', function(e) {
+                        e.preventDefault(); // Prevent the default input behavior
+                        showUpgradePopup();
+                    });
+                }
             }
         });
 
@@ -321,5 +327,33 @@
                 }
             }
         });
+        </script>
+        <script>
+            window.addEventListener('DOMContentLoaded', event => {
+    // Simple-DataTables
+    // https://github.com/fiduswriter/Simple-DataTables/wiki
+
+    if (datatablesSimple) {
+        let rows = datatablesSimple.querySelectorAll('tbody tr');
+        let pagingOption = true; // Default to enabling paging
+        let conditional_upgrade = document.getElementById('upgrade-container'); // Ensure this element is selected
+
+        if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC') {
+            if (rows.length > 10) {
+                for (let i = 10; i < rows.length; i++) {
+                    rows[i].parentNode.removeChild(rows[i]);
+                }
+            }
+            pagingOption = false; // Disable paging for this specific plan
+            if (conditional_upgrade) {
+                conditional_upgrade.style.display = 'block'; // Only attempt to show it if it exists
+            }
+        }
+
+        new simpleDatatables.DataTable(datatablesSimple, {
+            paging: pagingOption // Set paging based on the user plan
+        });
+    }
+});
         </script>
 {% endblock %}
