@@ -300,18 +300,44 @@
                 counts.none++;
             }
         }
-        console.log(counts);
         var ctx = document.getElementById("myPieChart");
         var myPieChart = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ["Like","Dislike", "No Feedback"],
+                labels: ["Like", "Dislike", "No Feedback"],
                 datasets: [{
                     data: [counts.like, counts.dislike, counts.none],
-                    backgroundColor: ['#28a745', '#dc3545', 'grey'],
+                    backgroundColor: ['#4CAF50', '#FF5252', '#9E9E9E'], // Updated colors
+                    borderColor: 'white', // Add border color
+                    borderWidth: 2 // Border width
                 }],
             },
             options: {
+                responsive: true, // Ensure responsiveness
+                animation: {
+                    animateScale: true, // Scale animation
+                    animateRotate: true // Rotation animation
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom', // Customize legend position
+                        labels: {
+                            font: {
+                                size: 14 // Adjust font size
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Customize tooltip background
+                        bodyFont: {
+                            size: 16 // Customize font size
+                        },
+                        borderColor: 'rgba(255, 255, 255, 0.5)', // Customize border color
+                        borderWidth: 2 // Customize border width
+                    }
+                },
                 onClick: function(evt, item) {
                     if (item.length > 0) {
                         var label = this.data.labels[item[0]._index];
