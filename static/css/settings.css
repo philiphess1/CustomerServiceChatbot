@@ -32,6 +32,8 @@ body {
   flex: 1 1 48%;
   margin-right: 2%;
   margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .settings-section.condensed .settings-group.small-box {
@@ -71,7 +73,7 @@ label.bold-label {
 }
 
 input[type="text"] {
-  width: 80%;
+  width: 100%;
   padding: .5rem;
   background: #ffffff;
   border: 1px solid #555;
@@ -198,6 +200,22 @@ textarea {
 
 .save-settings-button:hover {
   background-color: #45a049;
+}
+
+/* New styles for Chatbot Title and Pop Up Message inputs */
+.settings-section.condensed .settings-group label {
+  margin-bottom: 5px;
+}
+
+.settings-section.condensed .settings-group input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 5px;
+}
+
+.settings-section.condensed .settings-group div {
+  font-size: 0.8em;
+  color: #888;
 }
 
 @media (max-width: 768px) {

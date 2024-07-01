@@ -37,31 +37,38 @@ document.addEventListener('DOMContentLoaded', (event) => {
         chatbotButton.click();
     }, 100);
 
-    // Icon color change functionality
-    var primaryInput = document.getElementById('primary');
-    var secondaryInput = document.getElementById('secondary');
+    // Tab functionality
+    const tabLinks = document.querySelectorAll('.list-group-item');
+    const tabContent = document.querySelectorAll('.tab-pane');
 
-    primaryInput.addEventListener('input', function() {
-        var primaries = document.querySelectorAll('.primary');
-        primaries.forEach(function(primary) {
-            primary.style.fill = this.value;
-        }, this);
+    function showTab(tabId) {
+        tabContent.forEach(content => {
+            content.style.display = 'none';
+            content.classList.remove('show', 'active');
+        });
+
+        tabLinks.forEach(link => link.classList.remove('active'));
+
+        const selectedTab = document.getElementById(tabId);
+        const selectedLink = document.querySelector(`[data-target="${tabId}"]`);
+
+        if (selectedTab && selectedLink) {
+            selectedTab.style.display = 'block';
+            selectedTab.classList.add('show', 'active');
+            selectedLink.classList.add('active');
+        }
+    }
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const target = this.getAttribute('data-target');
+            showTab(target);
+        });
     });
 
-    secondaryInput.addEventListener('input', function() {
-        var secondaries = document.querySelectorAll('.secondary');
-        secondaries.forEach(function(secondary) {
-            secondary.style.fill = this.value;
-        }, this);
-    });
-
-    // Trigger the input event manually
-    primaryInput.dispatchEvent(new Event('input'));
-    secondaryInput.dispatchEvent(new Event('input'));
-
-    // Change display property
-    var elementToDisplay = document.getElementById('svg_icon');
-    elementToDisplay.style.display = 'block';
+    // Show the first tab by default
+    showTab('styling-section');
 
     // Form validation
     document.getElementById('settingsForm').addEventListener('submit', function(event) {
@@ -149,10 +156,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
         }
     });
-});
 
-// Widget icon functionality
-window.onload = function() {
+    // Widget icon functionality
     var labels = document.querySelectorAll('#widget_icon label');
     labels.forEach(function(label) {
         var radio = label.querySelector('input');
@@ -168,36 +173,8 @@ window.onload = function() {
             }
         });
     });
-};
 
-function showPage(pageId) {
-    // Hide all subpages
-    var subpages = document.getElementsByClassName('subpage');
-    for (var i = 0; i < subpages.length; i++) {
-        subpages[i].style.display = 'none';
-    }
-
-    // Show the selected subpage
-    document.getElementById(pageId).style.display = 'block';
-
-    // Remove the 'selected' class from all buttons
-    var buttons = document.getElementsByClassName('button-35');
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove('selected');
-    }
-
-    // Add the 'selected' class to the clicked button
-    if (pageId === 'styling-settings') {
-        document.querySelector('button[onclick="showPage(\'styling-settings\')"]').classList.add('selected');
-    } else if (pageId === 'system-settings') {
-        document.querySelector('button[onclick="showPage(\'system-settings\')"]').classList.add('selected');
-    } else if (pageId === 'faq-settings') {
-        document.querySelector('button[onclick="showPage(\'faq-settings\')"]').classList.add('selected');
-    }
-}
-
-// jQuery functionality
-$(document).ready(function() {
+    // jQuery functionality
     $('#font_style').select2();
 
     function formatIcon (icon) {
@@ -215,18 +192,10 @@ $(document).ready(function() {
         placeholder: "Click to change"
     });
 
-    // Add an event listener for the change event
     $('#icon-select').on('change', function() {
-        // Get the selected option
         var selectedOption = $(this).find('option:selected');
-
-        // Get the data-icon attribute of the selected option
         var icon = selectedOption.data('icon');
-
-        // Log the icon variable
         console.log('icon:', icon);
-
-        // Update the src attribute of the img element
         $('#selected-icon').attr('src', icon);
     });
 });
