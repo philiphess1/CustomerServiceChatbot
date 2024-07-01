@@ -228,3 +228,100 @@ textarea {
       width: 100%;
   }
 }
+/* Branding page specific styles */
+#branding-section .card {
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#branding-section .card-header {
+  background-color: #3a3a3a;
+  color: #ffffff;
+  border-bottom: 1px solid #4a4a4a;
+}
+
+#branding-section .card-body {
+  background-color: #2a2a2a;
+}
+
+#branding-section .form-label {
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+#branding-section .form-control,
+#branding-section .form-control-file {
+  background-color: #3a3a3a;
+  border: 1px solid #4a4a4a;
+  color: #ffffff;
+  padding: 0.5rem;
+}
+
+#branding-section .form-control:focus,
+#branding-section .form-control-file:focus {
+  border-color: #6a6a6a;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+#branding-section .settings-section {
+  margin-bottom: 2rem;
+}
+
+#branding-section .mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+#branding-section .d-flex {
+  display: flex !important;
+}
+
+#branding-section .align-items-center {
+  align-items: center !important;
+}
+
+#branding-section .mr-3 {
+  margin-right: 1rem !important;
+}
+
+#branding-section #currentLogo,
+#branding-section #selected-icon {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  background-color: #ffffff;
+  border: 1px solid #4a4a4a;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+#branding-section .form-text {
+  color: #aaaaaa;
+  font-size: 0.875rem;
+}
+
+/* Select2 customization for icon select */
+#branding-section .select2-container--default .select2-selection--single {
+  background-color: #3a3a3a;
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+  height: 38px;
+}
+
+#branding-section .select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #ffffff;
+  line-height: 38px;
+}
+
+#branding-section .select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 36px;
+}
+
+#branding-section .select2-container--default .select2-results__option {
+  background-color: #3a3a3a;
+  color: #ffffff;
+}
+
+#branding-section .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background-color: #4a4a4a;
+}
