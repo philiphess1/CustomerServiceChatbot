@@ -23,6 +23,7 @@
     width: 30%;
     border-radius: 15px;
     /* background-color: #313131; */
+    min-width: 1200px;
     color: #3a3a3a;
 }
 .popup-content button {
