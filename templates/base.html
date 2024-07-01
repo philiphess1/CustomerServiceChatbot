@@ -64,7 +64,7 @@
                             <a class="nav-link" href="{{ url_for('get_conversations', chatbot_id=chatbot_id) }}" id="conversations_nav">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Conversations
-                                {% if subscription_item_id == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}
+                                {% if subscription_item_id == 'price_1P9FIULO2ToUaMQEmx2wG1qC' or subscription_item_id == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' %}
                                     <i class="fas fa-lock" style="margin-left: 5px;"></i>
                                 {% endif %}
                             </a>
@@ -110,7 +110,7 @@
             viewConversationsLink.addEventListener(
                 "click",
                 function (event) {
-                    if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC') {
+                    if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
                         event.preventDefault();
                         myPopup.classList.add("show");
                     }

@@ -245,11 +245,10 @@
         </script>
         <script>
             var viewDetailsLink = document.getElementById('viewDetailsLink');
-
             viewDetailsLink.addEventListener(
                 "click",
                 function (event) {
-                    if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC') {
+                    if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
                         event.preventDefault();
                         myPopup.classList.add("show");
                     }
@@ -266,7 +265,7 @@
                 }
             );
         document.addEventListener('DOMContentLoaded', function() {
-            if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC') {
+            if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
                 document.body.addEventListener('click', function(e) {
                     if (e.target.matches('.datatable-selector, .datatable-pagination-list-item-link')) {
                         myPopup.classList.add("show");
@@ -364,7 +363,7 @@
         let pagingOption = true; // Default to enabling paging
         let conditional_upgrade = document.getElementById('upgrade-container'); // Ensure this element is selected
 
-        if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC') {
+        if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
             if (rows.length > 10) {
                 for (let i = 10; i < rows.length; i++) {
                     rows[i].parentNode.removeChild(rows[i]);

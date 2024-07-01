@@ -573,11 +573,16 @@
                 // Hide the typing indicator when the bot responds
                 hideTypingIndicator();
 
-                // Assuming the API response includes a 'sources' array
-                let sources = data.sources || []; // Fallback to an empty array if no sources are provided
+                // Check if the response status is 'error' and display the message
+                if (data.status && data.status === "error") {
+                    appendMessage("Chatbot", "left", data.message);
+                } else {
+                    // Assuming the API response includes a 'sources' array
+                    let sources = data.sources || []; // Fallback to an empty array if no sources are provided
 
-                // Now pass the content and sources to appendMessage
-                appendMessage("Chatbot", "left", data.content, sources);
+                    // Now pass the content and sources to appendMessage
+                    appendMessage("Chatbot", "left", data.content, sources);
+                }
             })
             .fail(function() {
                 // Hide the typing indicator in case of an error

@@ -87,8 +87,7 @@
                         <label for="logo">Logo:</label><br>
                         <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" style="width: 100px; height: 100px;">
                         <br>
-                        <input type="file" id="logo" name="logo" accept="image/png" {% if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}><br>
-                        
+                        <input type="file" id="logo" name="logo" accept="image/png" {% if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' or user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' %}disabled{% endif %}><br>
                         <br>
                         <label for="font_style">Font Style:</label>
                         <br>
@@ -130,7 +129,7 @@
                     </div><br>
 
                     <label for="bot_LLM">Assistant LLM:</label>
-                    <select id="bot_LLM" name="bot_LLM" {% if user_plan =='price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}>
+                    <select id="bot_LLM" name="bot_LLM" {% if user_plan =='price_1P9FIULO2ToUaMQEmx2wG1qC' or user_plan =='price_1OuIu1LO2ToUaMQE7Prun5Xt' %}disabled{% endif %}>
                         <option value="gpt-3.5-turbo" {% if settings['LLM'] == 'gpt-3.5-turbo' %}selected{% endif %}>GPT 3.5 Turbo</option>
                         <option value="gpt-4o" {% if settings['LLM'] == 'gpt-4o' %}selected{% endif %}>GPT-4o</option>
                     </select><br><br>

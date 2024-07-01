@@ -411,13 +411,13 @@ def create_chatbot():
     user_plan = g.cursor.fetchone()[0]
 
     if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and chatbot_count >= 1:
-        flash("You have exceeded your chatbot limit for the beginner plan!")
+        flash("You have exceeded your chatbot limit for the free plan!")
         return redirect(url_for('home'))
-    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and chatbot_count >= 3:
-        flash("You have exceeded your chatbot limit for the intermediate plan!")
+    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and chatbot_count >= 2:
+        flash("You have exceeded your chatbot limit for the starter plan!")
         return redirect(url_for('home'))
-    elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and chatbot_count >= 5:
-        flash("You have exceeded your chatbot limit for the enterprise plan!")
+    elif user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and chatbot_count >= 3:
+        flash("You have exceeded your chatbot limit for the professional plan!")
         return redirect(url_for('home'))
 
     default_settings = {
@@ -763,11 +763,11 @@ def chat(user_id, chatbot_id):
 
     # Check if the user has exceeded their question limit
     if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and question_count >= 50:
-        return jsonify({"status": "error", "message": "You have exceeded your question limit for the beginner plan!"})
-    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and question_count >= 500:
-        return jsonify({"status": "error", "message": "You have exceeded your question limit for the intermediate plan!"})
-    elif user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and question_count >= 10000:
-        return jsonify({"status": "error", "message": "You have exceeded your question limit for the enterprise plan!"})
+        return jsonify({"status": "error", "message": "You have exceeded your question limit for the free plan!"})
+    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and question_count >= 100:
+        return jsonify({"status": "error", "message": "You have exceeded your question limit for the starter plan!"})
+    elif user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and question_count >= 500:
+        return jsonify({"status": "error", "message": "You have exceeded your question limit for the professional plan!"})
 
     vectorstore = Pinecone(
         index, embeddings, text_field,  namespace=f"{user_id}{chatbot_id}"
@@ -1022,8 +1022,8 @@ def upload_file(chatbot_id):
 
     # Check if the user has exceeded their file size limit
     if (user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and total_file_size + float(store_file_size) > 5) or \
-        (user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and total_file_size + float(store_file_size) > 25) or \
-        (user_plan == 'price_1OqKxhLO2ToUaMQEqRFU0dh9' and total_file_size + float(store_file_size) > 1024):  # 1 GB is 1024 MB
+        (user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and total_file_size + float(store_file_size) > 10) or \
+        (user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and total_file_size + float(store_file_size) > 25):  # 1 GB is 1024 MB
          return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
 
     for file in uploaded_files:
@@ -1398,8 +1398,8 @@ def analytics(chatbot_id):
     # Determine the user's plan based on the subscription item id
     plans = {
         'price_1P9FIULO2ToUaMQEmx2wG1qC': 50,
-        'price_1OuIu1LO2ToUaMQE7Prun5Xt': 500,
-        'price_1OqKxhLO2ToUaMQEqRFU0dh9': 10000
+        'price_1OuIu1LO2ToUaMQE7Prun5Xt': 100,
+        'price_1PXpCPLO2ToUaMQElU97Rdyx': 500
     }
     user_plan = plans.get(subscription_item_id, 0)
 
