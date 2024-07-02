@@ -1031,6 +1031,11 @@ def upload_file(chatbot_id):
     if (user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and total_file_size + float(store_file_size) > 5) or \
         (user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and total_file_size + float(store_file_size) > 10) or \
         (user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and total_file_size + float(store_file_size) > 25):  # 1 GB is 1024 MB
+         for file in uploaded_files:
+            if file.filename != '':
+                filename = secure_filename(file.filename)
+                g.cursor.execute("DELETE FROM document_mapping WHERE filename = %s", (filename,))
+                g.db_conn.commit()
          return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
 
     for file in uploaded_files:
