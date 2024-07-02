@@ -1005,20 +1005,27 @@ def upload_file(chatbot_id):
         store_file_size = 0
     print(store_file_size)
 
-    for file in uploaded_files:
+    for i, file in enumerate(uploaded_files):
         if file.filename != '':
             filename = secure_filename(file.filename)
             file_size = len(file.read())
+            print(f'file number:{i} size:{file_size/1000000}')
             
             # Reset the file position to the beginning
             file.seek(0)
 
-            file_size = file_size/1000000
+            file_size = file_size / 1000000
+
+            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (filename, file_size, user_id, chatbot_id))
+            g.db_conn.commit()
+
+            
             total_file_size += file_size
 
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
     user_plan = g.cursor.fetchone()[0]
     print(user_plan)
+    print(total_file_size + float(store_file_size))
 
     # Check if the user has exceeded their file size limit
     if (user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and total_file_size + float(store_file_size) > 5) or \
@@ -1047,9 +1054,7 @@ def upload_file(chatbot_id):
             file.seek(0)
 
             file_size = file_size/1000000
-
-            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (filename, file_size, user_id, chatbot_id))
-            g.db_conn.commit()
+            
 
             # Create a BytesIO stream from the uploaded file
             file_stream = BytesIO(file.read())
