@@ -31,13 +31,7 @@
                 </div>
                 <div class="chatbox-body">
                     <!-- Chat messages go here -->
-                    <div class="suggested-questions">
-                        {% for q in question_list %}
-                            <p class="suggested-question" data-response="{{ q.response }}">{{ q.question }}</p>
-                        {% endfor %}
-                    </div>
                 </div>
-
                 <script>
                     var suggestedQuestions = document.querySelectorAll('.suggested-question');
                     suggestedQuestions.forEach(function(question) {
@@ -48,6 +42,11 @@
                         });
                     });
                 </script>
+                <div class="suggested-questions">
+                    {% for q in question_list %}
+                        <p class="suggested-question" data-response="{{ q.response }}">{{ q.question }}</p>
+                    {% endfor %}
+                </div>
                 <div class="chatbox-input">
                     <div class="input-wrapper">
                         <input type="text" id="user-input" placeholder="Ask a question..." autocomplete="off">

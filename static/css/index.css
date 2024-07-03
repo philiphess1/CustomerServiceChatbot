@@ -192,23 +192,30 @@
 
         .suggested-questions {
             display: flex;
-            overflow-x: scroll;
-            white-space: nowrap;
+            flex-direction: column; /* Stack items vertically */
+            align-items: flex-end; /* Align items to the right */
+            overflow-y: auto; /* Enable vertical scrolling */
+            white-space: normal; /* Allow text to wrap */
             border-radius: 7px;
             margin-bottom: 9px;
-        } 
+            max-height: 200px; /* Optional: Set a max height for scrolling */
+        }
+
         .suggested-question {
-            display: flex;
+            display: block; /* Change to block for vertical stacking */
             padding: 5px;
             margin: 2px;
-            background-color: gainsboro;
+            background-color: var(--bot-bubble-color);
+            border: 1px solid var(--title-color); /* Use bot bubble color for border */
             border-radius: 7px;
             cursor: pointer;
             font-size: 12px;
             letter-spacing: -0.5px;
-            color: rgb(61, 61, 61);
-            margin-bottom: 9px;
+            color: black; /* Use bot bubble color for font */
+            font-family: var(--font-family);
+            text-align: right; /* Align text to the right */
         }
+
         .suggested-questions::-webkit-scrollbar { /* For Chrome, Safari and Edge */
             margin-top: 5px;
             height: 5px;
@@ -217,6 +224,12 @@
         .suggested-questions::-webkit-scrollbar-thumb {
             background-color: darkgrey;
             border-radius: 3px;
+        }
+
+        .suggested-question:hover {
+            background-color: var(--title-color); /* Change background color on hover */
+            color: var(--background-color); /* Change text color on hover */
+            border: 1px solid var(--title-color); /* Optional: Change border color on hover */
         }
 
         .widget-button {
@@ -325,7 +338,7 @@
         }
         .msg-info {
             display: flex;
-            align-items: flex-end;
+            align-items: flex-start;
             justify-content: center; /* if you want to center the contents horizontally */
             margin-bottom: 0px;
         }
@@ -349,7 +362,7 @@
         .right-msg .msg-bubble::after {
             content: "";
             position: absolute;
-            bottom: -5px; /* Adjust this value as needed */
+            top: -5px; 
             right: 7px;
             width: 0;
             height: 0;
@@ -357,7 +370,7 @@
             border-left-color: var(--user-bubble-color);
             border-right: 0;
             margin-right: -10px;
-            transform: rotate(270deg);
+            transform: rotate(-270deg);
         }
         
         .left-msg .msg-bubble {
@@ -369,7 +382,7 @@
         .left-msg .msg-bubble::after {
             content: "";
             position: absolute;
-            bottom: -5px; 
+            top: -5px; 
             left: 5px;
             width: 0;
             height: 0;
@@ -377,7 +390,7 @@
             border-right-color: var(--bot-bubble-color);
             border-left: 0;
             margin-left: -10px;
-            transform: rotate(90deg);
+            transform: rotate(-90deg);
         }
         
 
