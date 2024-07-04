@@ -108,7 +108,7 @@
                                     <div class="row">
                                         <div class="col-md-4 mb-4">
                                             <h5>Logo</h5>
-                                            <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" style="width: 100px; height: 100px;">
+                                            <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" class="preview-box">
                                             <div class="custom-file mt-2">
                                                 <input type="file" class="custom-file-input" id="logo" name="logo" accept="image/png" {% if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}>
                                                 <label class="custom-file-label" for="logo">Choose file</label>
@@ -117,28 +117,32 @@
                                         </div>
                                         <div class="col-md-4 mb-4">
                                             <h5>Widget Icon</h5>
-                                            <img id="selected-icon" src="{{ url_for('static', filename='images/' + settings['widget_icon']) }}" alt="Selected Icon" style="width: 100px; height: 100px;">
-                                            <select id="icon-select" name="icon-select" style="width: 200px;">
-                                                <option value="{{settings['widget_icon']}}" selected data-icon="{{ url_for('static', filename='images/' + settings['widget_icon']) }}">Current</option>
-                                                <option value="ecco_icon.svg" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon.svg') %}selected{% endif %}>Lime</option>
-                                                <option value="ecco_icon_black.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_black.svg') %}selected{% endif %}>Black</option>
-                                                <option value="ecco_icon_blue.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_blue.svg') %}selected{% endif %}>Blue</option>
-                                                <option value="ecco_icon_grey.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_grey.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_grey.svg') %}selected{% endif %}>Grey</option>
-                                                <option value="ecco_icon_orange.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_orange.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_orange.svg') %}selected{% endif %}>Orange</option>
-                                                <option value="ecco_icon_purple.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_purple.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_purple.svg') %}selected{% endif %}>Purple</option>
-                                                <option value="ecco_icon_red.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_red.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_red.svg') %}selected{% endif %}>Red</option>
-                                                <option value="ecco_icon_yellow.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_yellow.svg') }}" {% if settings['widget_icon'] == url_for('static', filename='images/ecco_icon_yellow.svg') %}selected{% endif %}>Yellow</option>
+                                            <img id="selected-icon" src="{{ url_for('static', filename='images/' + (settings['widget_icon'] or 'default_icon.png')) }}" alt="Selected Icon" class="preview-box">
+                                            <select id="icon-select" name="icon-select" class="mt-2">
+                                                <option value="ecco_icon.svg" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}" {% if settings['widget_icon'] == 'ecco_icon.svg' %}selected{% endif %}>Lime</option>
+                                                <option value="ecco_icon_black.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_black.svg' %}selected{% endif %}>Black</option>
+                                                <option value="ecco_icon_blue.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_blue.svg' %}selected{% endif %}>Blue</option>
+                                                <option value="ecco_icon_grey.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_grey.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_grey.svg' %}selected{% endif %}>Grey</option>
+                                                <option value="ecco_icon_orange.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_orange.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_orange.svg' %}selected{% endif %}>Orange</option>
+                                                <option value="ecco_icon_purple.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_purple.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_purple.svg' %}selected{% endif %}>Purple</option>
+                                                <option value="ecco_icon_red.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_red.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_red.svg' %}selected{% endif %}>Red</option>
+                                                <option value="ecco_icon_yellow.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_yellow.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_yellow.svg' %}selected{% endif %}>Yellow</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4 mb-4">
                                             <h5>Font Style</h5>
-                                            <select id="font_style" name="font_style" class="form-control">
+                                            <div id="font-preview" class="preview-box">
+                                                <div class="preview-large">ABC</div>
+                                                <div class="preview-small">abc</div>
+                                            </div>
+                                            <select id="font_style" name="font_style" class="form-control mt-2">
                                                 {% set font_options = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Trebuchet MS', 'Comic Sans MS', 'Palatino Linotype', 'Arial Black', 'Book Antiqua', 'Garamond', 'Courier', 'Franklin Gothic Medium', 'Copperplate', 'Century Gothic', 'Rockwell', 'Baskerville', 'Californian FB', 'Candara', 'Consolas', 'Ebrima', 'Cambria', 'MS Gothic', 'MS Mincho'] %}
                                                 {% for font in font_options %}
-                                                    <option value="{{ font }}" style="font-family: '{{ font }}';" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
+                                                    <option value="{{ font }}" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
+                                    </div>
                                         <div class="hidden-chatbot-name">
                                             <label for="logo">Chatbot Name:</label><br>
                                             <input type="text" id="chatbot_name" name="chatbot_name" value="{{ settings['chatbot_name'] }}" maxlength="20"><br>
@@ -151,52 +155,48 @@
                     </div>
                 </div>
                     <!-- System Settings Section -->
-                    <div class="tab-pane fade" id="system-settings" role="tabpanel">
+                    <div id="system-settings" class="tab-pane fade" role="tabpanel">
                         <div class="card">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">System Settings</h5>
                             </div>
                             <div class="card-body">
                                 <div class="settings-container">
-                                    <div class="settings-section">
-                                        <div class="temperature-section">
-                                            <div class="temperature-label-container">
-                                                <label for="bot_temperature" class="temperature-label">Bot Temperature:</label>
+                                    <div class="settings-row">
+                                        <label>Bot Temperature:</label>
+                                        <div class="temperature-container">
+                                            <div class="temperature-labels">
+                                                <span>Most Accurate</span>
+                                                <span>Most Creative</span>
                                             </div>
-                                            <div class="temperature-container">
-                                                <div class="temperature-labels">
-                                                    <span>Most Accurate</span>
-                                                    <span>Most Creative</span>
-                                                </div>
-                                                <input type="range" class="form-range" min="0" max="1" step="0.1" id="bot_temperature" name="bot_temperature" value="{{ settings['bot_temperature'] }}">
-                                                <div class="temperature-steps">
-                                                    <span>0</span><span>0.1</span><span>0.2</span><span>0.3</span><span>0.4</span><span>0.5</span><span>0.6</span><span>0.7</span><span>0.8</span><span>0.9</span><span>1</span>
-                                                </div>
+                                            <input type="range" class="form-range" min="0" max="1" step="0.1" id="bot_temperature" name="bot_temperature" value="{{ settings['bot_temperature'] }}">
+                                            <div class="temperature-steps">
+                                                <span>0</span><span>0.1</span><span>0.2</span><span>0.3</span><span>0.4</span><span>0.5</span><span>0.6</span><span>0.7</span><span>0.8</span><span>0.9</span><span>1</span>
                                             </div>
                                         </div>
-                                        <div class="llm-section">
-                                            <label for="bot_LLM">Assistant LLM:</label>
-                                            <select id="bot_LLM" name="bot_LLM" {% if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}>
-                                                <option value="gpt-3.5-turbo" {% if settings['LLM'] == 'gpt-3.5-turbo' %}selected{% endif %}>GPT 3.5 Turbo</option>
-                                                <option value="gpt-4-turbo" {% if settings['LLM'] == 'gpt-4-turbo' %}selected{% endif %}>GPT 4o</option>
-                                            </select>
-                                        </div>
-                                        <div class="message-section">
-                                            <label for="greeting_message">Greeting Message:</label>
-                                            <textarea id="greeting_message" name="greeting_message" rows="4" cols="50" maxlength="500">{{ settings['greeting_message'] }}</textarea>
-                                            <em><small>Maximum 250 characters.</small></em>
-                                        </div>
-                                        <div class="message-section">
-                                            <label for="custom_prompt">Custom Prompt:</label>
-                                            <textarea id="custom_prompt" name="custom_prompt" rows="4" cols="50" maxlength="1000">{{ settings['custom_prompt'] }}</textarea>
-                                            <em><small>Maximum 1000 characters.</small></em>
-                                        </div>
+                                    </div>
+                                    <div class="settings-row">
+                                        <label for="bot_LLM">Assistant LLM:</label>
+                                        <select id="bot_LLM" name="bot_LLM">
+                                            <option value="gpt-3.5-turbo" {% if settings['LLM'] == 'gpt-3.5-turbo' %}selected{% endif %}>GPT 3.5 Turbo</option>
+                                            <option value="gpt-4-turbo" {% if settings['LLM'] == 'gpt-4-turbo' %}selected{% endif %}>GPT 4o</option>
+                                        </select>
+                                    </div>
+                                    <div class="settings-row">
+                                        <label for="greeting_message">Greeting Message:</label>
+                                        <textarea id="greeting_message" name="greeting_message" rows="4" maxlength="250">{{ settings['greeting_message'] }}</textarea>
+                                        <small class="form-text text-muted">Maximum 250 characters.</small>
+                                    </div>
+                                    <div class="settings-row">
+                                        <label for="custom_prompt">Custom Prompt:</label>
+                                        <textarea id="custom_prompt" name="custom_prompt" rows="4" maxlength="1000">{{ settings['custom_prompt'] }}</textarea>
+                                        <small class="form-text text-muted">Maximum 1000 characters.</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <button type="submit" class="save-settings-button">Save Settings</button>
                     </div>
-                
                     <!-- FAQ Settings Section -->
                     <div class="tab-pane fade" id="faq-settings" role="tabpanel">
                         <div class="card sidebar-card">

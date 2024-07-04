@@ -4,6 +4,7 @@ body {
   color: #e0e0e0;
 }
 
+/* Card Styles */
 .card {
   margin-bottom: 1.5rem;
   box-shadow: 0 1px 15px 1px rgba(52, 40, 104, .08);
@@ -16,47 +17,30 @@ body {
   padding: 1.25rem;
 }
 
+.card-header {
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #4a4a4a;
+}
+
+.card-title {
+  margin-bottom: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+/* Settings Container */
 .settings-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   margin-bottom: 0;
 }
 
-.settings-section {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
+.settings-row {
+  margin-bottom: 20px;
 }
 
-.settings-section.condensed .settings-group {
-  flex: 1 1 48%;
-  margin-right: 2%;
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-.settings-section.condensed .settings-group.small-box {
-  flex: 1 1 23%;
-  margin-right: 2%;
-  margin-bottom: 1rem;
-}
-
-.settings-group.half-width {
-  flex: 1 1 48%;
-  margin-right: 2%;
-}
-
-.settings-group.half-width:last-child {
-  margin-right: 0;
-}
-
-.settings-group.full-width {
-  flex: 1 1 100%;
-  display: flex;
-  align-items: center;
-}
-
+/* Form Elements */
 input[type="color"] {
   display: block;
   width: 80%;
@@ -64,7 +48,27 @@ input[type="color"] {
   margin-bottom: .5rem;
 }
 
-label.bold-label {
+input[type="text"], 
+input[type="file"],
+select, 
+textarea {
+  width: 100%;
+  padding: .5rem;
+  background: #333;
+  border: 1px solid #555;
+  color: #ffffff;
+  border-radius: .2rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="checkbox"] {
+  margin-left: .5rem;
+}
+
+label {
   display: block;
   margin-bottom: .5rem;
   font-size: .875rem;
@@ -72,38 +76,65 @@ label.bold-label {
   color: #ffffff;
 }
 
-input[type="text"] {
+/* Custom File Input */
+.custom-file {
+  position: relative;
+  display: inline-block;
   width: 100%;
-  padding: .5rem;
-  background: #ffffff;
-  border: 1px solid #555;
-  color: #000000;
-  border-radius: .2rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-input[type="checkbox"] {
-  margin-left: .5rem;
-}
-
-select {
+.custom-file-input {
+  position: relative;
+  z-index: 2;
   width: 100%;
-  padding: .5rem;
-  background: #3a3a3a;
-  border: 1px solid #555;
-  color: #e0e0e0;
-  border-radius: .2rem;
+  height: 38px;
+  margin: 0;
+  opacity: 0;
 }
 
-textarea {
-  width: 100%;
-  padding: .5rem;
-  background: #ffffff;
+.custom-file-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 38px;
+  padding: 0.375rem 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #333;
   border: 1px solid #555;
-  color: #000000;
-  border-radius: .2rem;
-  resize: vertical;
+  border-radius: 0.25rem;
 }
 
+.custom-file-label::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: block;
+  height: 36px;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  color: #ffffff;
+  content: "Browse";
+  background-color: #4a4a4a;
+  border-left: inherit;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.file-name {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+/* List Group */
 .list-group-item {
   background-color: #2a2a2a;
   border: 1px solid #333;
@@ -113,9 +144,9 @@ textarea {
 .list-group-item.active {
   background-color: #444;
   border-color: #555;
-  color: #e0e0e0;
 }
 
+/* Dropdown */
 .dropdown-menu {
   background-color: #3a3a3a;
   border: 1px solid #555;
@@ -129,6 +160,7 @@ textarea {
   background-color: #444;
 }
 
+/* Layout */
 .container.p-0 {
   display: flex;
   flex-wrap: nowrap;
@@ -168,6 +200,7 @@ textarea {
   margin-right: 350px;
 }
 
+/* Chatbot */
 #chatbot {
   position: fixed;
   top: 0;
@@ -182,6 +215,7 @@ textarea {
   transform: translateX(100%);
 }
 
+/* Save Button */
 .save-settings-button {
   position: absolute;
   bottom: 20px;
@@ -202,319 +236,185 @@ textarea {
   background-color: #45a049;
 }
 
-/* New styles for Chatbot Title and Pop Up Message inputs */
-.settings-section.condensed .settings-group label {
-  margin-bottom: 5px;
-}
-
-.settings-section.condensed .settings-group input[type="text"] {
+/* Preview Boxes */
+.preview-box {
   width: 100%;
-  padding: 8px;
-  margin-bottom: 5px;
-}
-
-.settings-section.condensed .settings-group div {
-  font-size: 0.8em;
-  color: #888;
-}
-
-@media (max-width: 768px) {
-  .main-content.shifted {
-      margin-right: 0;
-      width: 100%;
-  }
-
-  #chatbot {
-      width: 100%;
-  }
-}
-/* Branding page specific styles */
-#branding-section .card {
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-#branding-section .card-header {
-    background-color: #2a2a2a;
-    color: #ffffff;
-    border-bottom: 1px solid #4a4a4a;
-}
-
-#branding-section .card-body {
-    background-color: #2a2a2a;
-}
-
-#branding-section .form-label {
-    color: #ffffff;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-#branding-section .form-control,
-#branding-section .form-control-file {
-    background-color: #3a3a3a;
-    border: 1px solid #4a4a4a;
-    color: #ffffff;
-    padding: 0.5rem;
-}
-
-#branding-section .form-control:focus,
-#branding-section .form-control-file:focus {
-    border-color: #6a6a6a;
-    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
-}
-
-#branding-section .settings-section {
-    margin-bottom: 2rem;
-}
-
-#branding-section .mb-4 {
-    margin-bottom: 1.5rem !important;
-}
-
-#branding-section .d-flex {
-    display: flex !important;
-}
-
-#branding-section .align-items-center {
-    align-items: center !important;
-}
-
-#branding-section .mr-3 {
-    margin-right: 1rem !important;
-}
-
-#branding-section #currentLogo,
-#branding-section #selected-icon {
-    width: 100px;
-    height: 100px;
-    object-fit: contain;
-    background-color: #ffffff;
-    border: 1px solid #4a4a4a;
-    border-radius: 5px;
-    padding: 5px;
-}
-
-#branding-section .form-text {
-    color: #aaaaaa;
-    font-size: 0.875rem;
-}
-
-/* Select2 customization for icon select */
-#branding-section .select2-container--default .select2-selection--single {
-    background-color: #3a3a3a;
-    border: 1px solid #4a4a4a;
-    border-radius: 4px;
-    height: 38px;
-}
-
-#branding-section .select2-container--default .select2-selection--single .select2-selection__rendered {
-    color: #ffffff;
-    line-height: 38px;
-}
-
-#branding-section .select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 36px;
-}
-
-#branding-section .select2-container--default .select2-results__option {
-    background-color: #3a3a3a;
-    color: #ffffff;
-}
-
-#branding-section .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: #4a4a4a;
-}
-/* hide chatbot name, move to title page? */
-.hidden-chatbot-name {
-  display: none;
-}
-.custom-file {
-  position: relative;
-  display: inline-block;
-  width: 100%;
+  height: 100px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
   margin-bottom: 10px;
 }
 
-.custom-file-input {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  height: calc(1.5em + 0.75rem + 2px);
-  margin: 0;
-  opacity: 0;
+#currentLogo, #selected-icon {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
-.custom-file-label {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 1;
-  height: calc(1.5em + 0.75rem + 2px);
-  padding: 0.375rem 0.75rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #495057;
-  background-color: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+#font-preview .preview-large {
+  font-size: 36px;
 }
 
-.custom-file-label::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  display: block;
-  height: calc(1.5em + 0.75rem);
-  padding: 0.375rem 0.75rem;
-  line-height: 1.5;
-  color: #495057;
-  content: "Browse";
-  background-color: #e9ecef;
-  border-left: inherit;
-  border-radius: 0 0.25rem 0.25rem 0;
+#font-preview .preview-small {
+  font-size: 24px;
 }
 
-.custom-file-input:lang(en) ~ .custom-file-label::after {
-  content: "Browse";
+/* Select2 Customization */
+.select2-container {
+  width: 100% !important;
 }
 
-.file-name {
-  display: block;
-  margin-top: 5px;
-  font-size: 0.875em;
-}
-#system-settings .settings-section {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+.select2-container--default .select2-selection--single {
+  background-color: #3a3a3a;
+  border: 1px solid #555;
+  border-radius: 4px;
+  height: 40px;
+  line-height: 40px;
 }
 
-#system-settings .temperature-section {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #ffffff;
+  line-height: 40px;
 }
 
-.temperature-label-container {
-  width: 150px;
-  flex-shrink: 0;
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 38px;
 }
 
-.temperature-container {
-  flex-grow: 1;
-  max-width: 500px;
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: #ffffff transparent transparent transparent;
 }
 
-.temperature-steps {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-
-.temperature-steps span {
-  font-size: 12px;
-}
-
-input[type="range"] {
-  width: 100%;
-  margin: 10px 0;
-}
-
-.temperature-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-}
-
-.llm-section, .message-section {
-  margin-bottom: 20px;
-}
-
-.llm-section label, .message-section label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.message-section textarea {
-  width: 100%;
-  resize: vertical;
-}
-
-.message-section em {
-  display: block;
-  margin-top: 5px;
-}
-
-@media (max-width: 768px) {
-  .temperature-section {
-      flex-direction: column;
-      align-items: flex-start;
-  }
-
-  .temperature-label-container {
-      width: 100%;
-      margin-bottom: 10px;
-  }
-}
-#styling-section .settings-container {
-  display: block;
-}
-
-#styling-section .settings-section {
-  width: 100%;
-}
-
-#styling-section h3 {
-  margin-bottom: 20px;
+.font-select-dropdown .select2-results__option,
+.icon-select-dropdown .select2-results__option {
+  padding: 8px;
+  font-size: 16px;
+  background-color: #2a2a2a;
   color: #ffffff;
 }
 
-#styling-section input[type="color"] {
-  display: inline-block;
-  width: 250px;
+.font-select-dropdown .select2-results__option[aria-selected=true],
+.icon-select-dropdown .select2-results__option[aria-selected=true] {
+  background-color: #4a4a4a;
+}
+
+.font-select-dropdown .select2-results__option--highlighted[aria-selected],
+.icon-select-dropdown .select2-results__option--highlighted[aria-selected] {
+  background-color: #5a5a5a;
+  color: #ffffff;
+}
+
+.icon-select-dropdown .select2-results__option {
+  display: flex;
+  align-items: center;
+}
+
+.icon-select-dropdown .select2-results__option img {
+  width: 30px;
   height: 30px;
-  vertical-align: middle;
   margin-right: 10px;
 }
 
-#styling-section label {
-  display: inline-block;
-  vertical-align: middle;
-  margin-bottom: 100;
-  color: #ffffff;
+/* System Settings */
+#system-settings .temperature-container {
+  max-width: 500px;
 }
 
-#styling-section input[type="text"] {
-  display: block;
-  width: 100%;
-  max-width: 300px;
-  padding: 5px;
-  margin-top: 5px;
+#system-settings .temperature-labels {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 5px;
-  background: #ffffff;
-  border: 1px solid #555;
-  color: #000000;
-  border-radius: 3px;
 }
 
-#styling-section em small {
-  display: block;
-  margin-bottom: 15px;
+#system-settings .temperature-steps {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+#system-settings .form-range {
+  width: 100%;
+}
+
+#system-settings select,
+#system-settings textarea {
+  width: 100%;
+}
+
+#system-settings .form-text {
   color: #888;
+  margin-top: 5px;
 }
 
-#styling-section input[type="checkbox"] {
-  margin-left: 10px;
+/* Widget color selector */
+#icon-select {
+  height: 40px;
+  font-size: 16px;
 }
 
-#styling-section br {
+/* Hide chatbot name section */
+.hidden-chatbot-name {
   display: none;
 }
 
-#styling-section .settings-section > * {
-  margin-bottom: 15px;
+/* Responsive */
+@media (max-width: 768px) {
+  .main-content.shifted {
+    margin-right: 0;
+    width: 100%;
+  }
+
+  #chatbot {
+    width: 100%;
+  }
+
+  .temperature-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .temperature-label-container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .save-settings-button {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-top: 20px;
+  }
+}
+/* Add or update these styles in your CSS file */
+
+#font-preview {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #1a1a1a; /* Darker background for better contrast */
+  color: #ffffff; /* White text for maximum visibility */
+  text-align: center;
+}
+
+#font-preview .preview-large {
+  font-size: 36px;
+  margin-bottom: 5px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Adds a subtle shadow for better readability */
+}
+
+#font-preview .preview-small {
+  font-size: 24px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* If you want to ensure the preview box stands out more */
+.preview-box {
+  background-color: #1a1a1a !important; /* Override any other background color */
+  border-color: #555 !important;
 }

@@ -175,21 +175,42 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     // jQuery functionality
-    $('#font_style').select2();
+    function formatFont(font) {
+        if (!font.id) { return font.text; }
+        return $('<span>').css({'font-family': font.text, 'font-size': '16px'}).text(font.text);
+    }
 
-    function formatIcon (icon) {
-        var originalOption = icon.element;
-        var img = $(originalOption).data('icon');
+    $('#font_style').select2({
+        templateResult: formatFont,
+        templateSelection: formatFont,
+        minimumResultsForSearch: Infinity,
+        dropdownCssClass: "font-select-dropdown"
+    });
+
+    function updateFontPreview(fontFamily) {
+        $('#font-preview').css('font-family', fontFamily);
+    }
+
+    $('#font_style').on('change', function() {
+        updateFontPreview($(this).val());
+    });
+
+    // Initialize font preview
+    updateFontPreview($('#font_style').val());
+
+    function formatIcon(icon) {
         if (!icon.id) { return icon.text; }
         var $icon = $(
-            '<span><img src="' + img + '" class="img-flag" style="width: 30px; height: 30px;" /> ' + icon.text + '</span>'
+            '<span><img src="' + $(icon.element).data('icon') + '" class="img-flag" style="width: 30px; height: 30px;" /> ' + icon.text + '</span>'
         );
         return $icon;
     }
 
     $('#icon-select').select2({
         templateResult: formatIcon,
-        placeholder: "Click to change"
+        templateSelection: formatIcon,
+        minimumResultsForSearch: Infinity,
+        dropdownCssClass: "icon-select-dropdown"
     });
 
     $('#icon-select').on('change', function() {
@@ -199,6 +220,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         $('#selected-icon').attr('src', icon);
     });
 });
+
 document.getElementById('logo').addEventListener('change', function() {
     var fileName = this.files[0].name;
     document.getElementById('file-name').textContent = fileName;
