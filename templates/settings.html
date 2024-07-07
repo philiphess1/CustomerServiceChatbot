@@ -232,7 +232,9 @@
                 
                     <!-- User Form Section -->
                     <div class="tab-pane fade" id="user-form" role="tabpanel">
-                        <!-- Content for User Form -->
+                        <label for="include_email_form">Include Email Form:</label>
+                        <input type="checkbox" id="include_email_form" name="include_email_form" {% if settings['include_email_form'] %}checked{% endif %}>
+                    </div>
                     </div>
                 </div>
 </form>
