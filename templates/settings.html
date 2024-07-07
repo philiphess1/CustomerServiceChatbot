@@ -41,7 +41,11 @@
                     </a>
                 </div>
             </div>
+            <div class="settings-button-container">
+                <input type="submit" value="Save Settings" class="save-settings-button">
+            </div>
         </div>
+
         <div class="col-md-8 col-xl-9">
             <div class="tab-content">
                 <div class="tab-content">
@@ -136,7 +140,7 @@
                                                 <div class="preview-small">abc</div>
                                             </div>
                                             <select id="font_style" name="font_style" class="form-control mt-2">
-                                                {% set font_options = ['Arial', 'Verdana', 'Times New Roman', 'Courier New', 'Georgia', 'Impact', 'Lucida Console', 'Tahoma', 'Trebuchet MS', 'Comic Sans MS', 'Palatino Linotype', 'Arial Black', 'Book Antiqua', 'Garamond', 'Courier', 'Franklin Gothic Medium', 'Copperplate', 'Century Gothic', 'Rockwell', 'Baskerville', 'Californian FB', 'Candara', 'Consolas', 'Ebrima', 'Cambria', 'MS Gothic', 'MS Mincho'] %}
+                                                {% set font_options = ['Arial', 'Arial Black', 'Book Antiqua', 'Baskerville', 'Californian FB', 'Cambria', 'Candara', 'Century Gothic', 'Comic Sans MS', 'Consolas', 'Copperplate', 'Courier', 'Courier New', 'Ebrima', 'Franklin Gothic Medium', 'Garamond', 'Georgia', 'Impact', 'Lucida Console', 'MS Gothic', 'MS Mincho', 'Palatino Linotype', 'Rockwell', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Verdana'] %}
                                                 {% for font in font_options %}
                                                     <option value="{{ font }}" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
                                                 {% endfor %}
@@ -232,9 +236,6 @@
                         <!-- Content for User Form -->
                     </div>
                 </div>
-            </div>
-        <input type="submit" value="Save Settings" class="save-settings-button">  
-    </div>
 </form>
 </div>
 {% endblock %}

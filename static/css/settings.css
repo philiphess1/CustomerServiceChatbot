@@ -4,7 +4,6 @@ body {
   color: #e0e0e0;
 }
 
-/* Card Styles */
 .card {
   margin-bottom: 1.5rem;
   box-shadow: 0 1px 15px 1px rgba(52, 40, 104, .08);
@@ -29,7 +28,6 @@ body {
   color: #ffffff;
 }
 
-/* Settings Container */
 .settings-container {
   display: flex;
   flex-direction: column;
@@ -40,7 +38,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* Form Elements */
 input[type="color"] {
   display: block;
   width: 80%;
@@ -76,7 +73,6 @@ label {
   color: #ffffff;
 }
 
-/* Custom File Input */
 .custom-file {
   position: relative;
   display: inline-block;
@@ -134,7 +130,6 @@ label {
   color: #6c757d;
 }
 
-/* List Group */
 .list-group-item {
   background-color: #2a2a2a;
   border: 1px solid #333;
@@ -146,7 +141,6 @@ label {
   border-color: #555;
 }
 
-/* Dropdown */
 .dropdown-menu {
   background-color: #3a3a3a;
   border: 1px solid #555;
@@ -160,7 +154,6 @@ label {
   background-color: #444;
 }
 
-/* Layout */
 .container.p-0 {
   display: flex;
   flex-wrap: nowrap;
@@ -200,7 +193,6 @@ label {
   margin-right: 350px;
 }
 
-/* Chatbot */
 #chatbot {
   position: fixed;
   top: 0;
@@ -215,11 +207,17 @@ label {
   transform: translateX(100%);
 }
 
-/* Save Button */
+.settings-button-container {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #2a2a2a;
+  border-radius: 5px;
+  border: 1px solid #4a4a4a;
+}
+
 .save-settings-button {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
+  display: block;
+  width: 100%;
   padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
@@ -228,15 +226,12 @@ label {
   cursor: pointer;
   font-size: 16px;
   line-height: 1.5;
-  width: auto;
-  max-width: 200px;
 }
 
 .save-settings-button:hover {
   background-color: #45a049;
 }
 
-/* Preview Boxes */
 .preview-box {
   width: 100%;
   height: 100px;
@@ -246,7 +241,7 @@ label {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f8f9fa;
+  background-color: #1a1a1a;
   margin-bottom: 10px;
 }
 
@@ -264,7 +259,6 @@ label {
   font-size: 24px;
 }
 
-/* Select2 Customization */
 .select2-container {
   width: 100% !important;
 }
@@ -273,17 +267,17 @@ label {
   background-color: #3a3a3a;
   border: 1px solid #555;
   border-radius: 4px;
-  height: 40px;
-  line-height: 40px;
+  height: 50px;
+  line-height: 50px;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
   color: #ffffff;
-  line-height: 40px;
+  line-height: 50px;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
-  height: 38px;
+  height: 48px;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
@@ -320,7 +314,6 @@ label {
   margin-right: 10px;
 }
 
-/* System Settings */
 #system-settings .temperature-container {
   max-width: 500px;
 }
@@ -351,18 +344,15 @@ label {
   margin-top: 5px;
 }
 
-/* Widget color selector */
-#icon-select {
-  height: 40px;
+#icon-select, #font_style {
+  height: 50px;
   font-size: 16px;
 }
 
-/* Hide chatbot name section */
 .hidden-chatbot-name {
   display: none;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .main-content.shifted {
     margin-right: 0;
@@ -383,38 +373,11 @@ label {
     margin-bottom: 10px;
   }
 
-  .save-settings-button {
-    position: static;
-    width: 100%;
-    max-width: none;
+  .settings-button-container {
     margin-top: 20px;
   }
-}
-/* Add or update these styles in your CSS file */
 
-#font-preview {
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #555;
-  border-radius: 4px;
-  background-color: #1a1a1a; /* Darker background for better contrast */
-  color: #ffffff; /* White text for maximum visibility */
-  text-align: center;
-}
-
-#font-preview .preview-large {
-  font-size: 36px;
-  margin-bottom: 5px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Adds a subtle shadow for better readability */
-}
-
-#font-preview .preview-small {
-  font-size: 24px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-/* If you want to ensure the preview box stands out more */
-.preview-box {
-  background-color: #1a1a1a !important; /* Override any other background color */
-  border-color: #555 !important;
+  .save-settings-button {
+    width: 100%;
+  }
 }
