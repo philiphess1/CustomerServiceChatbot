@@ -4,13 +4,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let isChatbotOpen = false;
 
     function updateChatbotState(isOpen) {
-        if (mainContent.classList.contains('shifted') === isOpen) return; // Prevent unnecessary toggles
+        if (mainContent.classList.contains('shifted') === isOpen) return;
         isChatbotOpen = isOpen;
         mainContent.classList.toggle('shifted', isOpen);
         console.log('Chatbot is now:', isOpen ? 'open' : 'closed');
     }
 
-    // Chatbot toggle button
     if (chatbotButton) {
         chatbotButton.addEventListener('click', function(event) {
             updateChatbotState(!isChatbotOpen);
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         console.warn('Chatbot toggle button not found');
     }
 
-    // Check for chatbot state changes
     const observeTarget = document.body;
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
@@ -32,12 +30,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     observer.observe(observeTarget, { attributes: true });
 
-    // Automatically open the chatbot when the page loads
-    setTimeout(() => {
-        chatbotButton.click();
-    }, 100);
+    const disableAutoOpenCheckbox = document.getElementById('disable_auto_open');
+    if (chatbotButton && (!disableAutoOpenCheckbox || !disableAutoOpenCheckbox.checked)) {
+        setTimeout(() => {
+            chatbotButton.click();
+        }, 100);
+    }
 
-    // Tab functionality
     const tabLinks = document.querySelectorAll('.list-group-item');
     const tabContent = document.querySelectorAll('.tab-pane');
 
@@ -67,10 +66,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     });
 
-    // Show the first tab by default
     showTab('styling-section');
 
-    // Form validation
     document.getElementById('settingsForm').addEventListener('submit', function(event) {
         var botTemperature = document.getElementById('bot_temperature').value;
         var customPrompt = document.getElementById('custom_prompt').value;
@@ -107,7 +104,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         document.getElementById('bot_temperature_value').textContent = this.value;
     });
 
-    // FAQ functionality
     document.getElementById('add-premade-question').addEventListener('click', function() {
         var container = document.getElementById('premade-questions-container');
         var index = container.getElementsByClassName('premade-question').length + 1;
@@ -133,31 +129,26 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
         if (target.className === 'delete-premade-question') {
             if (target.parentNode.dataset.saved === 'true') {
-                // If the question is saved in the database, send a delete request to the server
                 var xhr = new XMLHttpRequest();
                 xhr.open('DELETE', '/delete_question', true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.send(JSON.stringify({
-                    question_id: target.parentNode.id.split('_')[1] // Extract the question id from the id attribute
+                    question_id: target.parentNode.id.split('_')[1]
                 }));
 
                 xhr.onload = function() {
                     if (xhr.status == 200) {
-                        // If the server responded with a status of 200, remove the question from the DOM
                         target.parentNode.remove();
                     } else {
-                        // If the server responded with an error status, log the error message
                         console.error('Failed to delete question:', xhr.responseText);
                     }
                 };
             } else {
-                // If the question is not saved in the database, just remove it from the DOM
                 target.parentNode.remove();
             }
         }
     });
 
-    // Widget icon functionality
     var labels = document.querySelectorAll('#widget_icon label');
     labels.forEach(function(label) {
         var radio = label.querySelector('input');
@@ -174,7 +165,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     });
 
-    // jQuery functionality
     function formatFont(font) {
         if (!font.id) { return font.text; }
         return $('<span>').css({'font-family': font.text, 'font-size': '16px'}).text(font.text);
@@ -195,7 +185,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         updateFontPreview($(this).val());
     });
 
-    // Initialize font preview
     updateFontPreview($('#font_style').val());
 
     function formatIcon(icon) {
@@ -219,9 +208,26 @@ document.addEventListener('DOMContentLoaded', (event) => {
         console.log('icon:', icon);
         $('#selected-icon').attr('src', icon);
     });
-});
 
-document.getElementById('logo').addEventListener('change', function() {
-    var fileName = this.files[0].name;
-    document.getElementById('file-name').textContent = fileName;
+    document.getElementById('logo').addEventListener('change', function() {
+        var fileName = this.files[0].name;
+        document.getElementById('file-name').textContent = fileName;
+    });
+
+    if (disableAutoOpenCheckbox) {
+        disableAutoOpenCheckbox.addEventListener('change', function() {
+            console.log('Disable Auto-open:', this.checked);
+        });
+    }
+
+    // Make the entire switch container clickable
+    const switchContainers = document.querySelectorAll('.custom-switch');
+    switchContainers.forEach(container => {
+        container.addEventListener('click', function(event) {
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            if (event.target !== checkbox) {
+                checkbox.click(); // This will trigger the change event
+            }
+        });
+    });
 });
