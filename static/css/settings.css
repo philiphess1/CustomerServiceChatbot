@@ -207,13 +207,6 @@ label {
   transform: translateX(100%);
 }
 
-.settings-button-container {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #2a2a2a;
-  border-radius: 5px;
-  border: 1px solid #4a4a4a;
-}
 
 .save-settings-button {
   display: block;
