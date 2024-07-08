@@ -288,7 +288,7 @@ def update_subscription():
         customer_name = None
 
         for field in custom_fields:
-            if field['key'] == 'name':
+            if field['key'] == 'accountname':
                 customer_name = field['text']['value']
                 break
         subscription_id = subscription['subscription']
