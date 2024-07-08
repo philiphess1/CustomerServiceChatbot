@@ -305,9 +305,12 @@ def update_subscription():
         g.cursor.execute("SELECT id FROM users WHERE email = %s", (customer_email,))
         user_data = g.cursor.fetchone()
 
+        user_id = None
+
         if user_data:
             # User exists, update their subscription_item_id
             g.cursor.execute("UPDATE users SET subscription_item_id = %s WHERE id = %s", (subscription_item_id, user_data[0]))
+            user_id = user_data[0]
         else:
             # User does not exist, create a new user record
             g.cursor.execute("INSERT INTO users (email, name, subscription_item_id, stripe_customer_id) VALUES (%s, %s, %s, %s) RETURNING id", (customer_email, customer_name, subscription_item_id, customer_id))
