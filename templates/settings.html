@@ -56,34 +56,30 @@
                                 <h5 class="card-title mb-0">Styling</h5>
                             </div>
                             <div class="card-body">
-                                <div class="settings-container">
-                                    <div class="settings-row">
-                                        <div class="settings-group">
-                                            <label for="heading_font_color">Heading Font Color</label>
-                                            <input type="color" id="heading_font_color" name="heading_font_color" class="mt-space" value="{{ settings['heading_font_color'] }}">
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="border_color">Heading Background Color</label>
-                                            <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}">
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="background_color">Chatbot Background Color</label>
-                                            <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}">
-                                        </div>
+                                <div class="color-settings-container">
+                                    <div class="settings-group">
+                                        <label for="heading_font_color">Heading Font Color</label>
+                                        <input type="color" id="heading_font_color" name="heading_font_color" value="{{ settings['heading_font_color'] }}">
                                     </div>
-                                    <div class="settings-row">
-                                        <div class="settings-group">
-                                            <label for="dot_color">Dot Animation Color</label>
-                                            <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}">
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="bot_bubble_color">Bot Text Bubble Color</label>
-                                            <input type="color" id="bot_bubble_color" name="bot_bubble_color" value="{{ settings['bot_bubble_color'] }}">                                        
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="user_bubble_color">User Text Bubble Color</label>
-                                            <input type="color" id="user_bubble_color" name="user_bubble_color" value="{{ settings['user_bubble_color'] }}">                                    
-                                        </div>
+                                    <div class="settings-group">
+                                        <label for="border_color">Heading Background Color</label>
+                                        <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}">
+                                    </div>
+                                    <div class="settings-group">
+                                        <label for="background_color">Chatbot Background Color</label>
+                                        <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}">
+                                    </div>
+                                    <div class="settings-group">
+                                        <label for="dot_color">Dot Animation Color</label>
+                                        <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}">
+                                    </div>
+                                    <div class="settings-group">
+                                        <label for="bot_bubble_color">Bot Text Bubble Color</label>
+                                        <input type="color" id="bot_bubble_color" name="bot_bubble_color" value="{{ settings['bot_bubble_color'] }}">
+                                    </div>
+                                    <div class="settings-group">
+                                        <label for="user_bubble_color">User Text Bubble Color</label>
+                                        <input type="color" id="user_bubble_color" name="user_bubble_color" value="{{ settings['user_bubble_color'] }}">
                                     </div>
                                 </div>
                                     <div class="settings-section condensed">
@@ -112,7 +108,6 @@
                             </div>
                         </div>
                     </div>
-                
                   <!-- Branding Section -->
                   <div class="tab-pane fade" id="branding-section" role="tabpanel">
                     <div class="card sidebar-card">

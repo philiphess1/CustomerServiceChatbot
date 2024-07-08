@@ -1,3 +1,4 @@
+/* Shared Styles */
 body {
   margin-top: 20px;
   background: #1e1e1e;
@@ -38,13 +39,6 @@ body {
   margin-bottom: 20px;
 }
 
-input[type="color"] {
-  display: block;
-  width: 80%;
-  height: 30px;
-  margin-bottom: .5rem;
-}
-
 input[type="text"], 
 input[type="file"],
 select, 
@@ -61,73 +55,12 @@ textarea {
   resize: vertical;
 }
 
-input[type="checkbox"] {
-  margin-left: .5rem;
-}
-
 label {
   display: block;
   margin-bottom: .5rem;
   font-size: .875rem;
   font-weight: bold;
   color: #ffffff;
-}
-
-.custom-file {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.custom-file-input {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  height: 38px;
-  margin: 0;
-  opacity: 0;
-}
-
-.custom-file-label {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 1;
-  height: 38px;
-  padding: 0.375rem 0.75rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #495057;
-  background-color: #333;
-  border: 1px solid #555;
-  border-radius: 0.25rem;
-}
-
-.custom-file-label::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  display: block;
-  height: 36px;
-  padding: 0.375rem 0.75rem;
-  line-height: 1.5;
-  color: #ffffff;
-  content: "Browse";
-  background-color: #4a4a4a;
-  border-left: inherit;
-  border-radius: 0 0.25rem 0.25rem 0;
-}
-
-.file-name {
-  display: block;
-  margin-top: 5px;
-  font-size: 0.875rem;
-  color: #6c757d;
 }
 
 .list-group-item {
@@ -139,19 +72,6 @@ label {
 .list-group-item.active {
   background-color: #444;
   border-color: #555;
-}
-
-.dropdown-menu {
-  background-color: #3a3a3a;
-  border: 1px solid #555;
-}
-
-.dropdown-item {
-  color: #e0e0e0;
-}
-
-.dropdown-item:hover {
-  background-color: #444;
 }
 
 .container.p-0 {
@@ -193,21 +113,6 @@ label {
   margin-right: 350px;
 }
 
-#chatbot {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 350px;
-  height: 100vh;
-  z-index: 1000;
-  transition: transform 0.3s ease;
-}
-
-#chatbot.closed {
-  transform: translateX(100%);
-}
-
-
 .save-settings-button {
   display: block;
   width: 100%;
@@ -225,7 +130,34 @@ label {
   background-color: #45a049;
 }
 
-.preview-box {
+/* Styling Section */
+#styling-section input[type="color"] {
+  display: block;
+  width: 80%;
+  height: 30px;
+  margin-bottom: .5rem;
+}
+.color-settings-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-group label {
+  margin-bottom: 5px;
+}
+
+.settings-group input[type="color"] {
+  width: 100%;
+  height: 40px;
+}
+/* Branding Section */
+#branding-section .preview-box {
   width: 100%;
   height: 100px;
   border: 1px solid #ccc;
@@ -238,20 +170,170 @@ label {
   margin-bottom: 10px;
 }
 
-#currentLogo, #selected-icon {
+#branding-section #currentLogo, 
+#branding-section #selected-icon {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
 
-#font-preview .preview-large {
+#branding-section #font-preview .preview-large {
   font-size: 36px;
 }
 
-#font-preview .preview-small {
+#branding-section #font-preview .preview-small {
   font-size: 24px;
 }
 
+#branding-section .custom-file {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+#branding-section .custom-file-input {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 38px;
+  margin: 0;
+  opacity: 0;
+}
+
+#branding-section .custom-file-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 38px;
+  padding: 0.375rem 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 0.25rem;
+}
+
+#branding-section .custom-file-label::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: block;
+  height: 36px;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  color: #ffffff;
+  content: "Browse";
+  background-color: #4a4a4a;
+  border-left: inherit;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+#branding-section .file-name {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+#branding-section .hidden-chatbot-name {
+  display: none;
+}
+
+/* System Settings Section */
+#system-settings .temperature-container {
+  max-width: 500px;
+}
+
+#system-settings .temperature-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+#system-settings .temperature-steps {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+#system-settings .form-range {
+  width: 100%;
+}
+
+#system-settings .form-text {
+  color: #888;
+  margin-top: 5px;
+}
+
+/* FAQ Settings Section */
+/* No specific styles for FAQ section in the provided CSS */
+
+/* User Form Section */
+/* Shared styles for custom switches */
+.custom-switch {
+  padding-left: 2.25rem;
+  cursor: pointer;
+}
+
+.custom-control-input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+
+.custom-control-label {
+  position: relative;
+  margin-bottom: 0;
+  vertical-align: top;
+  cursor: pointer;
+}
+
+.custom-control-label::before {
+  position: absolute;
+  top: 0.25rem;
+  left: -2.25rem;
+  display: block;
+  width: 1.75rem;
+  height: 1rem;
+  content: "";
+  background-color: #fff;
+  border: #adb5bd solid 1px;
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.custom-control-label::after {
+  position: absolute;
+  top: calc(0.25rem + 2px);
+  left: calc(-2.25rem + 2px);
+  display: block;
+  width: calc(1rem - 4px);
+  height: calc(1rem - 4px);
+  content: "";
+  background-color: #adb5bd;
+  border-radius: 0.5rem;
+  transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  color: #fff;
+  border-color: #007bff;
+  background-color: #007bff;
+}
+
+.custom-control-input:checked ~ .custom-control-label::after {
+  background-color: #fff;
+  transform: translateX(0.75rem);
+}
+
+/* Select2 Styling (used in multiple sections) */
 .select2-container {
   width: 100% !important;
 }
@@ -307,45 +389,7 @@ label {
   margin-right: 10px;
 }
 
-#system-settings .temperature-container {
-  max-width: 500px;
-}
-
-#system-settings .temperature-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
-
-#system-settings .temperature-steps {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-}
-
-#system-settings .form-range {
-  width: 100%;
-}
-
-#system-settings select,
-#system-settings textarea {
-  width: 100%;
-}
-
-#system-settings .form-text {
-  color: #888;
-  margin-top: 5px;
-}
-
-#icon-select, #font_style {
-  height: 50px;
-  font-size: 16px;
-}
-
-.hidden-chatbot-name {
-  display: none;
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
   .main-content.shifted {
     margin-right: 0;
@@ -373,132 +417,4 @@ label {
   .save-settings-button {
     width: 100%;
   }
-}
-/* User Form Styles */
-.custom-switch {
-  padding-left: 2.25rem;
-}
-
-.custom-control-input {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
-
-.custom-control-label {
-  position: relative;
-  margin-bottom: 0;
-  vertical-align: top;
-}
-
-.custom-control-label::before {
-  position: absolute;
-  top: 0.25rem;
-  left: -2.25rem;
-  display: block;
-  width: 1.75rem;
-  height: 1rem;
-  pointer-events: none;
-  content: "";
-  background-color: #495057;
-  border: #adb5bd solid 1px;
-  border-radius: 0.5rem;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.custom-control-label::after {
-  position: absolute;
-  top: calc(0.25rem + 2px);
-  left: calc(-2.25rem + 2px);
-  display: block;
-  width: calc(1rem - 4px);
-  height: calc(1rem - 4px);
-  content: "";
-  background: #fff;
-  border-radius: 0.5rem;
-  transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.custom-control-input:checked ~ .custom-control-label::before {
-  color: #fff;
-  border-color: #4CAF50;
-  background-color: #4CAF50;
-}
-
-.custom-control-input:checked ~ .custom-control-label::after {
-  transform: translateX(0.75rem);
-}
-
-.custom-control-input:focus ~ .custom-control-label::before {
-  box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
-}
-
-.custom-control-input:not(:disabled):active ~ .custom-control-label::before {
-  color: #fff;
-  background-color: #c3e6cb;
-  border-color: #c3e6cb;
-}
-
-.text-muted {
-  color: #6c757d !important;
-}
-.settings-group {
-  margin-bottom: 20px;
-}
-
-.settings-group > label {
-  margin-bottom: 5px;
-}
-
-.custom-switch {
-  padding-left: 2.25rem;
-  cursor: pointer;
-}
-
-.custom-control-label {
-  cursor: pointer;
-}
-
-.custom-control-input {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
-
-.custom-control-label::before {
-  position: absolute;
-  top: 0.25rem;
-  left: -2.25rem;
-  display: block;
-  width: 1.75rem;
-  height: 1rem;
-  content: "";
-  background-color: #fff;
-  border: #adb5bd solid 1px;
-  border-radius: 0.5rem;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.custom-control-label::after {
-  position: absolute;
-  top: calc(0.25rem + 2px);
-  left: calc(-2.25rem + 2px);
-  display: block;
-  width: calc(1rem - 4px);
-  height: calc(1rem - 4px);
-  content: "";
-  background-color: #adb5bd;
-  border-radius: 0.5rem;
-  transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
-}
-
-.custom-control-input:checked ~ .custom-control-label::before {
-  color: #fff;
-  border-color: #007bff;
-  background-color: #007bff;
-}
-
-.custom-control-input:checked ~ .custom-control-label::after {
-  background-color: #fff;
-  transform: translateX(0.75rem);
 }

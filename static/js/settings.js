@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', (event) => {
+    // Chatbot toggle functionality
     const chatbotButton = document.getElementById('b');
     const mainContent = document.querySelector('.main-content');
     let isChatbotOpen = false;
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         console.warn('Chatbot toggle button not found');
     }
 
+    // Observer for chatbot state changes
     const observeTarget = document.body;
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
@@ -27,9 +29,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
         });
     });
-
     observer.observe(observeTarget, { attributes: true });
 
+    // Auto-open chatbot functionality
     const disableAutoOpenCheckbox = document.getElementById('disable_auto_open');
     if (chatbotButton && (!disableAutoOpenCheckbox || !disableAutoOpenCheckbox.checked)) {
         setTimeout(() => {
@@ -37,6 +39,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }, 100);
     }
 
+    // Tab switching functionality
     const tabLinks = document.querySelectorAll('.list-group-item');
     const tabContent = document.querySelectorAll('.tab-pane');
 
@@ -68,6 +71,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     showTab('styling-section');
 
+    // Form validation
     document.getElementById('settingsForm').addEventListener('submit', function(event) {
         var botTemperature = document.getElementById('bot_temperature').value;
         var customPrompt = document.getElementById('custom_prompt').value;
@@ -98,12 +102,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
             alert('Chatbot Title cannot be more than 20 characters.');
             event.preventDefault();
         }
+
+        // TODO: Add code here to collect and format FAQ questions for submission
     });
 
+    // Bot temperature input handler
     document.getElementById('bot_temperature').addEventListener('input', function() {
         document.getElementById('bot_temperature_value').textContent = this.value;
     });
 
+    // FAQ question management
+    // Adding new questions
     document.getElementById('add-premade-question').addEventListener('click', function() {
         var container = document.getElementById('premade-questions-container');
         var index = container.getElementsByClassName('premade-question').length + 1;
@@ -122,6 +131,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         container.appendChild(question);
     });
 
+    // Deleting questions
     document.getElementById('premade-questions-container').addEventListener('click', function(event) {
         var target = event.target;
         if (target.tagName !== 'BUTTON') {
@@ -149,6 +159,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 
+    // Widget icon selection
     var labels = document.querySelectorAll('#widget_icon label');
     labels.forEach(function(label) {
         var radio = label.querySelector('input');
@@ -165,6 +176,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     });
 
+    // Font style selection and preview
     function formatFont(font) {
         if (!font.id) { return font.text; }
         return $('<span>').css({'font-family': font.text, 'font-size': '16px'}).text(font.text);
@@ -187,6 +199,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     updateFontPreview($('#font_style').val());
 
+    // Icon selection
     function formatIcon(icon) {
         if (!icon.id) { return icon.text; }
         var $icon = $(
@@ -209,24 +222,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
         $('#selected-icon').attr('src', icon);
     });
 
+    // Logo file selection
     document.getElementById('logo').addEventListener('change', function() {
         var fileName = this.files[0].name;
         document.getElementById('file-name').textContent = fileName;
     });
 
+    // Auto-open disable checkbox handler
     if (disableAutoOpenCheckbox) {
         disableAutoOpenCheckbox.addEventListener('change', function() {
             console.log('Disable Auto-open:', this.checked);
         });
     }
 
-    // Make the entire switch container clickable
-    const switchContainers = document.querySelectorAll('.custom-switch');
-    switchContainers.forEach(container => {
-        container.addEventListener('click', function(event) {
-            const checkbox = this.querySelector('input[type="checkbox"]');
-            if (event.target !== checkbox) {
-                checkbox.click(); // This will trigger the change event
+    // Make switch containers clickable
+    const customSwitches = document.querySelectorAll('.custom-switch');
+    customSwitches.forEach(switchEl => {
+        switchEl.addEventListener('click', function(event) {
+            if (event.target !== this.querySelector('input[type="checkbox"]')) {
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
             }
         });
     });
