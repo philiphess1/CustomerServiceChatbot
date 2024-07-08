@@ -93,15 +93,17 @@
                                             <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}" style="min-width: 300px;" maxlength="50">
                                             <div><em><small>Maximum 50 characters.</small></em></div>
                                         </div>
-                                        <div class="settings-section condensed">
-                                            <div class="settings-group">
-                                                <label for="disable_auto_open">Chatbot Behavior:</label>
-                                                <div class="custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="disable_auto_open" name="disable_auto_open" {% if settings['disable_auto_open'] %}checked{% endif %}>
-                                                    <label class="custom-control-label" for="disable_auto_open">Disable auto-open on page load</label>
-                                                </div>
-                                                <small class="form-text text-muted">When enabled, the chatbot will not automatically open when a user visits your website.</small>
+                                        <div class="settings-group">
+                                            <label for="disable_auto_open">Chatbot Behavior:</label>
+                                            <div class="switch-container">
+                                                <label class="switch" for="disable_auto_open">
+                                                    <input type="checkbox" id="disable_auto_open" name="disable_auto_open" {% if settings['disable_auto_open'] %}checked{% endif %}>
+                                                    <span class="slider round"></span>
+                                                </label>
+                                                <span class="switch-label">Disable auto-open on page load</span>
                                             </div>
+                                            <small class="form-text text-muted">When enabled, the chatbot will not automatically open when a user visits your website.</small>
+                                        </div>
                                         </div>
                                     </div>
                                 </div>
@@ -248,13 +250,13 @@
                                 <div class="settings-container">
                                     <div class="settings-row">
                                         <label for="include_email_form">Enable User Form</label>
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="include_email_form" name="include_email_form" {% if settings['include_email_form'] %}checked{% endif %}>
-                                            <label class="custom-control-label" for="include_email_form">Show email form before chat starts</label>
+                                        <div class="switch-container">
+                                            <label class="switch" for="include_email_form">
+                                                <input type="checkbox" id="include_email_form" name="include_email_form" {% if settings['include_email_form'] %}checked{% endif %}>
+                                                <span class="slider round"></span>
+                                            </label>
+                                            <span class="switch-label">Show email form before chat starts</span>
                                         </div>
-                                    </div>
-                                    <div class="settings-row">
-                                        <p class="text-muted">When enabled, users will be prompted to enter their email address before starting a chat session. This allows for better user tracking and follow-up communication.</p>
                                     </div>
                                 </div>
                             </div>

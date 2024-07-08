@@ -5,6 +5,29 @@ body {
   color: #e0e0e0;
 }
 
+.container.p-0 {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  transition: width 0.3s ease;
+}
+
+.row {
+  flex: 1;
+  display: flex;
+}
+
+.col-md-4.col-xl-3 {
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+
+.col-md-8.col-xl-9 {
+  position: relative;
+  flex: 0 0 75%;
+  max-width: 75%;
+}
+
 .card {
   margin-bottom: 1.5rem;
   box-shadow: 0 1px 15px 1px rgba(52, 40, 104, .08);
@@ -74,29 +97,6 @@ label {
   border-color: #555;
 }
 
-.container.p-0 {
-  display: flex;
-  flex-wrap: nowrap;
-  width: 100%;
-  transition: width 0.3s ease;
-}
-
-.row {
-  flex: 1;
-  display: flex;
-}
-
-.col-md-4.col-xl-3 {
-  flex: 0 0 25%;
-  max-width: 25%;
-}
-
-.col-md-8.col-xl-9 {
-  position: relative;
-  flex: 0 0 75%;
-  max-width: 75%;
-}
-
 .sidebar-card {
   position: sticky;
   top: 20px;
@@ -130,13 +130,27 @@ label {
   background-color: #45a049;
 }
 
+/* Tab Content */
+.tab-content {
+  width: 100%;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
 /* Styling Section */
 #styling-section input[type="color"] {
   display: block;
-  width: 80%;
-  height: 30px;
+  width: 100%;
+  height: 40px;
   margin-bottom: .5rem;
 }
+
 .color-settings-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -152,10 +166,6 @@ label {
   margin-bottom: 5px;
 }
 
-.settings-group input[type="color"] {
-  width: 100%;
-  height: 40px;
-}
 /* Branding Section */
 #branding-section .preview-box {
   width: 100%;
@@ -273,67 +283,90 @@ label {
 }
 
 /* FAQ Settings Section */
-/* No specific styles for FAQ section in the provided CSS */
+#faq-settings .card-body {
+  padding-top: 1.25rem;
+}
+
+#faq-settings .settings-section1 {
+  margin-top: 0;
+}
 
 /* User Form Section */
+#user-form .card-body {
+  padding-top: 1.25rem;
+}
+
+#user-form .settings-container {
+  margin-top: 0;
+}
+
 /* Shared styles for custom switches */
-.custom-switch {
-  padding-left: 2.25rem;
-  cursor: pointer;
+.switch-container {
+  display: flex;
+  align-items: center;
 }
 
-.custom-control-input {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
-
-.custom-control-label {
+.switch {
   position: relative;
-  margin-bottom: 0;
-  vertical-align: top;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.switch-label {
   cursor: pointer;
 }
 
-.custom-control-label::before {
-  position: absolute;
-  top: 0.25rem;
-  left: -2.25rem;
-  display: block;
-  width: 1.75rem;
-  height: 1rem;
-  content: "";
-  background-color: #fff;
-  border: #adb5bd solid 1px;
-  border-radius: 0.5rem;
-  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.custom-control-label::after {
-  position: absolute;
-  top: calc(0.25rem + 2px);
-  left: calc(-2.25rem + 2px);
-  display: block;
-  width: calc(1rem - 4px);
-  height: calc(1rem - 4px);
-  content: "";
-  background-color: #adb5bd;
-  border-radius: 0.5rem;
-  transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out;
-}
-
-.custom-control-input:checked ~ .custom-control-label::before {
-  color: #fff;
-  border-color: #007bff;
-  background-color: #007bff;
-}
-
-.custom-control-input:checked ~ .custom-control-label::after {
-  background-color: #fff;
-  transform: translateX(0.75rem);
-}
-
-/* Select2 Styling (used in multiple sections) */
+/* Select2 Styling */
 .select2-container {
   width: 100% !important;
 }

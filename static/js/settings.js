@@ -236,14 +236,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 
     // Make switch containers clickable
-    const customSwitches = document.querySelectorAll('.custom-switch');
-    customSwitches.forEach(switchEl => {
-        switchEl.addEventListener('click', function(event) {
-            if (event.target !== this.querySelector('input[type="checkbox"]')) {
-                const checkbox = this.querySelector('input[type="checkbox"]');
-                checkbox.checked = !checkbox.checked;
-                checkbox.dispatchEvent(new Event('change'));
-            }
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const switches = document.querySelectorAll('.switch');
+        switches.forEach(switchEl => {
+            const checkbox = switchEl.querySelector('input[type="checkbox"]');
+            switchEl.addEventListener('click', (event) => {
+                if (event.target !== checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
         });
     });
 });
