@@ -1420,7 +1420,7 @@ def analytics(chatbot_id):
     remaining_percentage = round(((total_questions_responses) / user_plan) * 100, 2) if user_plan else 0
 
     if not rows:
-        return render_template('analytics.html', data=[], common_topics=None, chatbot_id=chatbot_id)
+        return render_template('analytics.html', data=[], common_topics=["No questions asked yet"], unique_email_count=0, unique_session_count=0, remaining_percentage=0, chatbot_id=chatbot_id, subscription_item_id=subscription_item_id)
 
     questions_and_responses = [row[0] + ' ' + row[1] for row in rows]
     emails = [row[4] for row in rows if row[4] is not None]
