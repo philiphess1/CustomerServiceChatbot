@@ -187,6 +187,10 @@
 
             // Calculate the total questions asked
             var totalQuestions = data.reduce((acc, currentValue) => acc + currentValue, 0);
+            if (totalQuestions === 0) {
+                maxValue = 1;
+                yAxisMax = -1;
+            }
 
 
             // Calculate the maximum value for the y-axis
@@ -308,6 +312,9 @@
                 counts.none++;
             }
         }
+        if (counts.dislike + counts.like + counts.none === 0) {
+            counts.none = 1;
+        }
         var ctx = document.getElementById("myPieChart");
         var myPieChart = new Chart(ctx, {
             type: 'pie',
@@ -346,19 +353,19 @@
                         borderWidth: 2 // Customize border width
                     }
                 },
-                onClick: function(evt, item) {
-                    if (item.length > 0) {
-                        var label = this.data.labels[item[0]._index];
-                        for (var i = 0; i < rows.length; i++) {
-                            var row = rows[i];
-                            if (row.classList.contains(label.toLowerCase())) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        }
-                    }
-                }
+        //         onClick: function(evt, item) {
+        //             if (item.length > 0) {
+        //                 var label = this.data.labels[item[0]._index];
+        //                 for (var i = 0; i < rows.length; i++) {
+        //                     var row = rows[i];
+        //                     if (row.classList.contains(label.toLowerCase())) {
+        //                         row.style.display = '';
+        //                     } else {
+        //                         row.style.display = 'none';
+        //                     }
+        //                 }
+        //             }
+        //         }
             }
         });
         </script>
