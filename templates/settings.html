@@ -38,11 +38,12 @@
                             User Form
                         </a>
                     </div>
+                    <div class="spacer"></div> <!-- Use a styled div for spacing -->
+                    <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" enctype="multipart/form-data">
+                        <div class="settings-button-container">
+                            <input type="submit" value="Save Settings" class="save-settings-button">
+                        </div>
                 </div>
-    <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" enctype="multipart/form-data">
-                    <div class="settings-button-container">
-                        <input type="submit" value="Save Settings" class="save-settings-button">
-                    </div>
         </div>
         <div class="col-md-8 col-xl-9">
                 <div class="tab-content">

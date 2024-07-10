@@ -113,22 +113,34 @@ label { /* Like Heading Font Color */
   margin-right: 350px;
 }
 
+/* Style the spacer to ensure it doesn't cause a visual gap */
+.spacer {
+  height: 20px; /* Adjust height as needed */
+  background-color: #1e1e1e; /* Match the background color of your sidebar */
+  margin: 0;
+  padding: 0;
+  border: none; /* Ensure no border */
+}
+
+/* Ensure the Save Settings button has a consistent border and is positioned correctly */
 .save-settings-button {
   display: block;
   width: 100%;
   padding: 10px 20px;
   background-color: #4CAF50;
   color: white;
-  border: none;
-  border-radius: 5px;
+  border: none; /* Remove default border */
+  border-radius: 0 0 5px 5px; /* Adjust border-radius if necessary */
   cursor: pointer;
   font-size: 16px;
   line-height: 1.5;
+  position: relative; /* Adjust positioning */
 }
 
 .save-settings-button:hover {
   background-color: #45a049;
 }
+
 
 /* Tab Content */
 .tab-content {
