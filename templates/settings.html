@@ -4,12 +4,12 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Settings</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/settings.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/settings.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -79,6 +79,7 @@
                                             <input type="color" id="user_bubble_color" name="user_bubble_color" value="{{ settings['user_bubble_color'] }}">
                                         </div>
                                     </div>
+                                    <br>
                                         <div class="settings-section condensed">
                                             <div class="settings-group">
                                                 <label for="chatbot_title">Chatbot Title:</label>
@@ -127,7 +128,7 @@
                                         <div class="col-md-4 mb-4">
                                             <h5>Widget Icon</h5>
                                             <img id="selected-icon" src="{{ url_for('static', filename='images/' + (settings['widget_icon'] or 'default_icon.png')) }}" alt="Selected Icon" class="preview-box">
-                                            <select id="icon-select" name="icon-select" class="mt-2">
+                                            <select id="icon-select" class="icon-dropdown" name="icon-select">
                                                 <option value="ecco_icon.svg" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}" {% if settings['widget_icon'] == 'ecco_icon.svg' %}selected{% endif %}>Lime</option>
                                                 <option value="ecco_icon_black.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_black.svg' %}selected{% endif %}>Black</option>
                                                 <option value="ecco_icon_blue.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_blue.svg' %}selected{% endif %}>Blue</option>
@@ -144,7 +145,7 @@
                                                 <div class="preview-large">ABC</div>
                                                 <div class="preview-small">abc</div>
                                             </div>
-                                            <select id="font_style" name="font_style" class="form-control mt-2">
+                                            <select id="font_style" class="font-dropdown" name="font_style"">
                                                 {% set font_options = ['Arial', 'Arial Black', 'Book Antiqua', 'Baskerville', 'Californian FB', 'Cambria', 'Candara', 'Century Gothic', 'Comic Sans MS', 'Consolas', 'Copperplate', 'Courier', 'Courier New', 'Ebrima', 'Franklin Gothic Medium', 'Garamond', 'Georgia', 'Impact', 'Lucida Console', 'MS Gothic', 'MS Mincho', 'Palatino Linotype', 'Rockwell', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Verdana'] %}
                                                 {% for font in font_options %}
                                                     <option value="{{ font }}" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
@@ -211,23 +212,21 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="settings-container">
-                                        <div class="settings-section1">
-                                            <h3>Pre-made Questions</h3>
-                                            <div id="premade-questions-container">
-                                                {% for id, question, response in premade_questions %}
-                                                <div class="premade-question" data-saved="true" id="question_{{ id }}">
-                                                    <input type="hidden" name="premade_question_ids[]" value="{{ id }}">
-                                                    <label for="premade_question_{{ loop.index }}">Question:</label>
-                                                    <textarea id="premade_question_{{ loop.index }}" name="premade_questions[]" required readonly>{{ question }}</textarea>
-                                                    <label for="premade_response_{{ loop.index }}">Response:</label>
-                                                    <textarea id="premade_response_{{ loop.index }}" name="premade_responses[]" required readonly>{{ response }}</textarea>
-                                                    <button type="button" class="delete-premade-question">Delete</button>
-                                                </div>
-                                                {% endfor %}
+                                        <h3>Pre-made Questions</h3>
+                                        <div id="premade-questions-container">
+                                            {% for id, question, response in premade_questions %}
+                                            <div class="premade-question" data-saved="true" id="question_{{ id }}">
+                                                <input type="hidden" name="premade_question_ids[]" value="{{ id }}">
+                                                <label for="premade_question_{{ loop.index }}">Question:</label>
+                                                <textarea id="premade_question_{{ loop.index }}" name="premade_questions[]" required readonly>{{ question }}</textarea>
+                                                <label for="premade_response_{{ loop.index }}">Response:</label>
+                                                <textarea id="premade_response_{{ loop.index }}" name="premade_responses[]" required readonly>{{ response }}</textarea>
+                                                <button type="button" class="delete-premade-question">Delete</button>
                                             </div>
-                                            <br>
-                                            <button type="button" id="add-premade-question">Add Question</button>
+                                            {% endfor %}
                                         </div>
+                                        <br>
+                                        <button type="button" id="add-premade-question">Add Question</button>
                                     </div>
                                 </div>
                             </div>
