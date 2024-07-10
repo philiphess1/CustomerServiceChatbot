@@ -283,13 +283,7 @@ label {
 }
 
 /* FAQ Settings Section */
-#faq-settings .card-body {
-  padding-top: 1.25rem;
-}
 
-#faq-settings .settings-section1 {
-  margin-top: 0;
-}
 
 /* User Form Section */
 #user-form .card-body {
