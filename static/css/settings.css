@@ -112,6 +112,33 @@ label { /* Like Heading Font Color */
   width: calc(100% - 350px);
   margin-right: 350px;
 }
+.form-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+}
+
+.form-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+}
+
+textarea.form-input {
+  resize: vertical;
+}
 
 /* Style the spacer to ensure it doesn't cause a visual gap */
 .spacer {
@@ -288,6 +315,61 @@ label { /* Like Heading Font Color */
   color: #888;
   margin-top: 5px;
 }
+#system-settings .settings-row {
+  margin-bottom: 30px;
+}
+
+#system-settings h4 {
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+#system-settings .setting-description {
+  margin-bottom: 15px;
+  color: #888;
+  font-size: 0.9em;
+}
+
+#system-settings .form-group {
+  margin-bottom: 20px;
+}
+
+#system-settings label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffffff;
+  font-weight: bold;
+}
+.faq-tip, .prompt-description {
+  font-size: 0.9em;
+  color: #6c757d;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+}
+
+.form-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+textarea.form-input {
+  resize: vertical;
+}
+
+#support_email, #support_phone {
+  width: 100%;
+  max-width: 300px; /* Adjust this value as needed */
+}
 
 /* FAQ Settings Section */
 .delete-premade-question {
@@ -302,13 +384,6 @@ label { /* Like Heading Font Color */
 .delete-premade-question i {
   margin-right: 2px;
   margin-top: 10px;
-}
-.faq-tip {
-  font-size: 0.9em;
-  color: #6c757d;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
 }
 
 .faq-tip i {
