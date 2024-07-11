@@ -13,241 +13,250 @@
 {% endblock %}
 
 {% block content %}
-<div class="container p-0 main-content">
-    <h1 class="h3 mb-3"></h1>
-    <div class="row">
-        <div class="col-md-4 col-xl-3">
-            <div class="card sidebar-card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Account Settings</h5>
-                </div>
-                    <div class="list-group list-group-flush" role="tablist">
-                        <a class="list-group-item list-group-item-action active" data-toggle="list" role="tab" data-target="styling-section">
-                            Styling
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" data-target="branding-section">
-                            Branding
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" data-target="system-settings">
-                            System Settings
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" data-target="faq-settings">
-                            FAQs
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" data-target="user-form">
-                            User Form
-                        </a>
+<form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" enctype="multipart/form-data">
+    <div class="container p-0 main-content">
+        <h1 class="h3 mb-3"></h1>
+        <div class="row">
+            <div class="col-md-4 col-xl-3">
+                <div class="card sidebar-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Account Settings</h5>
                     </div>
-                    <div class="spacer"></div> <!-- Use a styled div for spacing -->
-                    <form id="settingsForm" action="{{ url_for('update_chatbot_settings', chatbot_id=chatbot_id) }}" method="post" enctype="multipart/form-data">
-                        <div class="settings-button-container">
-                            <input type="submit" value="Save Settings" class="save-settings-button">
+                        <div class="list-group list-group-flush" role="tablist">
+                            <a class="list-group-item list-group-item-action active" data-toggle="list" role="tab" data-target="styling-section">
+                                Styling
+                            </a>
+                            <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" data-target="branding-section">
+                                Branding
+                            </a>
+                            <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" data-target="system-settings">
+                                System Settings
+                            </a>
+                            <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" data-target="faq-settings">
+                                FAQs
+                            </a>
+                            <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" data-target="user-form">
+                                User Form
+                            </a>
                         </div>
-                </div>
-        </div>
-        <div class="col-md-8 col-xl-9">
-                <div class="tab-content">
-                        <!-- Styling Section -->
-                    <div id="styling-section" class="tab-pane fade show active" role="tabpanel">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Styling</h5>
+                        <br class="break-space">
+                            <div class="settings-button-container">
+                                <input type="submit" value="Save Settings" class="save-settings-button">
                             </div>
-                                <div class="card-body">
-                                    <div class="color-settings-container">
-                                        <div class="settings-group">
-                                            <label for="title_color">Heading Font Color</label>
-                                            <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}">
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="border_color">Heading Background Color</label>
-                                            <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}">
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="background_color">Chatbot Background Color</label>
-                                            <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}">
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="dot_color">Dot Animation Color</label>
-                                            <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}">
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="bot_bubble_color">Bot Text Bubble Color</label>
-                                            <input type="color" id="bot_bubble_color" name="bot_bubble_color" value="{{ settings['bot_bubble_color'] }}">
-                                        </div>
-                                        <div class="settings-group">
-                                            <label for="user_bubble_color">User Text Bubble Color</label>
-                                            <input type="color" id="user_bubble_color" name="user_bubble_color" value="{{ settings['user_bubble_color'] }}">
-                                        </div>
-                                    </div>
-                                    <br>
-                                        <div class="settings-section condensed">
-                                            <div class="settings-group">
-                                                <label for="chatbot_title">Chatbot Title:</label>
-                                                <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}" maxlength="20">
-                                                <div><em><small>Maximum 20 characters.</small></em></div>
-                                            </div>
-                                            <div class="settings-group">
-                                                <label for="popup_message">Pop Up Message:</label>
-                                                <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}" style="min-width: 300px;" maxlength="50">
-                                                <div><em><small>Maximum 50 characters.</small></em></div>
-                                            </div>
-                                            <div class="settings-group">
-                                                <label for="disable_auto_open">Chatbot Behavior:</label>
-                                                <div class="switch-container">
-                                                    <label class="switch" for="disable_auto_open">
-                                                        <input type="checkbox" id="disable_auto_open" name="disable_auto_open" {% if settings['disable_auto_open'] %}checked{% endif %}>
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                    <span class="switch-label">Disable auto-open on page load</span>
-                                                </div>
-                                                <small class="form-text text-muted">When enabled, the chatbot will not automatically open when a user visits your website.</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                        </div>
                     </div>
-                    <!-- Branding Section -->
-                    <div class="tab-pane fade" id="branding-section" role="tabpanel">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">Branding</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="settings-container">
-                                    <div class="row">
-                                        <div class="col-md-4 mb-4">
-                                            <h5>Logo</h5>
-                                            <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" class="preview-box">
-                                            <div class="custom-file mt-2">
-                                                <input type="file" class="custom-file-input" id="logo" name="logo" accept="image/png" {% if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}>
-                                                <label class="custom-file-label" for="logo">Choose file</label>
-                                                <span class="file-name" id="file-name">No file chosen</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 mb-4">
-                                            <h5>Widget Icon</h5>
-                                            <img id="selected-icon" src="{{ url_for('static', filename='images/' + (settings['widget_icon'] or 'default_icon.png')) }}" alt="Selected Icon" class="preview-box">
-                                            <select id="icon-select" class="icon-dropdown" name="icon-select">
-                                                <option value="ecco_icon.svg" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}" {% if settings['widget_icon'] == 'ecco_icon.svg' %}selected{% endif %}>Lime</option>
-                                                <option value="ecco_icon_black.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_black.svg' %}selected{% endif %}>Black</option>
-                                                <option value="ecco_icon_blue.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_blue.svg' %}selected{% endif %}>Blue</option>
-                                                <option value="ecco_icon_grey.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_grey.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_grey.svg' %}selected{% endif %}>Grey</option>
-                                                <option value="ecco_icon_orange.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_orange.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_orange.svg' %}selected{% endif %}>Orange</option>
-                                                <option value="ecco_icon_purple.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_purple.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_purple.svg' %}selected{% endif %}>Purple</option>
-                                                <option value="ecco_icon_red.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_red.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_red.svg' %}selected{% endif %}>Red</option>
-                                                <option value="ecco_icon_yellow.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_yellow.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_yellow.svg' %}selected{% endif %}>Yellow</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4 mb-4">
-                                            <h5>Font Style</h5>
-                                            <div id="font-preview" class="preview-box">
-                                                <div class="preview-large">ABC</div>
-                                                <div class="preview-small">abc</div>
-                                            </div>
-                                            <select id="font_style" class="font-dropdown" name="font_style"">
-                                                {% set font_options = ['Arial', 'Arial Black', 'Book Antiqua', 'Baskerville', 'Californian FB', 'Cambria', 'Candara', 'Century Gothic', 'Comic Sans MS', 'Consolas', 'Copperplate', 'Courier', 'Courier New', 'Ebrima', 'Franklin Gothic Medium', 'Garamond', 'Georgia', 'Impact', 'Lucida Console', 'MS Gothic', 'MS Mincho', 'Palatino Linotype', 'Rockwell', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Verdana'] %}
-                                                {% for font in font_options %}
-                                                    <option value="{{ font }}" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                        <div class="hidden-chatbot-name">
-                                            <label for="logo">Chatbot Name:</label><br>
-                                            <input type="text" id="chatbot_name" name="chatbot_name" value="{{ settings['chatbot_name'] }}" maxlength="20"><br>
-                                            <em><small>Must be no more than 20 characters.</small></em><br><br>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                            <!-- System Settings Section -->
-                        <div id="system-settings" class="tab-pane fade" role="tabpanel">
+            </div>
+            <div class="col-md-8 col-xl-9">
+                    <div class="tab-content">
+                            <!-- Styling Section -->
+                        <div id="styling-section" class="tab-pane fade show active" role="tabpanel">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title mb-0">System Settings</h5>
+                                    <h5 class="card-title mb-0">Styling</h5>
                                 </div>
-                                <div class="card-body">
-                                    <div class="settings-container">
-                                        <div class="settings-row">
-                                            <label>Bot Temperature:</label>
-                                            <div class="temperature-container">
-                                                <div class="temperature-labels">
-                                                    <span>Most Accurate</span>
-                                                    <span>Most Creative</span>
-                                                </div>
-                                                <input type="range" class="form-range" min="0" max="1" step="0.1" id="bot_temperature" name="bot_temperature" value="{{ settings['bot_temperature'] }}">
-                                                <div class="temperature-steps">
-                                                    <span>0</span><span>0.1</span><span>0.2</span><span>0.3</span><span>0.4</span><span>0.5</span><span>0.6</span><span>0.7</span><span>0.8</span><span>0.9</span><span>1</span>
-                                                </div>
+                                    <div class="card-body">
+                                        <div class="color-settings-container">
+                                            <div class="settings-group">
+                                                <label for="title_color">Heading Font Color</label>
+                                                <input type="color" id="title_color" name="title_color" value="{{ settings['title_color'] }}">
                                             </div>
-                                        </div>
-                                        <div class="settings-row">
-                                            <label for="bot_LLM">Assistant LLM:</label>
-                                            <select id="bot_LLM" name="bot_LLM">
-                                                <option value="gpt-3.5-turbo" {% if settings['LLM'] == 'gpt-3.5-turbo' %}selected{% endif %}>GPT 3.5 Turbo</option>
-                                                <option value="gpt-4-turbo" {% if settings['LLM'] == 'gpt-4-turbo' %}selected{% endif %}>GPT 4o</option>
-                                            </select>
-                                        </div>
-                                        <div class="settings-row">
-                                            <label for="greeting_message">Greeting Message:</label>
-                                            <textarea id="greeting_message" name="greeting_message" rows="4" maxlength="250">{{ settings['greeting_message'] }}</textarea>
-                                            <small class="form-text text-muted">Maximum 250 characters.</small>
-                                        </div>
-                                        <div class="settings-row">
-                                            <label for="custom_prompt">Custom Prompt:</label>
-                                            <textarea id="custom_prompt" name="custom_prompt" rows="4" maxlength="1000">{{ settings['custom_prompt'] }}</textarea>
-                                            <small class="form-text text-muted">Maximum 1000 characters.</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                                <!-- FAQ Settings Section -->
-                        <div class="tab-pane fade" id="faq-settings" role="tabpanel">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">FAQs</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="settings-container">
-                                        <h3>Pre-made Questions</h3>
-                                        <div id="premade-questions-container">
-                                            {% for id, question, response in premade_questions %}
-                                            <div class="premade-question" data-saved="true" id="question_{{ id }}">
-                                                <input type="hidden" name="premade_question_ids[]" value="{{ id }}">
-                                                <label for="premade_question_{{ loop.index }}">Question:</label>
-                                                <textarea id="premade_question_{{ loop.index }}" name="premade_questions[]" required readonly>{{ question }}</textarea>
-                                                <label for="premade_response_{{ loop.index }}">Response:</label>
-                                                <textarea id="premade_response_{{ loop.index }}" name="premade_responses[]" required readonly>{{ response }}</textarea>
-                                                <button type="button" class="delete-premade-question">Delete</button>
+                                            <div class="settings-group">
+                                                <label for="border_color">Heading Background Color</label>
+                                                <input type="color" id="border_color" name="border_color" value="{{ settings['border_color'] }}">
                                             </div>
-                                            {% endfor %}
+                                            <div class="settings-group">
+                                                <label for="background_color">Chatbot Background Color</label>
+                                                <input type="color" id="background_color" name="background_color" value="{{ settings['background_color'] }}">
+                                            </div>
+                                            <div class="settings-group">
+                                                <label for="dot_color">Dot Animation Color</label>
+                                                <input type="color" id="dot_color" name="dot_color" value="{{ settings['dot_color'] }}">
+                                            </div>
+                                            <div class="settings-group">
+                                                <label for="bot_bubble_color">Bot Text Bubble Color</label>
+                                                <input type="color" id="bot_bubble_color" name="bot_bubble_color" value="{{ settings['bot_bubble_color'] }}">
+                                            </div>
+                                            <div class="settings-group">
+                                                <label for="user_bubble_color">User Text Bubble Color</label>
+                                                <input type="color" id="user_bubble_color" name="user_bubble_color" value="{{ settings['user_bubble_color'] }}">
+                                            </div>
                                         </div>
                                         <br>
-                                        <button type="button" id="add-premade-question">Add Question</button>
+                                            <div class="settings-section condensed">
+                                                <div class="settings-group">
+                                                    <label for="chatbot_title">Chatbot Title:</label>
+                                                    <input type="text" id="chatbot_title" name="chatbot_title" value="{{ settings['chatbot_title'] }}" maxlength="20">
+                                                    <div><em><small>Maximum 20 characters.</small></em></div>
+                                                </div>
+                                                <div class="settings-group">
+                                                    <label for="popup_message">Pop Up Message:</label>
+                                                    <input type="text" id="popup_message" name="popup_message" value="{{ settings['popup_message'] }}" style="min-width: 300px;" maxlength="50">
+                                                    <div><em><small>Maximum 50 characters.</small></em></div>
+                                                </div>
+                                                <div class="settings-group">
+                                                    <label for="disable_auto_open">Chatbot Behavior:</label>
+                                                    <div class="switch-container">
+                                                        <label class="switch" for="disable_auto_open">
+                                                            <input type="checkbox" id="disable_auto_open" name="disable_auto_open" {% if settings['disable_auto_open'] %}checked{% endif %}>
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                        <span class="switch-label">Disable auto-open on page load</span>
+                                                    </div>
+                                                    <small class="form-text text-muted">When enabled, the chatbot will not automatically open when a user visits your website.</small>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
                             </div>
                         </div>
-                        <!-- User Form Section -->
-                        <div class="tab-pane fade" id="user-form" role="tabpanel">
+                        <!-- Branding Section -->
+                        <div class="tab-pane fade" id="branding-section" role="tabpanel">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title mb-0">User Form Settings</h5>
+                                    <h5 class="card-title mb-0">Branding</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="settings-container">
-                                        <div class="settings-row">
-                                            <label for="include_email_form">Enable User Form</label>
-                                            <div class="switch-container">
-                                                <label class="switch" for="include_email_form">
-                                                    <input type="checkbox" id="include_email_form" name="include_email_form" {% if settings['include_email_form'] %}checked{% endif %}>
-                                                    <span class="slider round"></span>
-                                                </label>
-                                                <span class="switch-label">Show email form before chat starts</span>
+                                        <div class="row">
+                                            <div class="col-md-4 mb-4">
+                                                <h5>Logo</h5>
+                                                <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" class="preview-box">
+                                                <div class="custom-file mt-2">
+                                                    <input type="file" class="custom-file-input" id="logo" name="logo" accept="image/png" {% if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}>
+                                                    <label class="custom-file-label" for="logo">Choose file</label>
+                                                    <span class="file-name" id="file-name">No file chosen</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-4">
+                                                <h5>Widget Icon</h5>
+                                                <img id="selected-icon" src="{{ url_for('static', filename='images/' + (settings['widget_icon'] or 'default_icon.png')) }}" alt="Selected Icon" class="preview-box">
+                                                <select id="icon-select" class="icon-dropdown" name="icon-select">
+                                                    <option value="ecco_icon.svg" data-icon="{{ url_for('static', filename='images/ecco_icon.svg') }}" {% if settings['widget_icon'] == 'ecco_icon.svg' %}selected{% endif %}>Lime</option>
+                                                    <option value="ecco_icon_black.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_black.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_black.svg' %}selected{% endif %}>Black</option>
+                                                    <option value="ecco_icon_blue.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_blue.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_blue.svg' %}selected{% endif %}>Blue</option>
+                                                    <option value="ecco_icon_grey.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_grey.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_grey.svg' %}selected{% endif %}>Grey</option>
+                                                    <option value="ecco_icon_orange.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_orange.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_orange.svg' %}selected{% endif %}>Orange</option>
+                                                    <option value="ecco_icon_purple.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_purple.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_purple.svg' %}selected{% endif %}>Purple</option>
+                                                    <option value="ecco_icon_red.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_red.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_red.svg' %}selected{% endif %}>Red</option>
+                                                    <option value="ecco_icon_yellow.svg" data-icon="{{ url_for('static', filename='images/ecco_icon_yellow.svg') }}" {% if settings['widget_icon'] == 'ecco_icon_yellow.svg' %}selected{% endif %}>Yellow</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 mb-4">
+                                                <h5>Font Style</h5>
+                                                <div id="font-preview" class="preview-box">
+                                                    <div class="preview-large">ABC</div>
+                                                    <div class="preview-small">abc</div>
+                                                </div>
+                                                <select id="font_style" class="font-dropdown" name="font_style"">
+                                                    {% set font_options = ['Arial', 'Arial Black', 'Book Antiqua', 'Baskerville', 'Californian FB', 'Cambria', 'Candara', 'Century Gothic', 'Comic Sans MS', 'Consolas', 'Copperplate', 'Courier', 'Courier New', 'Ebrima', 'Franklin Gothic Medium', 'Garamond', 'Georgia', 'Impact', 'Lucida Console', 'MS Gothic', 'MS Mincho', 'Palatino Linotype', 'Rockwell', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Verdana'] %}
+                                                    {% for font in font_options %}
+                                                        <option value="{{ font }}" {% if settings['font_style'] == font %}selected{% endif %}>{{ font }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                            <div class="hidden-chatbot-name">
+                                                <label for="logo">Chatbot Name:</label><br>
+                                                <input type="text" id="chatbot_name" name="chatbot_name" value="{{ settings['chatbot_name'] }}" maxlength="20"><br>
+                                                <em><small>Must be no more than 20 characters.</small></em><br><br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                <!-- System Settings Section -->
+                            <div id="system-settings" class="tab-pane fade" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">System Settings</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="settings-container">
+                                            <div class="settings-row">
+                                                <label>Bot Temperature:</label>
+                                                <div class="temperature-container">
+                                                    <div class="temperature-labels">
+                                                        <span>Most Accurate</span>
+                                                        <span>Most Creative</span>
+                                                    </div>
+                                                    <input type="range" class="form-range" min="0" max="1" step="0.1" id="bot_temperature" name="bot_temperature" value="{{ settings['bot_temperature'] }}">
+                                                    <div class="temperature-steps">
+                                                        <span>0</span><span>0.1</span><span>0.2</span><span>0.3</span><span>0.4</span><span>0.5</span><span>0.6</span><span>0.7</span><span>0.8</span><span>0.9</span><span>1</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="settings-row">
+                                                <label for="bot_LLM">Assistant LLM:</label>
+                                                <select id="bot_LLM" name="bot_LLM">
+                                                    <option value="gpt-3.5-turbo" {% if settings['LLM'] == 'gpt-3.5-turbo' %}selected{% endif %}>GPT 3.5 Turbo</option>
+                                                    <option value="gpt-4-turbo" {% if settings['LLM'] == 'gpt-4-turbo' %}selected{% endif %}>GPT 4o</option>
+                                                </select>
+                                            </div>
+                                            <div class="settings-row">
+                                                <label for="greeting_message">Greeting Message:</label>
+                                                <textarea id="greeting_message" name="greeting_message" rows="4" maxlength="250">{{ settings['greeting_message'] }}</textarea>
+                                                <small class="form-text text-muted">Maximum 250 characters.</small>
+                                            </div>
+                                            <div class="settings-row">
+                                                <label for="custom_prompt">Custom Prompt:</label>
+                                                <textarea id="custom_prompt" name="custom_prompt" rows="4" maxlength="1000">{{ settings['custom_prompt'] }}</textarea>
+                                                <small class="form-text text-muted">Maximum 1000 characters.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                    <!-- FAQ Settings Section -->
+                            <div class="tab-pane fade" id="faq-settings" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">FAQs</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="settings-container">
+                                            <h3>Pre-made Questions</h3>
+                                            <div class="faq-tip">
+                                                <i class="fas fa-info-circle"></i>
+                                                <span>Tip: For best appearance, consider using 3 or fewer questions, each under 50 words.</span>
+                                            </div>
+                                            <div id="premade-questions-container">
+                                                {% for id, question, response in premade_questions %}
+                                                <div class="premade-question" data-saved="true" id="question_{{ id }}">
+                                                    <input type="hidden" name="premade_question_ids[]" value="{{ id }}">
+                                                    <label for="premade_question_{{ loop.index }}">Question:</label>
+                                                    <textarea id="premade_question_{{ loop.index }}" name="premade_questions[]" required readonly>{{ question }}</textarea>
+                                                    <label for="premade_response_{{ loop.index }}">Response:</label>
+                                                    <textarea id="premade_response_{{ loop.index }}" name="premade_responses[]" required readonly>{{ response }}</textarea>
+                                                    <button type="button" class="delete-premade-question">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                            <br>
+                                            <button type="button" id="add-premade-question" class="btn-add-question">
+                                                <i class="fas fa-plus-circle"></i> Add Question
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- User Form Section -->
+                            <div class="tab-pane fade" id="user-form" role="tabpanel">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">User Form Settings</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="settings-container">
+                                            <div class="settings-row">
+                                                <label for="include_email_form">Enable User Form</label>
+                                                <div class="switch-container">
+                                                    <label class="switch" for="include_email_form">
+                                                        <input type="checkbox" id="include_email_form" name="include_email_form" {% if settings['include_email_form'] %}checked{% endif %}>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                    <span class="switch-label">Show email form before chat starts</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -258,8 +267,8 @@
                 </div>
             </div>
         </div>
-    </form>
-</div>
+    </div>
+</form>
 {% endblock %}
 
 {% block scripts %}

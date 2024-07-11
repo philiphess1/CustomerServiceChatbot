@@ -133,29 +133,33 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     // Deleting questions
     document.getElementById('premade-questions-container').addEventListener('click', function(event) {
-        var target = event.target;
-        if (target.tagName !== 'BUTTON') {
-            target = target.parentNode;
-        }
-        if (target.className === 'delete-premade-question') {
-            if (target.parentNode.dataset.saved === 'true') {
-                var xhr = new XMLHttpRequest();
-                xhr.open('DELETE', '/delete_question', true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.send(JSON.stringify({
-                    question_id: target.parentNode.id.split('_')[1]
-                }));
-
-                xhr.onload = function() {
-                    if (xhr.status == 200) {
-                        target.parentNode.remove();
-                    } else {
-                        console.error('Failed to delete question:', xhr.responseText);
-                    }
-                };
-            } else {
-                target.parentNode.remove();
-            }
+        const deleteButton = event.target.closest('.delete-premade-question');
+        if (!deleteButton) return; // If the click wasn't on a delete button, do nothing
+    
+        const questionDiv = deleteButton.closest('.premade-question');
+        if (!questionDiv) return; // If we couldn't find the parent question div, do nothing
+    
+        if (questionDiv.dataset.saved === 'true') {
+            const questionId = questionDiv.id.split('_')[1];
+            fetch('/delete_question', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question_id: questionId }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    questionDiv.remove();
+                } else {
+                    console.error('Failed to delete question:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        } else {
+            questionDiv.remove();
         }
     });
 
