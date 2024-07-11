@@ -102,8 +102,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
             alert('Chatbot Title cannot be more than 20 characters.');
             event.preventDefault();
         }
-
-        // TODO: Add code here to collect and format FAQ questions for submission
     });
 
     // Bot temperature input handler

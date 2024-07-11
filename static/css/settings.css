@@ -425,11 +425,19 @@ textarea.form-input {
 }
 
 /* User Form Section */
+.form-text.text-muted {
+  font-size: 0.875em;
+  color: #6c757d;
+  margin-top: 0.1rem;
+  margin-left: 0px; /* Adjust this value to align with your switch label */
+}
+
 
 /* Shared styles for custom switches */
 .switch-container {
   display: flex;
   align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .switch {
