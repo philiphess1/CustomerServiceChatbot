@@ -555,7 +555,7 @@ def serve_js(user_id, chatbot_id):
         chatbotContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
         
         var chatbotIframe = document.createElement('iframe');
-        chatbotIframe.src = 'https://eccoai-customization-2--t0rfrt.herokuapp.com/{user_id}/{chatbot_id}';
+        chatbotIframe.src = 'http://127.0.0.1:5000/{user_id}/{chatbot_id}';
         chatbotIframe.width = '360.5';
         chatbotIframe.height = '600';
         chatbotIframe.style.border = 'none';
@@ -595,7 +595,7 @@ def serve_js(user_id, chatbot_id):
         
         var toggleButton = document.createElement('img');
         toggleButton.id = 'b';
-        toggleButton.src = 'https://eccoai-customization-2--t0rfrt.herokuapp.com//static/images/{settings["widget_icon"]}';
+        toggleButton.src = 'http://127.0.0.1:5000//static/images/{settings["widget_icon"]}';
         toggleButton.alt = 'Chat';
         toggleButton.style.width = '80px';
         toggleButton.style.height = '80px';
@@ -695,7 +695,7 @@ def serve_js(user_id, chatbot_id):
 
     window.addEventListener('message', function(event) {{
     // Check if the message is from a trusted source
-    if (event.origin === "https://eccoai-customization-2--t0rfrt.herokuapp.com/") {{
+    if (event.origin === "http://127.0.0.1:5000/") {{
         // Perform actions based on the message
         if (event.data === "closeIframe") {{
             var iframe = document.getElementById('e');
@@ -762,7 +762,7 @@ def chat(user_id, chatbot_id):
 
     # Count the number of questions the user has asked
     g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (user_id,))
-    question_count = g.cursor.fetchone()[0]
+    question_count = g.cursor.fetchone()[0]*2
 
     # Check if the user has exceeded their question limit
     if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and question_count >= 50:
@@ -780,7 +780,7 @@ def chat(user_id, chatbot_id):
 
     retriever = vectorstore.as_retriever(
             search_type = "similarity_score_threshold",
-            search_kwargs={'score_threshold': 0.7, 'k': 3},
+            search_kwargs={'score_threshold': 0.8, 'k': 3},
         )
 
     if f'memory_{session.sid}' in session:
