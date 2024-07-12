@@ -1,358 +1,588 @@
-ul.select2-results__options li {
-  color: black;
+/* Shared Styles */
+body {
+  margin-top: 20px;
+  background: #1e1e1e;
+  color: #e0e0e0;
 }
 
-#faq-settings label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-#faq-settings input[type="text"] {
-  width: 80%; /* Adjust as needed */
-  padding: 5px; /* Adjust as needed */
-}
-
-.delete-premade-question {
-  color: white;
-  background-color: red;
-  border: none;
-  border-radius: 5px;
-  padding: 5px 10px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-#add-premade-question {
-  color: rgb(0, 0, 0);
-  background-color: #BFEF4B;
-  border: none;
-  border-radius: 5px;
-  padding: 5px 10px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-#add-premade-question:hover {
-  background-color: darkgreen;
-}
-
-.delete-premade-question:hover {
-  background-color: darkred;
-}
-
-.premade-question {
-  padding: 10px;
-  background-color: #dcdcdc;
-  border: #111 1px solid;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.premade-question label {
-  color: #000000;
-}
-
-
-
-label[for="custom_prompt"] {
-  display: block;
-  margin-bottom: 10px;
-}
-
-textarea {
-  resize: none;
+.container.p-0 {
+  display: flex;
+  flex-wrap: nowrap;
   width: 100%;
-  height: 100px;
-  padding: 10px;
-  box-sizing: border-box;
+  transition: width 0.3s ease;
 }
 
-.premade-question textarea {
-  resize: none;
-  width: 100%;
-  height: 50px;
-  padding: 10px;
-  box-sizing: border-box;
+.row {
+  flex: 1;
+  display: flex;
 }
 
-label[for="greeting_message"] {
-  display: block;
-  margin-bottom: 10px;
+.col-md-4.col-xl-3 {
+  flex: 0 0 25%;
+  max-width: 25%;
 }
 
-textarea#greeting_message {
-  resize: none;
-  width: 100%;
-  height: 50px;
-  padding: 10px;
-  box-sizing: border-box;
+.col-md-8.col-xl-9 {
+  position: relative;
+  flex: 0 0 75%;
+  max-width: 75%;
 }
-  
-  /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
-  @media screen and (max-height: 450px) {
-    .sidenav {padding-top: 15px;}
-    .sidenav a {font-size: 18px;}
-  }
 
+.card {
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 15px 1px rgba(52, 40, 104, .08);
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  border-radius: .2rem;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-header {
+  background-color: #2a2a2a;
+  border-bottom: 1px solid #4a4a4a;
+}
+
+.card-title {
+  margin-bottom: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #ffffff;
+}
 
 .settings-container {
   display: flex;
-  justify-content: space-between;
-  background-color: #161616; /* Moved from .settings-section */
-  border-radius: 5px; /* Moved from .settings-section */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Moved from .settings-section */
-  border: 2px solid #c1c1c1; /* Moved from .settings-section */ /* Added to give some space around the sections */
-  margin-bottom: 25px;
+  flex-direction: column;
+  margin-bottom: 0;
 }
 
-.settings-section {
-  padding: 20px;
-  width: 45%; /* Adjust this value as needed */
-  min-width: 380px;
-}
-.settings-section1 {
-  margin-bottom: 25px;
-  background-color: #161616;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  max-width: Auto;
-  min-width: 800px;
-  border: 2px solid #c1c1c1;
-}
-
-.settings-section h3 {
-    font-size: 20px;
-    margin-bottom: 20px;
-    color: #a5a5a5;
-}
-
-.settings-section1 h3 {
-  font-size: 20px;
+.settings-row {
   margin-bottom: 20px;
-  color: #a5a5a5;
 }
 
-.settings-section form label {
-    font-weight: bold;
-    color: #333;
-}
-
-input[type="submit"] {
-    background-color: #5C6BC0;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 40px;
-}
-
-input[type="submit"]:hover {
-  background-color: #3F51B5;
-}
-
-select#font_style {
-    cursor: pointer;
-}
-
-input#background_color {
-    cursor: pointer;
-}
-#widget_icon{
-  margin-top: 10px;
-}
-#widget_icon input[type="radio"] {
-  display: none;
-}
-#widget_icon label {
-  display: inline-block;
-  padding: 10px;
-  border: 1px solid rgb(211, 243, 255);
-  border-radius: 10px;
-  cursor: pointer;
-}
-#widget_icon input[type="radio"]:checked + label {
-  background-color: #ddd;
-}
-#widget_icon img {
-  width: 80px;
-  height: 80px;
-}
-.selected {
-  background-color: #ddd;
-  border: 1px solid #2e6eb6;
-}
-#settings-box{
-  display: flex;
-  justify-content: space-between;
-  width: 90%;
-}
-.tooltip-container {
-  position: relative;
-  display: inline-block;
-}
-
-.tooltip-text {
-  visibility: hidden;
-  background-color: #555;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-  position: absolute;
-  z-index: 1;
-  /* bottom: 80%; Position the tooltip above the button */
-  top: 10%;
-  left: 50%;
-  margin-left: 20px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  width: 200px;
-}
-
-.tooltip-container:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
-
-.info-button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  height: 20px;
-  width: 20px;
-  margin-top: 16px;
-  margin-left: 8px;
-}
-
-.subpage {
-  display: none;
-}
-
-#styling-settings{
-  display:block;
+input[type="text"], 
+input[type="file"],
+select, 
+textarea {
+  width: 100%;
+  padding: .5rem;
+  background: #333;
+  border: 1px solid #555;
+  color: #ffffff;
+  border-radius: .2rem;
 }
 
 textarea {
-  resize: both;
+  resize: vertical;
 }
 
-.button-35 {
-  align-items: center;
-  background-color: #5C6BC0;
-  border-radius: 12px;
-  box-shadow: transparent 0 0 0 3px, rgba(18, 18, 18, .1) 0 6px 20px;
-  box-sizing: border-box;
+label { /* Like Heading Font Color */
+  display: block;
+  margin-bottom: .5rem;
+  font-size: .875rem;
+  font-weight: bold;
   color: #ffffff;
-  cursor: pointer;
-  display: inline-flex;
-  flex: 1 1 auto;
-  font-size: 1.2rem;
-  font-weight: 700;
-  justify-content: center;
-  line-height: 1;
+}
+
+.list-group-item { /* Styling, Branding, System Settings, FAQs, User Form, Account Settigns Tab Switch */
+  background-color: #2a2a2a;
+  border: 1px solid #333;
+  color: #e0e0e0;
+}
+
+.list-group-item.active {
+  background-color: #444;
+  border-color: #555;
+}
+
+.sidebar-card {
+  position: sticky;
+  top: 20px;
+}
+
+.main-content {
+  transition: margin-right 0.3s ease, width 0.3s ease;
+  width: 100%;
+  position: relative;
+}
+
+.main-content.shifted {
+  width: calc(100% - 350px);
+  margin-right: 350px;
+}
+.form-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+}
+
+.form-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 28px;
+}
+
+textarea.form-input {
+  resize: vertical;
+}
+
+/* Style the spacer to ensure it doesn't cause a visual gap */
+.spacer {
+  height: 20px; /* Adjust height as needed */
+  background-color: #1e1e1e; /* Match the background color of your sidebar */
   margin: 0;
-  outline: none;
-  padding: 1rem 1.2rem;
-  text-align: center;
-  text-decoration: none;
-  transition: box-shadow .2s,-webkit-box-shadow .2s;
-  white-space: nowrap;
-  border: 0;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  border: 4px solid transparent;
-  transition: border-color 0.3s ease;
+  padding: 0;
+  border: none; /* Ensure no border */
 }
 
-.button-35:hover {
-  box-shadow: transparent 0 0 0 3px, rgba(96, 95, 95, 0.2) 0 6px 20px;
-  border: 4px solid #c8c4c4;
+/* Ensure the Save Settings button has a consistent border and is positioned correctly */
+.save-settings-button {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none; /* Remove default border */
+  border-radius: 0 0 5px 5px; /* Adjust border-radius if necessary */
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1.5;
+  position: relative; /* Adjust positioning */
 }
 
-.button-35.selected {
-  border: 4px solid #ffffff;
+.save-settings-button:hover {
+  background-color: #45a049;
 }
 
-.button-holder {
-  justify-content: space-between;
-  margin-top: 20px;
-}
 
-.range-container {
-  display: flex;
-  align-items: center;
+/* Tab Content */
+.tab-content {
   width: 100%;
 }
 
-#bot_temperature {
-  margin: 0 10px;
-  width: 50%;
-  background: transparent; /* Add this line */
+.tab-pane {
+  display: none;
 }
 
-#bot_temperature::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  background: #4CAF50;
+.tab-pane.active {
+  display: block;
+}
+
+/* Styling Section */
+#styling-section input[type="color"] {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin-bottom: -.8rem;
+}
+
+.color-settings-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: .8rem;
+}
+
+.settings-group label {
+  margin-bottom: .3rem;
+}
+
+/* Branding Section */
+#branding-section .preview-box { /* displays the logo, icon, and font preview */
+  width: 100%;
+  height: 100px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a1a;
+  margin-bottom: 10px;
+}
+
+#branding-section #font-preview .preview-large {
+  font-size: 36px;
+}
+
+#branding-section #font-preview .preview-small {
+  font-size: 24px;
+}
+
+#branding-section .custom-file {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+#branding-section .custom-file-input {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 38px;
+  margin: 0;
+  opacity: 0;
+}
+#branding-section .custom-file.mt-2 {
+  margin-top: 0px !important; /* Adjust the margin value as needed */
+}
+
+#branding-section .custom-file-label { /* Styling for box part of choose file */
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 38px;
+  padding: 0.375rem 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #333;
+  border: 1px solid #555;
+  border-radius: 0.25rem;
+}
+
+#branding-section .custom-file-label::after { /* Styling for browse part of choose file */
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  display: block;
+  height: 36px;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  color: #ffffff;
+  content: "Browse";
+  background-color: #4a4a4a;
+  border-left: inherit;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+#branding-section .file-name {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+#branding-section .hidden-chatbot-name {
+  display: none;
+}
+
+/* System Settings Section */
+#system-settings .temperature-container {
+  max-width: 500px;
+}
+
+#system-settings .temperature-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+#system-settings .temperature-steps {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+#system-settings .form-range {
+  width: 100%;
+}
+
+#system-settings .form-text {
+  color: #888;
+  margin-top: 5px;
+}
+#system-settings .settings-row {
+  margin-bottom: 30px;
+}
+
+#system-settings h4 {
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+#system-settings .setting-description {
+  margin-bottom: 15px;
+  color: #888;
+  font-size: 0.9em;
+}
+
+#system-settings .form-group {
+  margin-bottom: 20px;
+}
+
+#system-settings label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffffff;
+  font-weight: bold;
+}
+.faq-tip, .prompt-description {
+  font-size: 0.9em;
+  color: #6c757d;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #333;
+  color: #fff;
+}
+
+.form-input::placeholder {
+  color: #888;
+  font-style: italic;
+}
+
+textarea.form-input {
+  resize: vertical;
+}
+
+#support_email, #support_phone {
+  width: 100%;
+  max-width: 300px; /* Adjust this value as needed */
+}
+.form-input.optional {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+}
+.support-input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.support-input-group label {
+  margin-right: 10px;
+}
+
+.support-input-group input {
+  flex-grow: 1;
+  margin-right: 15px;
+}
+.support-input-group .switch-container {
+  display: flex;
+  align-items: center;
+}
+.support-input-group .form-input {
+  flex: 1;
+  margin-right: 10px;
+}
+/* FAQ Settings Section */
+.delete-premade-question {
+  cursor: pointer;
+  padding: 3px 8px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.delete-premade-question i {
+  margin-right: 2px;
+  margin-top: 10px;
+}
+
+.faq-tip i {
+  margin-right: 5px;
+  color: #17a2b8;
+}
+
+.btn-add-question {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -20px;
+}
+
+.btn-add-question:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+}
+
+.btn-add-question:active {
+  transform: translateY(0);
+}
+
+.btn-add-question i {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.premade-question {
+  padding-bottom: 20px; /* This adds internal spacing */
+}
+
+
+/* User Form Section */
+.form-text.text-muted {
+  font-size: 0.875em;
+  color: #6c757d;
+  margin-top: 0.1rem;
+  margin-left: 0px; /* Adjust this value to align with your switch label */
+}
+
+
+/* Shared styles for custom switches */
+.switch-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.switch-label {
   cursor: pointer;
 }
 
-body {
-  background-color: #313131;
-  color: rgb(237, 237, 237);
+/* Select2 Styling */
+/* For the drop down boxes on branding page */
+
+/* Override Select2 container width and height */
+.select2-container {
+  width: 100% !important;
 }
 
-.info-bundle {
-  display: flex;
-  align-items: center;
+.select2-container--default .select2-selection--single {
+  width: 100%;
+  height: 33px; /* Set your desired height */
+  background-color: #ffffff; /* Custom background color */
+  border: 1px solid #555; /* Custom border color */
+  border-radius: 4px; /* Custom border radius */
 }
 
-.info-content {
-  display: flex;
-  align-items: center;
+/* Highlight selected option */
+.select2-results__option--highlighted[aria-selected] {
+  background-color: #444;
+  color: #ffffff;
 }
 
-.flash-messages {
-  display: flex;
-  justify-content: center;
-  width: auto;
-  pointer-events: none;
-  padding-top: 20px;
-  margin-left: 20px;
+.font-select-dropdown .select2-results__option,
+.icon-select-dropdown .select2-results__option {
+  padding: 8px;
+  font-size: 16px;
+  background-color: #2a2a2a;
+  color: #ffffff;
 }
 
-.alert {
-  pointer-events: auto;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  border-radius: 15px;
-  padding: 10px;
-  opacity: 0.9;
-  transition: opacity 0.8s;
-  animation: fadeout 10s forwards;
-}
 
-.alert.error {
-  background-color: red;
-  margin-bottom: 4px;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-content.shifted {
+    margin-right: 0;
+    width: 100%;
+  }
 
-.alert.success {
-  background-color: #BFEF4B;
-  color: black;
-  margin-bottom: 4px;
-}
+  #chatbot {
+    width: 100%;
+  }
 
-@keyframes fadeout {
-  from { opacity: 0.9; }
-  to   { opacity: 0; }
+  .temperature-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .temperature-label-container {
+    width: 100%;
+    margin-bottom: .8rem;
+  }
+
+  .settings-button-container {
+    margin-top: 1.5rem;
+  }
+
+  .save-settings-button {
+    width: 100%;
+  }
 }

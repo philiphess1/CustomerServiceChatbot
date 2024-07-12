@@ -1,36 +1,239 @@
 document.addEventListener('DOMContentLoaded', (event) => {
-    // Simulate a click on the chatbot button to open it when the page loads
-    document.getElementById('b').click();
-});
+    // Chatbot toggle functionality
+    const chatbotButton = document.getElementById('b');
+    const mainContent = document.querySelector('.main-content');
+    let isChatbotOpen = false;
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    var primaryInput = document.getElementById('primary');
-    var secondaryInput = document.getElementById('secondary');
+    function updateChatbotState(isOpen) {
+        if (mainContent.classList.contains('shifted') === isOpen) return;
+        isChatbotOpen = isOpen;
+        mainContent.classList.toggle('shifted', isOpen);
+        console.log('Chatbot is now:', isOpen ? 'open' : 'closed');
+    }
 
-    primaryInput.addEventListener('input', function() {
-        var primaries = document.querySelectorAll('.primary');
-        primaries.forEach(function(primary) {
-            primary.style.fill = this.value;
-        }, this);
+    if (chatbotButton) {
+        chatbotButton.addEventListener('click', function(event) {
+            updateChatbotState(!isChatbotOpen);
+        });
+    } else {
+        console.warn('Chatbot toggle button not found');
+    }
+
+    // Observer for chatbot state changes
+    const observeTarget = document.body;
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                const isChatbotVisible = document.body.classList.contains('cb-open');
+                updateChatbotState(isChatbotVisible);
+            }
+        });
+    });
+    observer.observe(observeTarget, { attributes: true });
+
+    // Auto-open chatbot functionality
+    const disableAutoOpenCheckbox = document.getElementById('disable_auto_open');
+    if (chatbotButton && (!disableAutoOpenCheckbox || !disableAutoOpenCheckbox.checked)) {
+        setTimeout(() => {
+            chatbotButton.click();
+        }, 100);
+    }
+
+    // Tab switching functionality
+    const tabLinks = document.querySelectorAll('.list-group-item');
+    const tabContent = document.querySelectorAll('.tab-pane');
+
+    function showTab(tabId) {
+        tabContent.forEach(content => {
+            content.style.display = 'none';
+            content.classList.remove('show', 'active');
+        });
+
+        tabLinks.forEach(link => link.classList.remove('active'));
+
+        const selectedTab = document.getElementById(tabId);
+        const selectedLink = document.querySelector(`[data-target="${tabId}"]`);
+
+        if (selectedTab && selectedLink) {
+            selectedTab.style.display = 'block';
+            selectedTab.classList.add('show', 'active');
+            selectedLink.classList.add('active');
+        }
+    }
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            const target = this.getAttribute('data-target');
+            showTab(target);
+        });
     });
 
-    secondaryInput.addEventListener('input', function() {
-        var secondaries = document.querySelectorAll('.secondary');
-        secondaries.forEach(function(secondary) {
-            secondary.style.fill = this.value;
-        }, this);
+    showTab('styling-section');
+
+    const phoneInput = document.getElementById('support_phone');
+    phoneInput.addEventListener('input', function (e) {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
     });
 
-    // Trigger the input event manually
-    primaryInput.dispatchEvent(new Event('input'));
-    secondaryInput.dispatchEvent(new Event('input'));
 
-    // Change display property
-    var elementToDisplay = document.getElementById('svg_icon'); // replace 'elementId' with the id of your element
-    elementToDisplay.style.display = 'block'; // or 'inline', 'flex', etc. depending on your needs
-});
+    // Form validation and custom prompt generation
+    document.getElementById('settingsForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default submission
 
-window.onload = function() {
+        const requiredFields = [
+            { id: 'bot_temperature', name: 'Bot Temperature' },
+            { id: 'greeting_message', name: 'Greeting Message' },
+            { id: 'chatbot_title', name: 'Chatbot Title' },
+            { id: 'job_description', name: 'Job Description' },
+            { id: 'tone_1', name: 'Tone 1' },
+            { id: 'tone_2', name: 'Tone 2' },
+            { id: 'user_defined_restrictions', name: 'Additional Restrictions' },
+            { id: 'uncertainty_response', name: 'Uncertainty Response' }
+        ];
+
+        const noSupportEmail = document.getElementById('no_support_email').checked;
+        const noSupportPhone = document.getElementById('no_support_phone').checked;
+
+        if (!noSupportEmail) {
+            requiredFields.push({ id: 'support_email', name: 'Support Email' });
+        }
+        if (!noSupportPhone) {
+            requiredFields.push({ id: 'support_phone', name: 'Support Phone' });
+        }
+
+        const missingFields = requiredFields.filter(field => {
+            const element = document.getElementById(field.id);
+            return !element || element.value.trim() === '';
+        });
+
+        if (missingFields.length > 0) {
+            const missingFieldNames = missingFields.map(field => field.name).join(', ');
+            alert(`The following fields are missing: ${missingFieldNames}`);
+            return;
+        }
+
+        const botTemperature = parseFloat(document.getElementById('bot_temperature').value);
+        if (isNaN(botTemperature) || botTemperature < 0 || botTemperature > 1) {
+            alert('Bot Temperature must be between 0 and 1.');
+            return;
+        }
+
+        const greetingMessage = document.getElementById('greeting_message').value;
+        if (greetingMessage.length > 250) {
+            alert('Greeting Message cannot be more than 250 characters.');
+            return;
+        }
+
+        const chatbotTitle = document.getElementById('chatbot_title').value;
+        if (chatbotTitle.length > 20) {
+            alert('Chatbot Title cannot be more than 20 characters.');
+            return;
+        }
+
+        // Generate custom prompt
+        const jobDescription = document.getElementById('job_description').value;
+        const tone1 = document.getElementById('tone_1').value;
+        const tone2 = document.getElementById('tone_2').value;
+        const restrictions = document.getElementById('user_defined_restrictions').value;
+        const uncertaintyResponse = document.getElementById('uncertainty_response').value;
+        const supportEmail = document.getElementById('support_email').value;
+        const supportPhone = document.getElementById('support_phone').value;
+
+        let humanAssistanceInfo = '';
+        if (!noSupportEmail && !noSupportPhone) {
+            humanAssistanceInfo = `For human assistance, direct users to contact our support team:
+Email: ${supportEmail}
+Phone: ${supportPhone}`;
+        } else if (!noSupportEmail) {
+            humanAssistanceInfo = `For human assistance, direct users to contact our support team:
+Email: ${supportEmail}`;
+        } else if (!noSupportPhone) {
+            humanAssistanceInfo = `For human assistance, direct users to contact our support team:
+Phone: ${supportPhone}`;
+        } else {
+            humanAssistanceInfo = 'For human assistance, direct users to check out our company website for contact information.';
+        }
+
+        const customPrompt = `${jobDescription}
+
+Your role is to provide ${tone1} and ${tone2} customer support for our company. Your knowledge is confined to the context provided, and you should strive to deliver accurate information about our company based on this context. Be as detailed as possible without fabricating answers. Politely decline to respond to any inquiries that are not related to the provided documents or our company. Maintain your character at all times. Respond in the language used in the incoming message. Use simple formatting in your responses and speak as a member of our team, using "we" and "us" instead of "they". Include hyperlinks when necessary.
+
+RESTRICTIONS:
+- Avoid using the phrase "Based on the given information".
+- Do not invent answers.
+${restrictions ? '- ' + restrictions.split('\n').join('\n- ') : ''}
+
+If you are uncertain about a response, say "${uncertaintyResponse}" and conclude your response there.
+
+${humanAssistanceInfo}`;
+
+        document.getElementById('custom_prompt').value = customPrompt;
+
+        // Submit the form
+        this.submit();
+    });
+    
+
+    // Bot temperature input handler
+    document.getElementById('bot_temperature').addEventListener('input', function() {
+        document.getElementById('bot_temperature_value').textContent = this.value;
+    });
+
+    // FAQ question management
+    // Adding new questions
+    document.getElementById('add-premade-question').addEventListener('click', function() {
+        var container = document.getElementById('premade-questions-container');
+        var index = container.getElementsByClassName('premade-question').length + 1;
+        var question = document.createElement('div');
+        question.className = 'premade-question';
+        question.innerHTML = `
+            <label for="premade_question_${index}">Question:</label>
+            <textarea id="premade_question_${index}" name="premade_questions[]" required></textarea>
+            <label for="premade_response_${index}">Response:</label>
+            <textarea id="premade_response_${index}" name="premade_responses[]" required></textarea>
+            <button type="button" class="delete-premade-question">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        question.dataset.saved = 'false';
+        container.appendChild(question);
+    });
+
+    // Deleting questions
+    document.getElementById('premade-questions-container').addEventListener('click', function(event) {
+        const deleteButton = event.target.closest('.delete-premade-question');
+        if (!deleteButton) return; // If the click wasn't on a delete button, do nothing
+    
+        const questionDiv = deleteButton.closest('.premade-question');
+        if (!questionDiv) return; // If we couldn't find the parent question div, do nothing
+    
+        if (questionDiv.dataset.saved === 'true') {
+            const questionId = questionDiv.id.split('_')[1];
+            fetch('/delete_question', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question_id: questionId }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    questionDiv.remove();
+                } else {
+                    console.error('Failed to delete question:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        } else {
+            questionDiv.remove();
+        }
+    });
+
+    // Widget icon selection
     var labels = document.querySelectorAll('#widget_icon label');
     labels.forEach(function(label) {
         var radio = label.querySelector('input');
@@ -46,151 +249,77 @@ window.onload = function() {
             }
         });
     });
-};
 
-document.getElementById('settingsForm').addEventListener('submit', function(event) {
-    var botTemperature = document.getElementById('bot_temperature').value;
-    var customPrompt = document.getElementById('custom_prompt').value;
-    var greetingMessage = document.getElementById('greeting_message').value;
-    var chatbotTitle = document.getElementById('chatbot_title').value;
-
-    // Add this block
-    if (!botTemperature || !customPrompt || !greetingMessage || !chatbotTitle) {
-        alert('All fields must be filled out.');
-        event.preventDefault();
+    // Font style selection and preview
+    function formatFont(font) {
+        if (!font.id) { return font.text; }
+        return $('<span>').css({'font-family': font.text, 'font-size': '16px'}).text(font.text);
     }
 
-    if (botTemperature < 0 || botTemperature > 1) {
-        alert('Bot Temperature must be between 0 and 1.');
-        event.preventDefault();
+    $('#font_style').select2({
+        templateResult: formatFont,
+        templateSelection: formatFont,
+        minimumResultsForSearch: Infinity,
+        dropdownCssClass: "font-select-dropdown"
+    });
+
+    function updateFontPreview(fontFamily) {
+        $('#font-preview').css('font-family', fontFamily);
     }
 
-    if (customPrompt.length > 1000) {
-        alert('Custom Prompt cannot be more than 1000 characters.');
-        event.preventDefault();
-    }
+    $('#font_style').on('change', function() {
+        updateFontPreview($(this).val());
+    });
 
-    if (greetingMessage.length > 250) {
-        alert('Greeting Message cannot be more than 250 characters.');
-        event.preventDefault();
-    }
+    updateFontPreview($('#font_style').val());
 
-    if (chatbotTitle.length > 20) {
-        alert('Chatbot Title cannot be more than 20 characters.');
-        event.preventDefault();
-    }
-});
-
-document.getElementById('bot_temperature').addEventListener('input', function() {
-    document.getElementById('bot_temperature_value').textContent = this.value;
-});
-
-function showPage(pageId) {
-    // Hide all subpages
-    var subpages = document.getElementsByClassName('subpage');
-    for (var i = 0; i < subpages.length; i++) {
-        subpages[i].style.display = 'none';
-    }
-
-    // Show the selected subpage
-    document.getElementById(pageId).style.display = 'block';
-
-    // Remove the 'selected' class from all buttons
-    var buttons = document.getElementsByClassName('button-35');
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove('selected');
-    }
-
-    // Add the 'selected' class to the clicked button
-    if (pageId === 'styling-settings') {
-        document.querySelector('button[onclick="showPage(\'styling-settings\')"]').classList.add('selected');
-    } else if (pageId === 'system-settings') {
-        document.querySelector('button[onclick="showPage(\'system-settings\')"]').classList.add('selected');
-    } else if (pageId === 'faq-settings') {
-        document.querySelector('button[onclick="showPage(\'faq-settings\')"]').classList.add('selected');
-    }
-}
-document.getElementById('add-premade-question').addEventListener('click', function() {
-    var container = document.getElementById('premade-questions-container');
-    var index = container.getElementsByClassName('premade-question').length + 1;
-    var question = document.createElement('div');
-    question.className = 'premade-question';
-    question.innerHTML = `
-        <label for="premade_question_${index}">Question:</label>
-        <textarea id="premade_question_${index}" name="premade_questions[]" required></textarea>
-        <label for="premade_response_${index}">Response:</label>
-        <textarea id="premade_response_${index}" name="premade_responses[]" required></textarea>
-        <button type="button" class="delete-premade-question">
-            <i class="fas fa-trash"></i>
-        </button>
-    `;
-    question.dataset.saved = 'false';
-    container.appendChild(question);
-});
-
-document.getElementById('premade-questions-container').addEventListener('click', function(event) {
-    var target = event.target;
-    if (target.tagName !== 'BUTTON') {
-        target = target.parentNode;
-    }
-    if (target.className === 'delete-premade-question') {
-        if (target.parentNode.dataset.saved === 'true') {
-            // If the question is saved in the database, send a delete request to the server
-            var xhr = new XMLHttpRequest();
-            xhr.open('DELETE', '/delete_question', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify({
-                question_id: target.parentNode.id.split('_')[1] // Extract the question id from the id attribute
-            }));
-
-            xhr.onload = function() {
-                if (xhr.status == 200) {
-                    // If the server responded with a status of 200, remove the question from the DOM
-                    target.parentNode.remove();
-                } else {
-                    // If the server responded with an error status, log the error message
-                    console.error('Failed to delete question:', xhr.responseText);
-                }
-            };
-        } else {
-            // If the question is not saved in the database, just remove it from the DOM
-            target.parentNode.remove();
-        }
-    }
-});
-
-$(document).ready(function() {
-    $('#font_style').select2();
-});
-
-$(document).ready(function() {
-    function formatIcon (icon) {
-        var originalOption = icon.element;
-        var img = $(originalOption).data('icon');
+    // Icon selection
+    function formatIcon(icon) {
         if (!icon.id) { return icon.text; }
         var $icon = $(
-            '<span><img src="' + img + '" class="img-flag" style="width: 30px; height: 30px;" /> ' + icon.text + '</span>'
+            '<span><img src="' + $(icon.element).data('icon') + '" class="img-flag" style="width: 30px; height: 30px;" /> ' + icon.text + '</span>'
         );
         return $icon;
-    };
+    }
 
     $('#icon-select').select2({
         templateResult: formatIcon,
-        placeholder: "Click to change"
+        templateSelection: formatIcon,
+        minimumResultsForSearch: Infinity,
+        dropdownCssClass: "icon-select-dropdown"
     });
 
-    // Add an event listener for the change event
     $('#icon-select').on('change', function() {
-        // Get the selected option
         var selectedOption = $(this).find('option:selected');
-
-        // Get the data-icon attribute of the selected option
         var icon = selectedOption.data('icon');
-
-        // Log the icon variable
         console.log('icon:', icon);
-
-        // Update the src attribute of the img element
         $('#selected-icon').attr('src', icon);
+    });
+
+    // Logo file selection
+    document.getElementById('logo').addEventListener('change', function() {
+        var fileName = this.files[0].name;
+        document.getElementById('file-name').textContent = fileName;
+    });
+
+    // Auto-open disable checkbox handler
+    if (disableAutoOpenCheckbox) {
+        disableAutoOpenCheckbox.addEventListener('change', function() {
+            console.log('Disable Auto-open:', this.checked);
+        });
+    }
+
+       // Make switch containers clickable
+       document.addEventListener('DOMContentLoaded', (event) => {
+        const switches = document.querySelectorAll('.switch');
+        switches.forEach(switchEl => {
+            const checkbox = switchEl.querySelector('input[type="checkbox"]');
+            switchEl.addEventListener('click', (event) => {
+                if (event.target !== checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
     });
 });
