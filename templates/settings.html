@@ -119,7 +119,9 @@
                                         <div class="row">
                                             <div class="col-md-4 mb-4">
                                                 <h5>Logo</h5>
-                                                <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo" class="preview-box">
+                                                <div class="preview-box">
+                                                    <img id="currentLogo" src="{{ settings['logo'] }}" alt="Current Logo">
+                                                </div>
                                                 <div class="custom-file mt-2">
                                                     <input type="file" class="custom-file-input" id="logo" name="logo" accept="image/png" {% if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}disabled{% endif %}>
                                                     <label class="custom-file-label" for="logo">Choose file</label>

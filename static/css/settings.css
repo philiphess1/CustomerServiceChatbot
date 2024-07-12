@@ -207,27 +207,49 @@ textarea.form-input {
 }
 
 /* Branding Section */
-#branding-section .preview-box { /* displays the logo, icon, and font preview */
+#branding-section .preview-box {
   width: 100%;
   height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a1a;
   border: 1px solid #ccc;
   border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+#branding-section .preview-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+#branding-section #currentLogo {
+  max-width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0 10px; /* Add padding only to the sides */
+}
+
+/* Specific styles for font preview */
+#branding-section #font-preview {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #1a1a1a;
-  margin-bottom: 10px;
 }
 
 #branding-section #font-preview .preview-large {
   font-size: 36px;
+  line-height: 1;
 }
 
 #branding-section #font-preview .preview-small {
   font-size: 24px;
+  line-height: 1;
 }
-
 #branding-section .custom-file {
   position: relative;
   display: inline-block;
