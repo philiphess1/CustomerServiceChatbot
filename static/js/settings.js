@@ -71,69 +71,110 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     showTab('styling-section');
 
-    //Form Validation
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('settingsForm');
-        
-        form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
-    
-            // Collect all the input values
-            const botTemperature = document.getElementById('bot_temperature').value;
-            const greetingMessage = document.getElementById('greeting_message').value;
-            const chatbotTitle = document.getElementById('chatbot_title').value;
-            const jobDescription = document.getElementById('job_description').value;
-            const tone1 = document.getElementById('tone_1').value;
-            const tone2 = document.getElementById('tone_2').value;
-            const restrictions = document.getElementById('user_defined_restrictions').value;
-            const uncertaintyResponse = document.getElementById('uncertainty_response').value;
-            const supportEmail = document.getElementById('support_email').value;
-            const supportPhone = document.getElementById('support_phone').value;
-    
-            // Validate inputs
-            if (!botTemperature || !greetingMessage || !chatbotTitle || !jobDescription || !tone1 || !tone2 || !uncertaintyResponse) {
-                alert('All required fields must be filled out.');
-                return;
-            }
-    
-            if (botTemperature < 0 || botTemperature > 1) {
-                alert('Bot Temperature must be between 0 and 1.');
-                return;
-            }
-    
-            if (greetingMessage.length > 250) {
-                alert('Greeting Message cannot be more than 250 characters.');
-                return;
-            }
-    
-            if (chatbotTitle.length > 20) {
-                alert('Chatbot Title cannot be more than 20 characters.');
-                return;
-            }
-    
-            // Generate the custom prompt
-            const customPrompt = `${jobDescription}
-    
-    Your role is to provide ${tone1} and ${tone2} customer support for our company. Your knowledge is confined to the context provided, and you should strive to deliver accurate information about our company based on this context. Be as detailed as possible without fabricating answers. Politely decline to respond to any inquiries that are not related to the provided documents or our company. Maintain your character at all times. Respond in the language used in the incoming message. Use simple formatting in your responses and speak as a member of our team, using "we" and "us" instead of "they". Include hyperlinks when necessary.
-    
-    RESTRICTIONS:
-    - Avoid using the phrase "Based on the given information".
-    - Do not invent answers.
-    ${restrictions ? '- ' + restrictions.split('\n').join('\n- ') : ''}
-    
-    If you are uncertain about a response, say "${uncertaintyResponse}" and conclude your response there.
-    
-    For human assistance, direct users to contact our support team:
-    Email: ${supportEmail}
-    Phone: ${supportPhone}`;
-    
-            // Set the value of the hidden custom_prompt input
-            document.getElementById('custom_prompt').value = customPrompt;
-    
-            // Now you can submit the form
-            form.submit();
-        });
+    const phoneInput = document.getElementById('support_phone');
+    phoneInput.addEventListener('input', function (e) {
+        let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
     });
+
+
+    // Form validation and custom prompt generation
+    document.getElementById('settingsForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default submission
+
+        const requiredFields = [
+            { id: 'bot_temperature', name: 'Bot Temperature' },
+            { id: 'greeting_message', name: 'Greeting Message' },
+            { id: 'chatbot_title', name: 'Chatbot Title' },
+            { id: 'job_description', name: 'Job Description' },
+            { id: 'tone_1', name: 'Tone 1' },
+            { id: 'tone_2', name: 'Tone 2' },
+            { id: 'user_defined_restrictions', name: 'Additional Restrictions' },
+            { id: 'uncertainty_response', name: 'Uncertainty Response' }
+        ];
+
+        const noSupportEmail = document.getElementById('no_support_email').checked;
+        const noSupportPhone = document.getElementById('no_support_phone').checked;
+
+        if (!noSupportEmail) {
+            requiredFields.push({ id: 'support_email', name: 'Support Email' });
+        }
+        if (!noSupportPhone) {
+            requiredFields.push({ id: 'support_phone', name: 'Support Phone' });
+        }
+
+        const missingFields = requiredFields.filter(field => {
+            const element = document.getElementById(field.id);
+            return !element || element.value.trim() === '';
+        });
+
+        if (missingFields.length > 0) {
+            const missingFieldNames = missingFields.map(field => field.name).join(', ');
+            alert(`The following fields are missing: ${missingFieldNames}`);
+            return;
+        }
+
+        const botTemperature = parseFloat(document.getElementById('bot_temperature').value);
+        if (isNaN(botTemperature) || botTemperature < 0 || botTemperature > 1) {
+            alert('Bot Temperature must be between 0 and 1.');
+            return;
+        }
+
+        const greetingMessage = document.getElementById('greeting_message').value;
+        if (greetingMessage.length > 250) {
+            alert('Greeting Message cannot be more than 250 characters.');
+            return;
+        }
+
+        const chatbotTitle = document.getElementById('chatbot_title').value;
+        if (chatbotTitle.length > 20) {
+            alert('Chatbot Title cannot be more than 20 characters.');
+            return;
+        }
+
+        // Generate custom prompt
+        const jobDescription = document.getElementById('job_description').value;
+        const tone1 = document.getElementById('tone_1').value;
+        const tone2 = document.getElementById('tone_2').value;
+        const restrictions = document.getElementById('user_defined_restrictions').value;
+        const uncertaintyResponse = document.getElementById('uncertainty_response').value;
+        const supportEmail = document.getElementById('support_email').value;
+        const supportPhone = document.getElementById('support_phone').value;
+
+        let humanAssistanceInfo = '';
+        if (!noSupportEmail && !noSupportPhone) {
+            humanAssistanceInfo = `For human assistance, direct users to contact our support team:
+Email: ${supportEmail}
+Phone: ${supportPhone}`;
+        } else if (!noSupportEmail) {
+            humanAssistanceInfo = `For human assistance, direct users to contact our support team:
+Email: ${supportEmail}`;
+        } else if (!noSupportPhone) {
+            humanAssistanceInfo = `For human assistance, direct users to contact our support team:
+Phone: ${supportPhone}`;
+        } else {
+            humanAssistanceInfo = 'For human assistance, direct users to check out our company website for contact information.';
+        }
+
+        const customPrompt = `${jobDescription}
+
+Your role is to provide ${tone1} and ${tone2} customer support for our company. Your knowledge is confined to the context provided, and you should strive to deliver accurate information about our company based on this context. Be as detailed as possible without fabricating answers. Politely decline to respond to any inquiries that are not related to the provided documents or our company. Maintain your character at all times. Respond in the language used in the incoming message. Use simple formatting in your responses and speak as a member of our team, using "we" and "us" instead of "they". Include hyperlinks when necessary.
+
+RESTRICTIONS:
+- Avoid using the phrase "Based on the given information".
+- Do not invent answers.
+${restrictions ? '- ' + restrictions.split('\n').join('\n- ') : ''}
+
+If you are uncertain about a response, say "${uncertaintyResponse}" and conclude your response there.
+
+${humanAssistanceInfo}`;
+
+        document.getElementById('custom_prompt').value = customPrompt;
+
+        // Submit the form
+        this.submit();
+    });
+    
 
     // Bot temperature input handler
     document.getElementById('bot_temperature').addEventListener('input', function() {
@@ -268,8 +309,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     }
 
-    // Make switch containers clickable
-    document.addEventListener('DOMContentLoaded', (event) => {
+       // Make switch containers clickable
+       document.addEventListener('DOMContentLoaded', (event) => {
         const switches = document.querySelectorAll('.switch');
         switches.forEach(switchEl => {
             const checkbox = switchEl.querySelector('input[type="checkbox"]');

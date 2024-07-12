@@ -228,20 +228,35 @@
                                                     <label for="uncertainty_response">Uncertainty Response:</label>
                                                     <textarea id="uncertainty_response" name="uncertainty_response" class="form-input" rows="3" placeholder="E.g., 'I'm not certain about that. Please contact our support team for more accurate information.'"></textarea>
                                                 </div>
-                                                <div class="form-group">
+                                                <div class="form-group support-input-group">
                                                     <label for="support_email">Support Email:</label>
                                                     <input type="email" id="support_email" name="support_email" class="form-input" placeholder="Enter your support email address">
+                                                    <div class="switch-container">
+                                                        <label class="switch" for="no_support_email">
+                                                            <input type="checkbox" id="no_support_email" name="no_support_email">
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                        <span class="switch-label">Exclude</span>
+                                                    </div>
                                                 </div>
-                                                <div class="form-group">
+                                                
+                                                <div class="form-group support-input-group">
                                                     <label for="support_phone">Support Phone:</label>
-                                                    <input type="tel" id="support_phone" name="support_phone" class="form-input" placeholder="Enter your support phone number">
+                                                    <input type="tel" id="support_phone" name="support_phone" class="form-input" placeholder="##########">
+                                                    <div class="switch-container">
+                                                        <label class="switch" for="no_support_phone">
+                                                            <input type="checkbox" id="no_support_phone" name="no_support_phone">
+                                                            <span class="slider round"></span>
+                                                        </label>
+                                                        <span class="switch-label">Exclude</span>
+                                                    </div>
+                                                </div>
                                                 </div>
                                                 <input type="hidden" id="custom_prompt" name="custom_prompt">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                                     <!-- FAQ Settings Section -->
                             <div class="tab-pane fade" id="faq-settings" role="tabpanel">
                                 <div class="card">
@@ -290,6 +305,7 @@
                                                     <label class="switch" for="include_email_form">
                                                         <input type="checkbox" id="include_email_form" name="include_email_form" {% if settings['include_email_form'] %}checked{% endif %}>
                                                         <span class="slider round"></span>
+                                                    </label>
                                                 </div>
                                                 <p class="form-text text-muted">Requires users to enter their name and email before continuing with chatbot help</p>
                                             </div>

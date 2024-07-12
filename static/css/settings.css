@@ -370,7 +370,32 @@ textarea.form-input {
   width: 100%;
   max-width: 300px; /* Adjust this value as needed */
 }
+.form-input.optional {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+}
+.support-input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
+.support-input-group label {
+  margin-right: 10px;
+}
+
+.support-input-group input {
+  flex-grow: 1;
+  margin-right: 15px;
+}
+.support-input-group .switch-container {
+  display: flex;
+  align-items: center;
+}
+.support-input-group .form-input {
+  flex: 1;
+  margin-right: 10px;
+}
 /* FAQ Settings Section */
 .delete-premade-question {
   cursor: pointer;
@@ -424,6 +449,7 @@ textarea.form-input {
   padding-bottom: 20px; /* This adds internal spacing */
 }
 
+
 /* User Form Section */
 .form-text.text-muted {
   font-size: 0.875em;
@@ -437,7 +463,7 @@ textarea.form-input {
 .switch-container {
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
 }
 
 .switch {
