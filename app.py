@@ -101,9 +101,24 @@ def get_bot_temperature(user_id, chatbot_id):
 
 def get_custom_prompt(user_id, chatbot_id):
     with g.db_conn.cursor() as cursor:
-        cursor.execute("SELECT custom_prompt FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+        cursor.execute("""
+            SELECT job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone 
+            FROM chatbot_settings 
+            WHERE user_id = %s AND id = %s;
+        """, (user_id, chatbot_id))
         row = cursor.fetchone()
-        return row[0] if row else "Default prompt part"
+        if row:
+            return {
+                "job_description": row[0],
+                "tone_1": row[1],
+                "tone_2": row[2],
+                "restrictions": row[3],
+                "uncertainty_response": row[4],
+                "support_email": row[5],
+                "support_phone": row[6]
+            }
+        else:
+            return "Default prompt part"
     
 def get_LLM(user_id, chatbot_id):
     with g.db_conn.cursor() as cursor:
@@ -447,12 +462,13 @@ def create_chatbot():
         'popup_message': 'Hello, I am here to answer your questions!',
         'LLM': 'gpt-3.5-turbo',
         'bot_bubble_color': '#dcdcdc',  # Default bot bubble color
-        'user_bubble_color': '#5fc9f8'  # Default user bubble color
+        'user_bubble_color': '#5fc9f8',  # Default user bubble color
+        'open_by_default': 'False'
     }
 
     g.cursor.execute("""
-            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color, popup_message, LLM, bot_bubble_color, user_bubble_color)
-            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(job_description)s, %(tone_1)s, %(tone_2)s, %(restrictions)s, %(uncertainty_response)s, %(support_email)s, %(support_phone)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(popup_message)s, %(LLM)s, %(bot_bubble_color)s, %(user_bubble_color)s)
+            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color, popup_message, LLM, bot_bubble_color, user_bubble_color, open_by_default)
+            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(job_description)s, %(tone_1)s, %(tone_2)s, %(restrictions)s, %(uncertainty_response)s, %(support_email)s, %(support_phone)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(popup_message)s, %(LLM)s, %(bot_bubble_color)s, %(user_bubble_color)s, %(open_by_default)s)
             RETURNING id;
         """, {'user_id': user_id, **default_settings})
     chatbot_id = g.cursor.fetchone()[0]
@@ -533,7 +549,7 @@ def chatbot(user_id, chatbot_id):
 @app.route('/<int:user_id>/<int:chatbot_id>/popup.js')
 def serve_js(user_id, chatbot_id):
     # Query PostgreSQL to get the widget_icon_url and popup_message
-    g.cursor.execute("SELECT widget_icon_url, popup_message, font_style FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, popup_message, font_style, open_by_default FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -543,7 +559,8 @@ def serve_js(user_id, chatbot_id):
     settings = {
         'widget_icon': row[0],
         'popup_message': row[1],
-        'font_style': row[2]
+        'font_style': row[2],
+        'open_by_default': row[3]
     }
 
     # Generate the JavaScript code
@@ -721,6 +738,12 @@ def serve_js(user_id, chatbot_id):
         }}
     }}
     }});
+
+        if ({settings['open_by_default']}) {{
+        setTimeout(function() {{
+            document.getElementById('b').click();
+        }}, 100);
+    }}
     """
 
     return Response(js_code, mimetype='text/javascript')
@@ -805,7 +828,7 @@ def chat(user_id, chatbot_id):
         )
 
     bot_temperature = get_bot_temperature(user_id, chatbot_id)
-    custom_prompt = get_custom_prompt(user_id, chatbot_id)
+    prompt_data = get_custom_prompt(user_id, chatbot_id)
     model = get_LLM(user_id, chatbot_id)
     print(f"Model: {model}")
 
@@ -832,13 +855,44 @@ def chat(user_id, chatbot_id):
     Standalone question:"""
     CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_template)
 
-    template = f"""{custom_prompt}
+    # Check for support email and phone presence
+    noSupportEmail = prompt_data['support_email'] == ''
+    noSupportPhone = prompt_data['support_phone'] == ''
+
+    humanAssistanceInfo = ''
+    if not noSupportEmail and not noSupportPhone:
+        humanAssistanceInfo = f"""For human assistance, direct users to contact our support team:
+    Email: {prompt_data['support_email']}
+    Phone: {prompt_data['support_phone']}"""
+    elif not noSupportEmail:
+        humanAssistanceInfo = f"For human assistance, direct users to contact our support team:\nEmail: {prompt_data['support_email']}"
+    elif not noSupportPhone:
+        humanAssistanceInfo = f"For human assistance, direct users to contact our support team:\nPhone: {prompt_data['support_phone']}"
+    else:
+        humanAssistanceInfo = 'For human assistance, direct users to check out our company website for contact information.'
+
+    restrictions_formatted = '- ' + prompt_data['restrictions'].replace('\n', '\n- ') if prompt_data['restrictions'] else ''
+
+    template = f"""{prompt_data['job_description']}
+
+    Your role is to provide {prompt_data['tone_1']} and {prompt_data['tone_2']} customer support for our company. Your knowledge is confined to the context provided, and you should strive to deliver accurate information about our company based on this context. Be as detailed as possible without fabricating answers. Politely decline to respond to any inquiries that are not related to the provided documents or our company. Maintain your character at all times. Respond in the language used in the incoming message. Use simple formatting in your responses and speak as a member of our team, using "we" and "us" instead of "they". Include hyperlinks when necessary.
+
+    RESTRICTIONS:
+    - Avoid using the phrase "Based on the given information".
+    - Do not invent answers.
+    - If the question is a short phrase such as "Hello", "What's up", etc., respond with a greeting.
+    {restrictions_formatted}
+
+    If you are uncertain about a response, say "{prompt_data['uncertainty_response']}" and conclude your response there.
+
+    {humanAssistanceInfo}
 
     Answer the question based only on the following context:
     {{context}}
 
     Question: {{question}}
     """
+    
     ANSWER_PROMPT = ChatPromptTemplate.from_template(template)
 
     # First we add a step to load memory
