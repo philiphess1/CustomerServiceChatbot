@@ -1,35 +1,31 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     // Chatbot toggle functionality
-    const chatbotButton = document.getElementById('b');
     const mainContent = document.querySelector('.main-content');
     let isChatbotOpen = false;
 
     function updateChatbotState(isOpen) {
         if (mainContent.classList.contains('shifted') === isOpen) return;
-        isChatbotOpen = isOpen;
         mainContent.classList.toggle('shifted', isOpen);
         console.log('Chatbot is now:', isOpen ? 'open' : 'closed');
     }
 
-    if (chatbotButton) {
-        chatbotButton.addEventListener('click', function(event) {
-            updateChatbotState(!isChatbotOpen);
+    // Assuming the iframe has an ID of 'e'
+    const iframe = document.getElementById('e');
+    if (iframe) {
+        // Observer for iframe visibility changes
+        const styleObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    // Check if the iframe is visible
+                    const isVisible = iframe.style.display !== 'none' && iframe.style.opacity !== '0';
+                    updateChatbotState(isVisible);
+                }
+            });
         });
+        styleObserver.observe(iframe, { attributes: true, attributeFilter: ['style'] });
     } else {
-        console.warn('Chatbot toggle button not found');
+        console.warn('Chatbot iframe not found');
     }
-
-    // Observer for chatbot state changes
-    const observeTarget = document.body;
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                const isChatbotVisible = document.body.classList.contains('cb-open');
-                updateChatbotState(isChatbotVisible);
-            }
-        });
-    });
-    observer.observe(observeTarget, { attributes: true });
 
     // Auto-open chatbot functionality
     // const disableAutoOpenCheckbox = document.getElementById('disable_auto_open');
