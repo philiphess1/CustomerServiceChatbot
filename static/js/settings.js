@@ -32,12 +32,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     observer.observe(observeTarget, { attributes: true });
 
     // Auto-open chatbot functionality
-    const disableAutoOpenCheckbox = document.getElementById('disable_auto_open');
-    if (chatbotButton && (!disableAutoOpenCheckbox || !disableAutoOpenCheckbox.checked)) {
-        setTimeout(() => {
-            chatbotButton.click();
-        }, 100);
-    }
+    // const disableAutoOpenCheckbox = document.getElementById('disable_auto_open');
+    // if (chatbotButton && (!disableAutoOpenCheckbox || !disableAutoOpenCheckbox.checked)) {
+    //     setTimeout(() => {
+    //         chatbotButton.click();
+    //     }, 100);
+    // }
 
     // Tab switching functionality
     const tabLinks = document.querySelectorAll('.list-group-item');

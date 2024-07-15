@@ -563,6 +563,7 @@ def serve_js(user_id, chatbot_id):
         'open_by_default': row[3]
     }
 
+    js_boolean_value = 'true' if settings['open_by_default'] else 'false'
     # Generate the JavaScript code
     js_code = f"""
     // chatbot.js
@@ -739,7 +740,7 @@ def serve_js(user_id, chatbot_id):
     }}
     }});
 
-        if ({settings['open_by_default']}) {{
+        if ({js_boolean_value}) {{
         setTimeout(function() {{
             document.getElementById('b').click();
         }}, 100);
@@ -892,7 +893,7 @@ def chat(user_id, chatbot_id):
 
     Question: {{question}}
     """
-    
+
     ANSWER_PROMPT = ChatPromptTemplate.from_template(template)
 
     # First we add a step to load memory
@@ -1441,6 +1442,11 @@ def update_chatbot_settings(chatbot_id):
     user_bubble_color = request.form.get('user_bubble_color')
     include_email_form = request.form.get('include_email_form')
     open_by_default = request.form.get('disable_auto_open')
+
+    if open_by_default == 'on':
+        open_by_default = True
+    else:
+        open_by_default = False
 
     for question, response in zip(premade_questions, premade_responses):
         if not question_exists_in_db(chatbot_id, question):

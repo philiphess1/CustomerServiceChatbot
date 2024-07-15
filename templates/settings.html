@@ -96,7 +96,7 @@
                                                     <label for="disable_auto_open">Chatbot Behavior:</label>
                                                     <div class="switch-container">
                                                         <label class="switch" for="disable_auto_open">
-                                                            <input type="checkbox" id="disable_auto_open" name="disable_auto_open" {% if settings['disable_auto_open'] %}checked{% endif %}>
+                                                            <input type="checkbox" id="disable_auto_open" name="disable_auto_open" {% if settings['open_by_default'] %}checked{% endif %}>
                                                             <span class="slider round"></span>
                                                         </label>
                                                         <span class="switch-label">Disable auto-open on page load</span>
