@@ -66,6 +66,14 @@ document.getElementById("file").addEventListener("change", function() {
     updateFileListDisplay();
 });
 
+function filearraysize() {
+    var upload_size = 0;
+    for (let i = 0; i < fileArray.length; i++) {
+        console.log(fileArray[i]);
+        upload_size += parseFloat((fileArray[i].size / 1024 / 1024).toFixed(2));
+    }
+    return upload_size;
+}
 function updateFileListDisplay() {
     const fileList = document.getElementById("filelist");
     fileList.innerHTML = ""; // clear current file list
@@ -76,12 +84,10 @@ function updateFileListDisplay() {
         fileList.style.display = "none";
     }
 
-    let totalSize = 0; // Initialize total size
+    let totalSize = filearraysize(); // Calculate total size once
 
     // Update displayed file list
     for (let i = 0; i < fileArray.length; i++) {
-        const fileSize = (fileArray[i].size / 1024 / 1024).toFixed(2); // Convert to MB and round to 2 decimal places
-        totalSize += parseFloat(fileSize); // Add file size to total size
         const fileExtension = fileArray[i].name.split('.').pop().toLowerCase();
         let fileIcon = 'default';
         if (fileExtension.includes('xls')) {
@@ -94,22 +100,22 @@ function updateFileListDisplay() {
             fileIcon = 'csv';
         }
         let filename = fileArray[i].name;
-            if (filename.length > 50) {
-                filename = filename.substring(0, 25) + '...' + filename.substring(filename.length - 20);
-            }
+        if (filename.length > 50) {
+            filename = filename.substring(0, 25) + '...' + filename.substring(filename.length - 20);
+        }
 
-            const fileHtml = `
-                <div id="fileitem">
-                    <div id="fileinfo">
-                        <img src="/static/images/${fileIcon}.png" height="30" width="30" alt="${fileIcon}-icon">
-                        <div id="filename">${filename}</div>
-                        <div id="spacer"></div>
-                        <div class="x-icon">
-                            <img src="/static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button" data-index="${i}">
-                        </div>
+        const fileHtml = `
+            <div id="fileitem">
+                <div id="fileinfo">
+                    <img src="/static/images/${fileIcon}.png" height="30" width="30" alt="${fileIcon}-icon">
+                    <div id="filename">${filename}</div>
+                    <div id="spacer"></div>
+                    <div class="x-icon">
+                        <img src="/static/images/X-icon.png" height="20" width="20" alt="X-icon" class="remove-button" data-index="${i}">
                     </div>
                 </div>
-            `;
+            </div>
+        `;
 
         // Insert the fileHtml into the DOM
         fileList.insertAdjacentHTML('beforeend', fileHtml);
@@ -120,13 +126,13 @@ function updateFileListDisplay() {
     removeButtons.forEach((button) => {
         button.addEventListener('click', function () {
             const index = this.getAttribute('data-index');
-            totalSize -= parseFloat(fileArray[index].size / 1024 / 1024);
             fileArray.splice(index, 1);
-            updateFileListDisplay();
-            // update the file count display
-            document.getElementById('file-label').innerHTML = fileArray.length + ' file(s) selected, total size: ' + totalSize.toFixed(2) + ' MB';
+            updateFileListDisplay(); // This will recalculate totalSize correctly
         });
     });
+
+    // Update the file count and total size display
+    document.getElementById('file-label').innerHTML = fileArray.length + ' file(s) selected, total size: ' + totalSize.toFixed(2) + ' MB';
 
     if (fileArray.length === 0) {
         document.getElementById('uploading').style.display = 'none';
