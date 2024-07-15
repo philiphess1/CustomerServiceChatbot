@@ -722,7 +722,7 @@ def serve_js(user_id, chatbot_id):
 
     window.addEventListener('message', function(event) {{
     // Check if the message is from a trusted source
-    if (event.origin === "http://127.0.0.1:5000/") {{
+    if (event.origin === "http://127.0.0.1:5000") {{
         // Perform actions based on the message
         if (event.data === "closeIframe") {{
             var iframe = document.getElementById('e');
