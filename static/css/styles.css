@@ -11382,3 +11382,8 @@ body {
 .upgrade-button:hover {
   background-color: rgb(80, 205, 80);
 }
+.popup {
+  position: fixed; /* or 'absolute' depending on your needs */
+  z-index: 1050; /* Assuming the layoutSidenav has a lower z-index */
+  /* Other styling properties */
+}
