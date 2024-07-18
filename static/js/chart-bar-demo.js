@@ -1,6 +1,6 @@
 // Set new default font family and font color to mimic Bootstrap's default styling
 Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-Chart.defaults.global.defaultFontColor = '#292b2c';
+Chart.defaults.global.defaultFontColor = '#e0e0e0';
 
 // Bar Chart Example
 var ctx = document.getElementById("myBarChart");
@@ -10,8 +10,8 @@ var myLineChart = new Chart(ctx, {
     labels: ["January", "February", "March", "April", "May", "June"],
     datasets: [{
       label: "Revenue",
-      backgroundColor: "rgba(2,117,216,1)",
-      borderColor: "rgba(2,117,216,1)",
+      backgroundColor: "rgba(78, 115, 223, 0.8)",
+      borderColor: "rgba(78, 115, 223, 1)",
       data: [4215, 5312, 6251, 7841, 9821, 14984],
     }],
   },
@@ -22,7 +22,8 @@ var myLineChart = new Chart(ctx, {
           unit: 'month'
         },
         gridLines: {
-          display: false
+          display: false,
+          color: "rgba(255, 255, 255, 0.1)"
         },
         ticks: {
           maxTicksLimit: 6
@@ -35,12 +36,19 @@ var myLineChart = new Chart(ctx, {
           maxTicksLimit: 5
         },
         gridLines: {
-          display: true
+          display: true,
+          color: "rgba(255, 255, 255, 0.1)"
         }
       }],
     },
     legend: {
       display: false
+    },
+    tooltips: {
+      backgroundColor: "rgb(32,32,32)",
+      bodyFontColor: "#e0e0e0",
+      borderColor: "rgb(64,64,64)",
+      borderWidth: 1
     }
   }
 });

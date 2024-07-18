@@ -4,6 +4,7 @@
     <title>Analytics</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dark-mode.css') }}">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 {% endblock %}
 
@@ -104,6 +105,7 @@
                 </div>
             </div>
         </div>
+    </div>
     <div class="row">
         <div class="col-xl-6">
             <div class="card mb-4">
@@ -131,27 +133,17 @@
         </div>
         <div class="card-body">
             <div class="upgrade-container" id="upgrade-container" style="display: none;">
-                <p><b><a class="upgrade_button btn btn-sm" style="background-color: rgb(178, 226, 75); color: #fff; transition: background-color 0.3s ease; cursor: pointer; text-decoration: none; font-style: normal; outline: none;" onclick="window.open('https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM', '_blank');">Upgrade</a> your plan to see all questions and answers</b></p>
-                <!-- <button onclick="window.open('https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM', '_blank');">Upgrade</button> -->
+                <p><b><a class="upgrade_button btn btn-sm" style="background-color: var(--dark-primary); color: var(--dark-on-primary); transition: background-color 0.3s ease; cursor: pointer; text-decoration: none; font-style: normal; outline: none;" onclick="window.open('https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM', '_blank');">Upgrade</a> your plan to see all questions and answers</b></p>
             </div>
-            
-            <table id="datatablesSimple">
+            <table id="datatablesSimple" class="table table-bordered table-striped">
                 <thead>
-                    <tr>
-                        <th>User Question</th>
-                        <th>Bot Response</th>
-                        <th>Feedback</th>
-                        <th>Created At</th>=
-                    </tr>
-                </thead>
-                <tfoot>
                     <tr>
                         <th>User Question</th>
                         <th>Bot Response</th>
                         <th>Feedback</th>
                         <th>Created At</th>
                     </tr>
-                </tfoot>
+                </thead>
                 <tbody>
                     {% for item in data %}
                     <tr class="question-row {{ 'like' if item['feedback_type'] == 'Like' else ('dislike' if item['feedback_type'] == 'Dislike' else 'none') }}">
@@ -160,7 +152,7 @@
                         <td>{{ item['feedback_type'] }}</td>
                         <td>{{ item['created_at'] }}</td>
                     </tr>
-                {% endfor %}
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -168,137 +160,85 @@
 {% endblock %}
 
 {% block scripts %}
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="{{ url_for('static', filename='js/chart-area-demo.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/chart-bar-demo.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-        <script src="{{ url_for('static', filename='js/datatables-simple-demo.js') }}"></script>
-        <script>
-            var date_count = JSON.parse('{{ date_count | safe }}');
-            // Set new default font family and font color to mimic Bootstrap's default styling
-            Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-            Chart.defaults.global.defaultFontColor = '#292b2c';
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/chart-area-demo.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart-bar-demo.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/datatables-simple-demo.js') }}"></script>
+    <script>
+        var date_count = JSON.parse('{{ date_count | safe }}');
+        Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#e0e0e0';
 
-            var labels = Object.keys(date_count);
-            var data = Object.values(date_count);
+        var labels = Object.keys(date_count);
+        var data = Object.values(date_count);
 
-            var maxValue = Math.max(...data);
-            var yAxisMax = Math.ceil(maxValue * 1.2);
+        var maxValue = Math.max(...data);
+        var yAxisMax = Math.ceil(maxValue * 1.2);
 
-            // Calculate the total questions asked
-            var totalQuestions = data.reduce((acc, currentValue) => acc + currentValue, 0);
-            if (totalQuestions === 0) {
-                maxValue = 1;
-                yAxisMax = -1;
-            }
+        var totalQuestions = data.reduce((acc, currentValue) => acc + currentValue, 0);
+        if (totalQuestions === 0) {
+            maxValue = 1;
+            yAxisMax = 1;
+        }
 
-
-            // Calculate the maximum value for the y-axis
-            // var yAxisMax = maxValue * 1.2;  // 20% more than the maximum value
-
-
-            // Area Chart Example
-            var ctx = document.getElementById("myAreaChart");
-            var myLineChart = new Chart(ctx, {
+        var ctx = document.getElementById("myAreaChart");
+        var myLineChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                label: "Sessions",
-                lineTension: 0.3,
-                backgroundColor: "rgba(2,117,216,0.2)",
-                borderColor: "rgba(2,117,216,1)",
-                pointRadius: 5,
-                pointBackgroundColor: "rgba(2,117,216,1)",
-                pointBorderColor: "rgba(255,255,255,0.8)",
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: "rgba(2,117,216,1)",
-                pointHitRadius: 50,
-                pointBorderWidth: 2,
-                data: data,
+                    label: "Sessions",
+                    lineTension: 0.3,
+                    backgroundColor: "rgba(78, 115, 223, 0.05)",
+                    borderColor: "rgba(78, 115, 223, 1)",
+                    pointRadius: 3,
+                    pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHoverRadius: 3,
+                    pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                    pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                    pointHitRadius: 10,
+                    pointBorderWidth: 2,
+                    data: data,
                 }],
             },
             options: {
                 scales: {
-                xAxes: [{
-                    time: {
-                    unit: 'date'
-                    },
-                    gridLines: {
-                    display: false
-                    },
-                    ticks: {
-                    maxTicksLimit: 7
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        min: 0,
-                        max: yAxisMax,
-                        maxTicksLimit: 5
-                    },
-                    gridLines: {
-                    color: "rgba(0, 0, 0, .125)",
-                    }
-                }],
+                    xAxes: [{
+                        gridLines: {
+                            display: false,
+                            color: "rgba(255, 255, 255, 0.1)"
+                        },
+                        ticks: {
+                            maxTicksLimit: 7
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            max: yAxisMax,
+                            maxTicksLimit: 5
+                        },
+                        gridLines: {
+                            color: "rgba(255, 255, 255, 0.1)",
+                        }
+                    }],
                 },
                 legend: {
-                display: false
+                    display: false
                 },
-                title: {
-                    display: true,
-                    text: 'Total Questions Asked: ' + totalQuestions,
-                    fontSize: 16
-                }
-            }
-            });
-        </script>
-        <script type="text/javascript">
-            var userPlan = "{{ subscription_item_id }}";
-        </script>
-        <script>
-            var viewDetailsLink = document.getElementById('viewDetailsLink');
-            viewDetailsLink.addEventListener(
-                "click",
-                function (event) {
-                    if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
-                        event.preventDefault();
-                        myPopup.classList.add("show");
-                    }
-                }
-            );
-
-            window.addEventListener(
-                "click",
-                function (event) {
-                    if (event.target == myPopup) {
-                        myPopup.classList.remove("show");
-                        event.target.classList.remove("disabled"); // This line adds the "disabled" class to myPopup
-                    }
-                }
-            );
-        document.addEventListener('DOMContentLoaded', function() {
-            if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
-                document.body.addEventListener('click', function(e) {
-                    if (e.target.matches('.datatable-selector, .datatable-pagination-list-item-link')) {
-                        myPopup.classList.add("show");
-                        // Disable the clicked element
-                        e.target.disabled = true;
-                        // Optionally, add a class to visually indicate the element is disabled
-                        e.target.classList.add("disabled");
-                    }
-                });
-                // Check if the .datatable-input element exists before adding the event listener
-                var searchInput = document.querySelector('.datatable-input');
-                if (searchInput) {
-                    searchInput.addEventListener('keyup', function(e) {
-                        e.preventDefault(); // Prevent the default input behavior
-                        showUpgradePopup();
-                    });
+                tooltips: {
+                    backgroundColor: "rgb(32,32,32)",
+                    bodyFontColor: "#e0e0e0",
+                    titleFontColor: "#e0e0e0",
+                    borderColor: "rgb(64,64,64)",
+                    borderWidth: 1
                 }
             }
         });
-
+    </script>
+    <script>
         var rows = document.querySelectorAll('.question-row');
         var counts = {like: 0, dislike: 0, none: 0};
 
@@ -322,79 +262,51 @@
                 labels: ["Like", "Dislike", "No Feedback"],
                 datasets: [{
                     data: [counts.like, counts.dislike, counts.none],
-                    backgroundColor: ['#4CAF50', '#FF5252', '#9E9E9E'], // Updated colors
-                    borderColor: 'white', // Add border color
-                    borderWidth: 2 // Border width
+                    backgroundColor: ['#4CAF50', '#FF5252', '#FFC107'],
+                    borderColor: '#121212',
+                    borderWidth: 2
                 }],
             },
             options: {
-                responsive: true, // Ensure responsiveness
-                animation: {
-                    animateScale: true, // Scale animation
-                    animateRotate: true // Rotation animation
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom', // Customize legend position
-                        labels: {
-                            font: {
-                                size: 14 // Adjust font size
-                            }
-                        }
-                    },
-                    tooltip: {
-                        enabled: true,
-                        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Customize tooltip background
-                        bodyFont: {
-                            size: 16 // Customize font size
-                        },
-                        borderColor: 'rgba(255, 255, 255, 0.5)', // Customize border color
-                        borderWidth: 2 // Customize border width
+                responsive: true,
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: {
+                        fontColor: '#e0e0e0'
                     }
                 },
-        //         onClick: function(evt, item) {
-        //             if (item.length > 0) {
-        //                 var label = this.data.labels[item[0]._index];
-        //                 for (var i = 0; i < rows.length; i++) {
-        //                     var row = rows[i];
-        //                     if (row.classList.contains(label.toLowerCase())) {
-        //                         row.style.display = '';
-        //                     } else {
-        //                         row.style.display = 'none';
-        //                     }
-        //                 }
-        //             }
-        //         }
-            }
-        });
-        </script>
-        <script>
-            window.addEventListener('DOMContentLoaded', event => {
-    // Simple-DataTables
-    // https://github.com/fiduswriter/Simple-DataTables/wiki
-
-    if (datatablesSimple) {
-        let rows = datatablesSimple.querySelectorAll('tbody tr');
-        let pagingOption = true; // Default to enabling paging
-        let conditional_upgrade = document.getElementById('upgrade-container'); // Ensure this element is selected
-
-        if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
-            if (rows.length > 10) {
-                for (let i = 10; i < rows.length; i++) {
-                    rows[i].parentNode.removeChild(rows[i]);
+                tooltips: {
+                    backgroundColor: "rgb(32,32,32)",
+                    bodyFontColor: "#e0e0e0",
+                    borderColor: "rgb(64,64,64)",
+                    borderWidth: 1
                 }
             }
-            pagingOption = false; // Disable paging for this specific plan
-            if (conditional_upgrade) {
-                conditional_upgrade.style.display = 'block'; // Only attempt to show it if it exists
-            }
-        }
-
-        new simpleDatatables.DataTable(datatablesSimple, {
-            paging: pagingOption // Set paging based on the user plan
         });
-    }
-});
-        </script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var userPlan = "{{ subscription_item_id }}";
+                var upgradeContainer = document.getElementById('upgrade-container');
+                if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
+                    upgradeContainer.style.display = 'block';
+                }
+            });
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof simpleDatatables !== 'undefined') {
+                    new simpleDatatables.DataTable("#datatablesSimple", {
+                        searchable: true,
+                        fixedHeight: true,
+                        perPage: 10,
+                        footer: false,
+                        labels: {
+                            placeholder: "Search...",
+                            perPage: " entries per page",
+                            noRows: "No entries found",
+                            info: "Showing {start} to {end} of {rows} entries",
+                        }
+                    });
+                }
+            });
+    </script>
+
 {% endblock %}

@@ -1,0 +1,324 @@
+/* Base colors */
+:root {
+    --dark-bg: #1e1e1e;
+    --dark-surface: #2d2d2d;
+    --dark-primary: #bb86fc;
+    --dark-secondary: #03dac6;
+    --dark-on-surface: #e0e0e0;
+    --dark-on-primary: #000000;
+    --dark-on-secondary: #000000;
+    --dark-border: rgba(255, 255, 255, 0.15);
+}
+
+/* Basic overrides */
+body, .bg-light, .bg-white {
+    background-color: var(--dark-bg) !important;
+    color: var(--dark-on-surface) !important;
+}
+
+.card, .modal-content, .list-group-item {
+    background-color: var(--dark-surface) !important;
+    color: var(--dark-on-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+
+.card-header, .modal-header, .modal-footer {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--dark-border) !important;
+}
+
+.border, .border-top, .border-right, .border-bottom, .border-left {
+    border-color: var(--dark-border) !important;
+}
+
+.text-dark, .text-body {
+    color: var(--dark-on-surface) !important;
+}
+
+.table {
+    color: var(--dark-on-surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.table th, .table td {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px;
+}
+
+.table thead th {
+    background-color: #2a2a2a;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-control, .form-select {
+    background-color: #3a3a3a;
+    border-color: var(--dark-border);
+    color: var(--dark-on-surface);
+}
+
+.btn-light {
+    background-color: #3a3a3a;
+    color: var(--dark-on-surface);
+    border-color: var(--dark-border);
+}
+
+.nav-link, .navbar-brand {
+    color: var(--dark-on-surface) !important;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--dark-surface);
+    color: var(--dark-primary);
+    border-color: var(--dark-border);
+}
+
+.dropdown-menu {
+    background-color: #3a3a3a;
+    border-color: var(--dark-border);
+}
+
+.dropdown-item {
+    color: var(--dark-on-surface);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Additional styles for better contrast */
+.text-muted {
+    color: #b0b0b0 !important;
+}
+
+.btn-primary {
+    background-color: #4a78e0;
+    border-color: #3867d6;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #c82333;
+}
+
+/* Adjust chart colors for better visibility */
+.chart-area path {
+    stroke: #4a78e0;
+}
+
+.chart-bar rect {
+    fill: #4a78e0;
+}
+
+/* Style for the "Upgrade" button */
+.upgrade-button {
+    background-color: #4CAF50 !important;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upgrade-button:hover {
+    background-color: #45a049;
+}
+
+.upgrade_button {
+    background-color: #4CAF50 !important; /* Green color */
+    color: white !important;
+}
+
+.upgrade_button:hover {
+    background-color: #45a049 !important; /* Darker green on hover */
+}
+
+/* Fix for "View Details" text */
+.footer-link, .footer-link .small {
+    color: #ffffff !important;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+}
+
+/* Additional styles for better visibility */
+.bg-primary {
+    background-color: #4a78e0 !important;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.text-primary {
+    color: #4a78e0 !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-info {
+    color: #17a2b8 !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+
+/* Ensure good contrast for inputs and selects */
+input, select, textarea {
+    background-color: #3a3a3a !important;
+    color: var(--dark-on-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* Style for the datatable */
+.datatable-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.datatable-table th,
+.datatable-table td {
+    border: 1px solid var(--dark-border);
+}
+
+.datatable-table thead th {
+    background-color: #2a2a2a;
+}
+
+.datatable-pagination-list-item-link {
+    color: var(--dark-on-surface) !important;
+}
+
+.datatable-pagination-list-item-link:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.datatable-input {
+    background-color: #3a3a3a !important;
+    color: var(--dark-on-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+/* Table styles */
+.table {
+    color: var(--dark-on-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+
+.table th, .table td {
+    border: 1px solid var(--dark-border) !important;
+    color: var(--dark-on-surface) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: var(--dark-surface) !important;
+}
+
+.table thead th {
+    background-color: #2a2a2a !important;
+    border-bottom: 2px solid var(--dark-border) !important;
+    color: var(--dark-on-surface) !important;
+}
+
+/* DataTables specific styles */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+    color: var(--dark-on-surface) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: var(--dark-on-surface) !important;
+    border: 1px solid var(--dark-border) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    color: var(--dark-on-primary) !important;
+    background: var(--dark-primary) !important;
+    border-color: var(--dark-primary) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--dark-on-surface) !important;
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    background-color: #3a3a3a !important;
+    color: var(--dark-on-surface) !important;
+    border: 1px solid var(--dark-border) !important;
+}
+.datatable-table tfoot {
+    display: none !important;
+}
+
+select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 8 8'%3E%3Cpath fill='%23ffffff' d='M0 0l4 4 4-4z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right .7em top 50% !important;
+    background-size: .65em auto !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    padding-right: 1.5em !important;
+}
+.datatable-pagination .datatable-pagination-list-item-link {
+    background-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+.datatable-pagination .datatable-pagination-list-item-link:hover {
+    background-color: #4a4a4a !important;
+}
+
+.datatable-pagination .active .datatable-pagination-list-item-link {
+    background-color: #bb86fc !important;
+    color: #000000 !important;
+    border-color: #bb86fc !important;
+}
+.datatable-top,
+.datatable-bottom {
+    background-color: var(--dark-surface) !important;
+    color: var(--dark-on-surface) !important;
+    padding: 8px !important;
+}
+
+.datatable-selector,
+.datatable-input {
+    background-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+.datatable-info {
+    color: #e0e0e0 !important;
+}
