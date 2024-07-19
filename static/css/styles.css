@@ -11387,3 +11387,17 @@ body {
   z-index: 1050; /* Assuming the layoutSidenav has a lower z-index */
   /* Other styling properties */
 }
+.close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+  font-size: 24px; /* Adjust size as needed */
+}
+.close:hover {
+  color: rgb(94, 94, 94); /* Change to your preferred hover color */
+  transform: scale(1.1); /* Slightly increase size */
+}
+.popup-content {
+  position: relative; /* This makes sure the .close button is positioned relative to the popup-content */
+}
