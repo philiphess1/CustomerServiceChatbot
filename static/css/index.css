@@ -212,6 +212,7 @@
             color: black; /* Use bot bubble color for font */
             font-family: var(--font-family);
             text-align: right; /* Align text to the right */
+            background-color: var(--bot-bubble-color);
         }
 
         .suggested-questions::-webkit-scrollbar { /* For Chrome, Safari and Edge */
@@ -225,8 +226,9 @@
         }
 
         .suggested-question:hover {
-            background-color: var(--bot-bubble-color); /* Change background color on hover */
-            border: 1px solid var(--title-color); /* Optional: Change border color on hover */
+            background-color: var(--bot-bubble-color);
+            filter: brightness(120%); /* Adjust the percentage to get the desired lightness */
+            border: 1px solid var(--title-color);
         }
 
         .widget-button {
