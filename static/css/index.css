@@ -194,7 +194,6 @@
             display: flex;
             flex-direction: column; /* Stack items vertically */
             align-items: flex-end; /* Align items to the right */
-            overflow-y: auto; /* Enable vertical scrolling */
             white-space: normal; /* Allow text to wrap */
             border-radius: 7px;
             margin-bottom: 9px;
@@ -205,7 +204,6 @@
             display: block; /* Change to block for vertical stacking */
             padding: 5px;
             margin: 2px;
-            background-color: rgba(var(--bot-bubble-color-rgb), 0.95);;
             border: 1px solid var(--title-color); /* Use bot bubble color for border */
             border-radius: 7px;
             cursor: pointer;
@@ -228,7 +226,6 @@
 
         .suggested-question:hover {
             background-color: var(--bot-bubble-color); /* Change background color on hover */
-            color: var(--background-color); /* Change text color on hover */
             border: 1px solid var(--title-color); /* Optional: Change border color on hover */
         }
 
