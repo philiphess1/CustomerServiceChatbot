@@ -1048,12 +1048,29 @@ def admin(chatbot_id):
     else:
         # Redirect to the login page
         return redirect(url_for('login'))
+    
+    g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
+    user_plan = g.cursor.fetchone()[0]
 
+    g.cursor.execute("SELECT SUM(file_size) FROM document_mapping WHERE user_id = %s", (user_id,))
+    used_storage = g.cursor.fetchone()[0]
+    used_storage = round(used_storage, 3) if used_storage else 0
+
+    plans = {
+        'price_1P9FIULO2ToUaMQEmx2wG1qC': 5,
+        'price_1OuIu1LO2ToUaMQE7Prun5Xt': 10,
+        'price_1PXpCPLO2ToUaMQElU97Rdyx': 25
+    }
+
+    max_storage_limit = plans[user_plan]
+
+    can_upload = True if used_storage < max_storage_limit else False
+    
     # Query PostgreSQL to get the list of documents
     g.cursor.execute("SELECT id, filename, file_size, upload_date FROM document_mapping WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id))
     documents = [{'id': row[0], 'name': row[1], 'size': round(row[2], 3), 'date_added': row[3]} for row in g.cursor.fetchall()]
 
-    return render_template('admin.html', documents=documents, user_id=user_id, chatbot_id=chatbot_id)
+    return render_template('admin.html', documents=documents, user_id=user_id, chatbot_id=chatbot_id, used_storage=used_storage, max_storage_limit=max_storage_limit, can_upload=can_upload)
 @app.route('/<int:chatbot_id>/integrations')
 @login_required
 def integrations(chatbot_id):
@@ -1064,13 +1081,14 @@ def integrations(chatbot_id):
 def upload_file(chatbot_id):
     uploaded_files = request.files.getlist('file')
     user_id = current_user.id
-    total_file_size = 0
+    total_upload_size = 0
 
     g.cursor.execute("SELECT SUM(file_size) FROM document_mapping WHERE user_id = %s", (user_id,))
     store_file_size = g.cursor.fetchone()[0]
     if store_file_size is None:
         store_file_size = 0
     print(store_file_size)
+    total_upload_size += float(store_file_size)
 
     for i, file in enumerate(uploaded_files):
         if file.filename != '':
@@ -1082,28 +1100,30 @@ def upload_file(chatbot_id):
             file.seek(0)
 
             file_size = file_size / 1000000
-
-            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (filename, file_size, user_id, chatbot_id))
-            g.db_conn.commit()
-
             
-            total_file_size += file_size
+            total_upload_size += file_size
 
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
     user_plan = g.cursor.fetchone()[0]
     print(user_plan)
-    print(total_file_size + float(store_file_size))
+    print(total_upload_size)
 
     # Check if the user has exceeded their file size limit
-    if (user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and total_file_size + float(store_file_size) > 5) or \
-        (user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and total_file_size + float(store_file_size) > 10) or \
-        (user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and total_file_size + float(store_file_size) > 25):  # 1 GB is 1024 MB
-         for file in uploaded_files:
-            if file.filename != '':
-                filename = secure_filename(file.filename)
-                g.cursor.execute("DELETE FROM document_mapping WHERE filename = %s", (filename,))
-                g.db_conn.commit()
-         return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
+    if (user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and total_upload_size > 5) or \
+        (user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and total_upload_size > 10) or \
+        (user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and total_upload_size > 25):  # 1 GB is 1024 MB
+        return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
+
+    
+        # If the total size is within the limit, insert each file into the database
+    for file in uploaded_files:
+        if file.filename != '':
+            filename = secure_filename(file.filename)
+            file_size = len(file.read()) / 1000000  # Convert bytes to MB
+            file.seek(0)  # Reset the file position to the beginning after reading
+            # Insert file record into the database
+            g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (filename, file_size, user_id, chatbot_id))
+            g.db_conn.commit()
 
     for file in uploaded_files:
         if file.filename != '':

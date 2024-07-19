@@ -12,6 +12,12 @@ header {
     padding: 20px;
     text-align: center;
 }
+
+.disabled-content {
+    pointer-events: none; /* Prevents clicking on any element within the div */
+    opacity: 0.5; /* Optional: lowers the opacity to visually indicate the area is disabled */
+}
+
 h1 {
     margin: 0;
     font-size: 36px;

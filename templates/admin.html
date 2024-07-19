@@ -6,6 +6,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dark-mode.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -15,11 +16,11 @@
                 <section>
                     <form class="form" class="form_1" action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
                         <h2>Upload Documents</h2>
-                        <div id="form-content">
+                        <div id="form-content" class="{{ 'disabled-content' if used_storage >= max_storage_limit }}">
                             <div class="upload-area" id="upload-area">
                                 <img src="{{ url_for('static', filename='images/cloud-upload.png') }}" height="200" width="200" alt="Upload">
                                 <label for="file" class="upload-label">Drag and drop files here or <span class="click-text" id="click-text">click</span> to choose a file:</label>
-                                <input type="file" id="file" name="file" required multiple onchange="updateFileSizeAndCount();" accept=".pdf, .docx">
+                                <input type="file" id="file" name="file" required multiple onchange="updateFileSizeAndCount();" accept=".pdf, .docx" {{ 'disabled' if not can_upload }}>
                                 <label id="file-label">Choose file(s)</label>
                             </div>
                             <div id="uploading">
@@ -40,7 +41,7 @@
                                     </div>
                                 </div>
                                 <!-- <input type="submit" value="Upload"> -->
-                                <button class="button" type="submit" value="Upload">
+                                <button class="button" type="submit" value="Upload" {{ 'disabled' if not can_upload }}>
                                     <span class="button__text">Upload</span>
                                     <span class="button__icon"><img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="upload"></span>
                                 </button>
@@ -56,12 +57,12 @@
                     </form>
                     <!-- url form -->
                     <form class="form form_1" action="/{{ chatbot_id }}/scrape" method="post" enctype="multipart/form-data" id="url-form">
-                        <div id="url-area">
+                        <div id="url-area" class="{{ 'disabled-content' if used_storage >= max_storage_limit }}">
                             <div id="url-input">
                                 <label class="url-label" for="url">Or enter a URL:</label>
-                                <input type="url" id="url" name="url" required>
+                                <input type="url" id="url" name="url" required {{ 'disabled' if not can_upload }}>
                             </div>
-                            <button id="submit-button" type="submit" value="Upload" class="url-button" disabled>
+                            <button id="submit-button" type="submit" value="Upload" class="url-button" {{ 'disabled' if not can_upload }}>
                                 <span class="button__icon"><img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="upload"></span>
                             </button>
                         </div>
@@ -75,6 +76,35 @@
                 <div class="section">
                     <div class="file-list">
                         <h2>Existing Documents</h2>
+                        <!-- Usage Card  -->
+                        <div class="col-12 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Storage Remaining</div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <!-- Display used storage and max storage limit -->
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ used_storage }} MB / {{ max_storage_limit }} MB</div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="progress progress-sm mr-2">
+                                                        <!-- Calculate width based on used storage and max storage limit -->
+                                                        <div class="progress-bar bg-info" role="progressbar"
+                                                            style="width: {{ (used_storage / max_storage_limit) * 100 }}%" aria-valuenow="{{ used_storage }}" aria-valuemin="0"
+                                                            aria-valuemax="{{ max_storage_limit }}"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-database fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <table>
                             <thead>
                                 <tr class="final-row">
