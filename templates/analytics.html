@@ -262,7 +262,7 @@
                 labels: ["Like", "Dislike", "No Feedback"],
                 datasets: [{
                     data: [counts.like, counts.dislike, counts.none],
-                    backgroundColor: ['#4CAF50', '#FF5252', '#FFC107'],
+                    backgroundColor: ['#4CAF50', '#FF5252', '#dbdbdb7c'],
                     borderColor: '#121212',
                     borderWidth: 2
                 }],
@@ -307,6 +307,17 @@
                     });
                 }
             });
+            var viewConversationsPage = document.getElementById('viewDetailsLink');
+
+            viewConversationsPage.addEventListener(
+                "click",
+                function (event) {
+                    if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
+                        event.preventDefault();
+                        myPopup.classList.add("show");
+                    }
+                }
+            );
     </script>
 
 {% endblock %}
