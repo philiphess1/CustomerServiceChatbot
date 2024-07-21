@@ -6,6 +6,27 @@
     flex-basis: 68%;
 }
 
+.error-message {
+    display: none; /* Keep it hidden by default */
+    background-color: #ffdddd; /* Light red background */
+    color: #d8000c; /* Darker red text for contrast */
+    border: 1px solid #d8000c; /* Dark red border */
+    padding: 10px; /* Some padding for spacing */
+    margin: 20px 0; /* Margin for spacing around the element */
+    border-radius: 5px; /* Slightly rounded corners */
+    text-align: center; /* Center the text */
+}
+
+/* Optional: Add a fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.error-message {
+    animation: fadeIn 1s ease-in;
+}
+
 header {
     background-color: #333;
     color: #070707;
@@ -17,6 +38,8 @@ header {
     pointer-events: none; /* Prevents clicking on any element within the div */
     opacity: 0.5; /* Optional: lowers the opacity to visually indicate the area is disabled */
 }
+
+
 
 h1 {
     margin: 0;

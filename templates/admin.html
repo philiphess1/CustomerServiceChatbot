@@ -14,6 +14,7 @@
         <div class="left-container">
             <section class="upload-section" id="document-upload">
                 <section>
+                    <div id="error-message" class="error-message" style="display: none;"></div>
                     <form class="form" class="form_1" action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
                         <h2>Upload Documents</h2>
                         <div id="form-content" class="{{ 'disabled-content' if used_storage >= max_storage_limit }}">
@@ -24,7 +25,6 @@
                                 <label id="file-label">Choose file(s)</label>
                             </div>
                             <div id="uploading">
-                                <h3>Uploading list</h3>
                                 <div id="file-list">
 
                                 </div>     

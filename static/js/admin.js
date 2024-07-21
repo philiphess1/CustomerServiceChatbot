@@ -37,14 +37,20 @@ function uploadFiles() {
             window.location.href = '/' + chatbot_id + '/admin';    
         } else {
             // Handle errors or show an error message to the user
-            console.error(data.message);
+            showError(data.message);
         }
     })
     .catch(error => {
         document.getElementById("loading").style.display = "none";  // Hide loading icon
         document.getElementById("form-content").style.display = "block";  // Show form content
-        console.error('There was an error!', error);
+        showError("You reached your upload limit. Please upgrade to a premium plan to upload more files.");
     });
+}
+
+function showError(message) {
+    const errorMessageDiv = document.getElementById("error-message");
+    errorMessageDiv.textContent = message; // Set the error message
+    errorMessageDiv.style.display = "block"; // Make the error message visible
 }
 
 document.getElementById('url-form').addEventListener('submit', function () {
