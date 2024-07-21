@@ -59,7 +59,7 @@
                 </div>
                         <ul id="chatbot-list">
                             {% for chatbot in chatbots %}
-                                <li onclick="location.href='{{ url_for('admin', chatbot_id=chatbot[0]) }}';" class="chatbot">
+                            <li onclick="location.href='{{ url_for('admin', chatbot_id=chatbot[0]) }}';" class="chatbot">
                                     <div class="flex justify-between items-center">
                                         <span class="chatbot-name">{{ chatbot[1] }}</span>
                                         <span class="chatbot-date">Created on: {{ chatbot[2] }}</span>
@@ -69,15 +69,32 @@
                                             <span class="status-dot"></span>
                                             <span class="status-text">Online</span>
                                         </div>
-                                        <a href="{{ url_for('delete_chatbot', chatbot_id=chatbot[0]) }}" class="delete-icon" onclick="event.stopPropagation();">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
+                                        <div class="menu-icon" onclick="toggleMenu(this)">
+                                            <div class="ellipsis-wrapper">
+                                                <i class="fa fa-ellipsis-h"></i>
+                                            </div>
+                                            <div class="menu-options hidden">
+                                                <a href="#" onclick="event.stopPropagation(); renameChatbot('{{ chatbot[0] }}');">Rename</a>
+                                                <a href="{{ url_for('delete_chatbot', chatbot_id=chatbot[0]) }}" onclick="event.stopPropagation();" class="delete-icon" style="color: red;">Delete</a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </li>
-                            {% endfor %}
+                                {% endfor %}
                         </ul>
             </div>
+            <!-- Rename Chatbot Modal -->
+            <div id="renameModal" class="modal">
+                <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Rename Chatbot</h2>
+                <input type="text" id="newName" placeholder="Enter new name">
+                <button onclick="submitRename()">Rename</button>
+                </div>
+            </div>
+        </div>
     </section>
+
     <script>
         document.querySelectorAll('.delete-icon').forEach(function(deleteIcon) {
             deleteIcon.addEventListener('click', function(event) {
@@ -182,6 +199,98 @@
                         console.error('There has been a problem with your fetch operation:', error);
                     });
             });
+            function toggleMenu(element) {
+            const menu = element.querySelector('.menu-options');
+            menu.classList.toggle('hidden');
+        }
+
+        function renameChatbot(chatbotId) {
+            // Implement renaming logic here
+            // This could involve showing a prompt to enter a new name, then sending that to the server
+            const newName = prompt('Enter new name:');
+            if (newName) {
+                // Assuming you have a route set up to handle renaming
+                fetch(`/rename_chatbot/${chatbotId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ newName: newName }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle response
+                    console.log(data);
+                    location.reload(); // Reload the page to see the changes
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+    // Add a click event listener to the whole document
+    document.addEventListener('click', function(event) {
+        // Check if the click is outside the menu-icon or menu-options
+        if (!event.target.closest('.menu-icon')) {
+            // Hide all menu-options
+            document.querySelectorAll('.menu-options').forEach(function(menu) {
+                menu.classList.add('hidden');
+            });
+        }
+    });
+});
+
+function toggleMenu(element) {
+    // Prevent the document click listener from firing
+    event.stopPropagation();
+    
+    // Close all other menus before toggling the current one
+    document.querySelectorAll('.menu-options').forEach(function(menu) {
+        if (menu !== element.querySelector('.menu-options')) {
+            menu.classList.add('hidden');
+        }
+    });
+    
+    // Toggle the current menu
+    const menu = element.querySelector('.menu-options');
+    menu.classList.toggle('hidden');
+}
+let currentChatbotId = null; // To keep track of the chatbot being renamed
+
+function renameChatbot(chatbotId) {
+    // Show the modal
+    document.getElementById('renameModal').style.display = 'block';
+    currentChatbotId = chatbotId; // Store the current chatbot ID
+}
+
+function submitRename() {
+    const newName = document.getElementById('newName').value;
+    if (newName) {
+        fetch(`/rename_chatbot/${currentChatbotId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ newName: newName }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            location.reload(); // Reload the page to see the changes
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+    // Hide the modal
+    document.getElementById('renameModal').style.display = 'none';
+}
+
+// Close the modal when the user clicks on <span> (x)
+document.querySelector('.close').onclick = function() {
+    document.getElementById('renameModal').style.display = 'none';
+}
     </script>
 </body>
 </html>

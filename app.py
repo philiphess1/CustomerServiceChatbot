@@ -381,7 +381,7 @@ def update_subscription():
 
     return jsonify(success=True)
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET','POST'])
 @login_required
 def home():
     # Fetch the chatbot settings for the current user
@@ -412,6 +412,15 @@ def home():
 
     # Extract the renewal date
     renewal_date = datetime.fromtimestamp(latest_subscription.current_period_end)
+
+    # if request.method == 'POST':
+    #     chatbot_name = request.form['chatbot_name']
+
+    #     # Update the user's password in the database
+    #     g.cursor.execute("UPDATE chatbot_settings SET chatbot_name = %s WHERE user_id = %s AND id = %s;", (chatbot_name,current_user.id))
+    #     g.db_conn.commit()
+
+    #     flash('Your Chatbotname has been updated!', 'success')
 
     # Pass the chatbot settings to the template
     return render_template('home.html', chatbots=chatbots, count=total_count, user_id=current_user.id, user_plan=user_plan, renewal_date=renewal_date,name=name)
@@ -484,6 +493,21 @@ def delete_chatbot(chatbot_id):
     """, (chatbot_id,))
     g.db_conn.commit()
     return jsonify({'message': 'Chatbot deleted successfully'})
+
+@app.route('/rename_chatbot/<int:chatbot_id>', methods=['POST'])
+@login_required
+def rename_chatbot(chatbot_id):
+    new_name = request.json.get('newName') 
+    if not new_name:
+        return jsonify({'error': 'New name is required'}), 400
+    g.cursor.execute("""
+        UPDATE chatbot_settings
+        SET chatbot_name = %s
+        WHERE id = %s
+    """, (new_name, chatbot_id))
+    g.db_conn.commit()
+    return jsonify({'message': 'Chatbot renamed successfully'})
+
 
 @app.route('/logout')
 @login_required
