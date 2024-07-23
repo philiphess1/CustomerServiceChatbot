@@ -51,6 +51,8 @@ function showError(message) {
     const errorMessageDiv = document.getElementById("error-message");
     errorMessageDiv.textContent = message; // Set the error message
     errorMessageDiv.style.display = "block"; // Make the error message visible
+    fileArray = []; // Clear the fileArray
+    updateFileListDisplay(); // Update the file list display
 }
 
 document.getElementById('url-form').addEventListener('submit', function () {
