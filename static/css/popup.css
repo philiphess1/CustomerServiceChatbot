@@ -1,0 +1,194 @@
+@import url(https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css);
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700);
+
+.snip1517 {
+    display: flex;
+    justify-content: space-between; /* Space items horizontally */
+    align-items: stretch; /* Make child elements (.plan) stretch to fill the container's height */
+    font-family: 'Source Sans Pro', Arial, sans-serif;
+    color: #ffffff;
+    text-align: left;
+    font-size: 16px;
+    width: 100%;
+    max-width: 1000px;
+    margin: 30px auto; /* Center the snip1517 horizontally */
+  }
+
+.snip1517 img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  z-index: -1;
+}
+
+.snip1517 .plan {
+    display: flex;
+    flex-direction: column;
+    margin: 0 0.5%;
+    width: 24%;
+    padding-top: 10px;
+    position: relative;
+    overflow: hidden;
+    background-color: #222f3d;
+    border-radius: 8px;
+}
+
+  .snip1517 .plan .content {
+    flex: 1; /* Make the content stretch to fill the available space, ensuring equal height */
+}
+
+.snip1517 .plan:hover i,
+.snip1517 .plan.hover i {
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+}
+
+.snip1517 * {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -webkit-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
+}
+
+.snip1517 header {
+  color: #ffffff;
+}
+
+.snip1517 .plan-title {
+  line-height: 60px;
+  position: relative;
+  margin: 0;
+  padding: 0 20px;
+  font-size: 1.6em;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.snip1517 .plan-title:after {
+  position: absolute;
+  content: '';
+  top: 100%;
+  left: 20px;
+  width: 30px;
+  height: 3px;
+  background-color: #fff;
+}
+
+.snip1517 .plan-cost {
+  padding: 0 20px;
+  margin: 0;
+}
+
+.snip1517 .plan-price {
+  font-weight: 400;
+  font-size: 2.8em;
+  margin: 10px 0;
+  display: inline-block;
+}
+
+.snip1517 .plan-type {
+  opacity: 0.8;
+  font-size: 0.7em;
+  text-transform: uppercase;
+}
+
+.snip1517 .plan-features {
+  padding: 0 0 20px;
+  margin: 0;
+  list-style: outside none none;
+  font-size: 0.9em;
+  flex-grow: 1; /* Makes the list take up remaining space */
+}
+
+.snip1517 .plan-features li {
+  padding: 8px 20px;
+}
+
+.snip1517 .plan-features i {
+  margin-right: 8px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.snip1517 .plan-select {
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  text-align: center;
+}
+
+.snip1517 .plan-select a {
+  background-color: #156dab;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 12px 20px;
+  font-size: 0.75em;
+  font-weight: 600;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  display: inline-block;
+}
+
+.snip1517 .plan-select a:hover {
+  background-color: #5b635d !important;
+}
+
+.snip1517 .featured {
+  margin-top: -10px;
+  z-index: 1;
+  border-radius: 8px;
+  border: 2px solid #156dab;
+  background-color: #156dab;
+}
+
+.snip1517 .featured .plan-select {
+  padding: 30px 20px;
+}
+
+.snip1517 .featured .plan-select a {
+  background-color: #10507e;
+}
+
+@media only screen and (max-width: 767px) {
+  .snip1517 {
+    flex-wrap: wrap;
+  }
+  .snip1517 .plan {
+    width: 49%;
+    margin: 0.5%;
+  }
+  .snip1517 .plan-title,
+  .snip1517 .plan-select a {
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+  .snip1517 .plan-select,
+  .snip1517 .featured .plan-select {
+    padding: 20px;
+  }
+  .snip1517 .featured {
+    margin-top: 0;
+  }
+  .snip1517 .featured header {
+    line-height: 70px;
+  }
+}
+
+/* CSS */
+.select-plan-button {
+    display: inline-block;
+    background-color: rgb(178, 226, 75);
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+@media only screen and (max-width: 440px) {
+  .snip1517 .plan {
+    margin: 0.5% 0;
+    width: 100%;
+  }
+}

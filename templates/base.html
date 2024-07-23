@@ -11,6 +11,7 @@
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/popup.css') }}">
         {% block styles %}{% endblock %}
     </head>
     <body class="sb-nav-fixed">
@@ -88,10 +89,55 @@
                                     <b>Upgrade your plan to <b style="color: rgb(158, 222, 18);">Professional</b> to view this feature</b>
                                 </h4>
                                 <p>Explore our plans:</p>
-                                <!-- Stripe Pricing Table -->
-                                <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
-                                <stripe-pricing-table pricing-table-id="prctbl_1OuJCtLO2ToUaMQECUURg73l" publishable-key="pk_live_51Om2ZyLO2ToUaMQEquLu8CUtqxaBR16T2Ib4lQWMRaxQOa9wkjfEzP0rFJEo8jfwzMCvWgXpoFOykI86X4eVjnY000qL9nkvUF">
-                                </stripe-pricing-table>
+                                <div class="snip1517">
+                                    <div class="plan">
+                                      <header>
+                                        <h4 class="plan-title">
+                                           
+                                          Basic
+                                        </h4>
+                                        <div class="plan-cost"><span class="plan-price">Free</span><span class="plan-type"></span></div>
+                                      </header>
+                                      <ul class="plan-features">
+                                        <li><i class="ion-android-remove"> </i>1 Chatbot</li>
+                                        <li><i class="ion-android-remove"> </i>50 Messages Per Month</li>
+                                        <li><i class="ion-android-remove"> </i>5MB of Storage</li>
+                                      </ul>
+                                    <a href="https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM" class="select-plan-button">Select Plan</a>
+                                    </div>
+                                    <div class="plan">
+                                      <header>
+                                        <h4 class="plan-title">
+                                           
+                                          Starter
+                                        </h4>
+                                        <div class="plan-cost"><span class="plan-price">$10</span><span class="plan-type">/month</span></div>
+                                      </header>
+                                      <ul class="plan-features">
+                                        <li><i class="ion-android-remove"> </i>2 Chatbots</li>
+                                        <li><i class="ion-android-remove"> </i>100 Messages Per Month</li>
+                                        <li><i class="ion-android-remove"> </i>10MB of Storage</li>
+                                      </ul>
+                                      <a href="https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM" class="select-plan-button">Select Plan</a>
+                                    </div>
+                                    <div class="plan featured">
+                                      <header>
+                                        <h4 class="plan-title">
+                                          Professional
+                                        </h4>
+                                        <div class="plan-cost"><span class="plan-price">$40</span><span class="plan-type">/month</span></div>
+                                      </header>
+                                      <ul class="plan-features">
+                                        <li><i class="ion-android-remove"> </i>3 Chatbots</li>
+                                        <li><i class="ion-android-remove"> </i>500 Messages Per Month</li>
+                                        <li><i class="ion-android-remove"> </i>25MB of Storage</li>
+                                        <li><i class="ion-android-remove"> </i>Personal Branding</li>
+                                        <li><i class="ion-android-remove"> </i>Lead Collection</li>
+                                        <li><i class="ion-android-remove"> </i>Track/View Conversations</li>
+                                      </ul>
+                                      <a href="https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM" class="select-plan-button">Select Plan</a>
+                                    </div>
+                                  </div>
                             </div>
                         </div>
                     </div>
@@ -99,6 +145,11 @@
             </div>
         </div>
         <script>
+            $(".hover").mouseleave(
+            function() {
+                $(this).removeClass("hover");
+            }
+            );
             var userPlan = "{{ subscription_item_id }}";
             var viewConversationsLink = document.getElementById('conversations_nav');
 
