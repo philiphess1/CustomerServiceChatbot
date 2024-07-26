@@ -1562,25 +1562,25 @@ def analytics(chatbot_id):
     #!!!!!!!!!!!!!!!!!!!!
     # If you want to use the OpenAI API to get common topics, uncomment the code below
     #!!!!!!!!!!!!!!!!!!!!
-    # client = OpenAI(
-    #     api_key=openai_api_key
-    # )
+    client = OpenAI(
+        api_key=openai_api_key
+    )
 
     # Combine all questions and responses into a single string
     all_text = ' '.join(questions_and_responses)
 
-    # if all_text:
-    #     completion = client.chat.completions.create(
-    #         model="gpt-3.5-turbo",
-    #         messages=[
-    #             {"role": "system", "content": "You are a helpful assistant, skilled in analyzing a list of topics and providing 5 common topics from that list. When providing the topics, only list the topics without any additional text."},
-    #             {"role": "user", "content": f"Create a list of 3 common topics from the following text. They must be no longer than 1 word. Make the list of topics in a numbered order: {all_text}."}
-    #         ]
-    #     )
-    #     topics = completion.choices[0].message.content.replace('- ', '')
-    #     common_topics = topics.split('\n')
-    # else:
-    #     common_topics = ["No questions asked yet"]
+    if all_text:
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant, skilled in analyzing a list of topics and providing 5 common topics from that list. When providing the topics, only list the topics without any additional text."},
+                {"role": "user", "content": f"Create a list of 3 common topics from the following text. They must be no longer than 1 word. Make the list of topics in a numbered order: {all_text}."}
+            ]
+        )
+        topics = completion.choices[0].message.content.replace('- ', '')
+        common_topics = topics.split('\n')
+    else:
+        common_topics = ["No questions asked yet"]
     common_topics = ["No questions asked yet"]
 
     print(f"Common topics: {common_topics}")
