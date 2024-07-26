@@ -1583,7 +1583,6 @@ def analytics(chatbot_id):
         common_topics = topics.split('\n')
     else:
         common_topics = ["No questions asked yet"]
-    common_topics = ["No questions asked yet"]
 
     print(f"Common topics: {common_topics}")
 
