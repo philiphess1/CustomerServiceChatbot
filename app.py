@@ -606,7 +606,7 @@ def serve_js(user_id, chatbot_id):
         chatbotContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
         
         var chatbotIframe = document.createElement('iframe');
-        chatbotIframe.src = 'http://127.0.0.1:5000/{user_id}/{chatbot_id}';
+        chatbotIframe.src = 'https://app.eccoai.org/{user_id}/{chatbot_id}';
         chatbotIframe.width = '360.5';
         chatbotIframe.height = '600';
         chatbotIframe.style.border = 'none';
@@ -646,7 +646,7 @@ def serve_js(user_id, chatbot_id):
         
         var toggleButton = document.createElement('img');
         toggleButton.id = 'b';
-        toggleButton.src = 'http://127.0.0.1:5000//static/images/{settings["widget_icon"]}';
+        toggleButton.src = 'https://app.eccoai.org//static/images/{settings["widget_icon"]}';
         toggleButton.alt = 'Chat';
         toggleButton.style.width = '80px';
         toggleButton.style.height = '80px';
@@ -746,7 +746,7 @@ def serve_js(user_id, chatbot_id):
 
     window.addEventListener('message', function(event) {{
     // Check if the message is from a trusted source
-    if (event.origin === "http://127.0.0.1:5000") {{
+    if (event.origin === "https://app.eccoai.org") {{
         // Perform actions based on the message
         if (event.data === "closeIframe") {{
             var iframe = document.getElementById('e');
