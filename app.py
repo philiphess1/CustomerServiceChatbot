@@ -1561,9 +1561,6 @@ def analytics(chatbot_id):
     unique_session_count = len(set(session_ids))
 
 
-    #!!!!!!!!!!!!!!!!!!!!
-    # If you want to use the OpenAI API to get common topics, uncomment the code below
-    #!!!!!!!!!!!!!!!!!!!!
     client = OpenAI(
         api_key=openai_api_key
     )
