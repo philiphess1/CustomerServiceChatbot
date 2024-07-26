@@ -364,7 +364,9 @@ def update_subscription():
     elif event['type'] == 'customer.subscription.updated':
         subscription = event['data']['object']
         customer_id = subscription['customer']
+        print(f'Customer ID: {customer_id}')
         plan_id = subscription['items']['data'][0]['plan']['id']
+        print(f'Plan ID: {plan_id}')
 
         # Get the renewal date from the subscription object
         renewal_date = datetime.fromtimestamp(subscription['current_period_end'])
