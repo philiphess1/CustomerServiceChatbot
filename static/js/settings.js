@@ -27,14 +27,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
         console.warn('Chatbot iframe not found');
     }
 
-    // Auto-open chatbot functionality
-    // const disableAutoOpenCheckbox = document.getElementById('disable_auto_open');
-    // if (chatbotButton && (!disableAutoOpenCheckbox || !disableAutoOpenCheckbox.checked)) {
-    //     setTimeout(() => {
-    //         chatbotButton.click();
-    //     }, 100);
-    // }
-
     // Tab switching functionality
     const tabLinks = document.querySelectorAll('.list-group-item');
     const tabContent = document.querySelectorAll('.tab-pane');
@@ -73,6 +65,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
         e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
     });
 
+    // Handle exclude sources checkbox
+    const excludeSourcesCheckbox = document.getElementById('exclude_sources');
+    if (excludeSourcesCheckbox) {
+        excludeSourcesCheckbox.addEventListener('change', function() {
+            console.log('Exclude Sources:', this.checked);
+        });
+    }
 
     // Form validation and custom prompt generation
     document.getElementById('settingsForm').addEventListener('submit', function(event) {
@@ -136,6 +135,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         const uncertaintyResponse = document.getElementById('uncertainty_response').value;
         const supportEmail = document.getElementById('support_email').value;
         const supportPhone = document.getElementById('support_phone').value;
+        const excludeSources = document.getElementById('exclude_sources').checked;
 
         let humanAssistanceInfo = '';
         if (!noSupportEmail && !noSupportPhone) {
@@ -159,7 +159,7 @@ Your role is to provide ${tone1} and ${tone2} customer support for our company. 
 RESTRICTIONS:
 - Avoid using the phrase "Based on the given information".
 - Do not invent answers.
-- If the question is a short phrase such as "Hello", "Waht's up", etc., respond with a greeting.
+- If the question is a short phrase such as "Hello", "What's up", etc., respond with a greeting.
 ${restrictions ? '- ' + restrictions.split('\n').join('\n- ') : ''}
 
 If you are uncertain about a response, say "${uncertaintyResponse}" and conclude your response there.
@@ -168,10 +168,12 @@ ${humanAssistanceInfo}`;
 
         document.getElementById('custom_prompt').value = customPrompt;
 
+        // Include the exclude sources setting
+        document.getElementById('exclude_sources_hidden').value = excludeSources;
+
         // Submit the form
         this.submit();
     });
-    
 
     // Bot temperature input handler
     document.getElementById('bot_temperature').addEventListener('input', function() {
@@ -299,15 +301,8 @@ ${humanAssistanceInfo}`;
         document.getElementById('file-name').textContent = fileName;
     });
 
-    // Auto-open disable checkbox handler
-    if (disableAutoOpenCheckbox) {
-        disableAutoOpenCheckbox.addEventListener('change', function() {
-            console.log('Disable Auto-open:', this.checked);
-        });
-    }
-
-       // Make switch containers clickable
-       document.addEventListener('DOMContentLoaded', (event) => {
+    // Make switch containers clickable
+    document.addEventListener('DOMContentLoaded', (event) => {
         const switches = document.querySelectorAll('.switch');
         switches.forEach(switchEl => {
             const checkbox = switchEl.querySelector('input[type="checkbox"]');

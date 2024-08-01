@@ -59,7 +59,7 @@
                 </div>
                         <ul id="chatbot-list">
                             {% for chatbot in chatbots %}
-                            <li onclick="location.href='{{ url_for('admin', chatbot_id=chatbot[0]) }}';" class="chatbot">
+                            <li onclick="location.href='{{ url_for('analytics', chatbot_id=chatbot[0]) }}';" class="chatbot">
                                     <div class="flex justify-between items-center">
                                         <span class="chatbot-name">{{ chatbot[1] }}</span>
                                         <span class="chatbot-date">Created on: {{ chatbot[2] }}</span>

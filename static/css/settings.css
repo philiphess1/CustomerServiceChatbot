@@ -9,24 +9,30 @@ body {
   display: flex;
   flex-wrap: nowrap;
   width: 100%;
+  max-width: 100%; /* Ensure the container takes full width */
+  margin: 0 auto; /* Center the container */
+  padding: 0 20px; /* Add some padding on the sides */
   transition: width 0.3s ease;
 }
 
 .row {
   flex: 1;
   display: flex;
+  width: 100%; /* Ensure the row takes full width */
 }
 
 .col-md-4.col-xl-3 {
-  flex: 0 0 25%;
-  max-width: 25%;
+  flex: 0 0 250px; /* Fixed width for the sidebar */
+  max-width: 250px;
 }
 
 .col-md-8.col-xl-9 {
   position: relative;
-  flex: 0 0 75%;
-  max-width: 75%;
+  flex: 1; /* Allow this column to grow and fill available space */
+  max-width: none; /* Remove max-width restriction */
+  padding: 20px;
 }
+
 
 .card {
   margin-bottom: 1.5rem;
@@ -580,6 +586,23 @@ input:checked + .slider:before {
 
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .container.p-0 {
+    flex-direction: column;
+    padding: 0 10px; /* Reduce padding on smaller screens */
+  }
+
+  .col-md-4.col-xl-3,
+  .col-md-8.col-xl-9 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .sidebar-card {
+    position: static;
+  }
+}
+
 @media (max-width: 768px) {
   .main-content.shifted {
     margin-right: 0;
@@ -606,5 +629,12 @@ input:checked + .slider:before {
 
   .save-settings-button {
     width: 100%;
+  }
+}
+
+/* Add a media query for extra large screens */
+@media (min-width: 1400px) {
+  .container.p-0 {
+    max-width: 18000px; /* or any other large value that suits your needs */
   }
 }
