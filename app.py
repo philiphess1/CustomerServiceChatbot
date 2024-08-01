@@ -42,6 +42,9 @@ from collections import defaultdict
 from datetime import timedelta
 from urllib.parse import urlparse
 import redis
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
 
 load_dotenv()
 
@@ -833,9 +836,35 @@ def chat(user_id, chatbot_id):
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
     user_plan = g.cursor.fetchone()[0]
 
-    # Count the number of questions the user has asked
-    g.cursor.execute("SELECT COUNT(*) FROM feedback WHERE user_id = %s", (user_id,))
-    question_count = g.cursor.fetchone()[0]*2
+    # Fetch the user's Stripe customer ID
+    g.cursor.execute("SELECT stripe_customer_id, name FROM users WHERE id = %s", (current_user.id,))
+    result = g.cursor.fetchone()
+    stripe_customer_id = result[0]
+    name = result[1] if result[1] else 'User'
+
+    # Fetch the subscriptions from Stripe
+    subscriptions = stripe.Subscription.list(customer=stripe_customer_id)
+
+    # Get the latest subscription
+    latest_subscription = subscriptions.data[0]
+
+    # Assuming `m` is the number of months you want to go back
+    m = 1 
+
+    # Calculate the renewal_date
+    renewal_date = datetime.fromtimestamp(latest_subscription.current_period_end)
+
+    # Calculate the start date (m months before the renewal_date)
+    start_date = renewal_date - relativedelta(months=m)
+
+    # Count the number of questions the user has asked within the date range
+    g.cursor.execute("""
+        SELECT COUNT(*)
+        FROM feedback
+        WHERE user_id = %s AND created_at BETWEEN %s AND %s
+    """, (user_id, start_date, renewal_date))
+
+    question_count = g.cursor.fetchone()[0] * 2
 
     # Check if the user has exceeded their question limit
     if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and question_count >= 50:
@@ -1555,10 +1584,36 @@ def analytics(chatbot_id):
     user_row = g.cursor.fetchone()
     subscription_item_id = user_row[0]
 
-    # Fetch the total number of questions and responses from the usage table
-    g.cursor.execute("SELECT total_questions, total_answers FROM usage WHERE user_id = %s;", (user_id,))
-    usage_row = g.cursor.fetchone()
-    total_questions_responses = usage_row[0] + usage_row[1]
+    # Fetch the user's Stripe customer ID
+    g.cursor.execute("SELECT stripe_customer_id, name FROM users WHERE id = %s", (current_user.id,))
+    result = g.cursor.fetchone()
+    stripe_customer_id = result[0]
+    name = result[1] if result[1] else 'User'
+
+    # Fetch the subscriptions from Stripe
+    subscriptions = stripe.Subscription.list(customer=stripe_customer_id)
+
+    # Get the latest subscription
+    latest_subscription = subscriptions.data[0]
+
+    # Assuming `m` is the number of months you want to go back
+    m = 1 
+
+    # Calculate the renewal_date
+    renewal_date = datetime.fromtimestamp(latest_subscription.current_period_end)
+
+    # Calculate the start date (m months before the renewal_date)
+    start_date = renewal_date - relativedelta(months=m)
+
+    # Count the number of questions the user has asked within the date range
+    g.cursor.execute("""
+        SELECT COUNT(*)
+        FROM feedback
+        WHERE user_id = %s AND created_at BETWEEN %s AND %s
+    """, (user_id, start_date, renewal_date))
+
+    question_count = g.cursor.fetchone()[0] * 2
+
 
     # Determine the user's plan based on the subscription item id
     plans = {
@@ -1569,7 +1624,7 @@ def analytics(chatbot_id):
     user_plan = plans.get(subscription_item_id, 0)
 
     # Calculate the remaining percentage and round to two decimal places
-    remaining_percentage = round(((total_questions_responses) / user_plan) * 100, 2) if user_plan else 0
+    remaining_percentage = round(((question_count) / user_plan) * 100, 2) if user_plan else 0
 
     if not rows:
         date_count = defaultdict(int)
