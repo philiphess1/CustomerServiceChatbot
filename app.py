@@ -97,12 +97,18 @@ def get_bot_temperature(user_id, chatbot_id):
         cursor.execute("SELECT bot_temperature FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
         row = cursor.fetchone()
         return row[0] if row else 0.0
+
+def get_exclude_sources(user_id, chatbot_id):
+    with g.db_conn.cursor() as cursor:
+        cursor.execute("SELECT exclude_sources FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+        row = cursor.fetchone()
+        return row[0] if row else False
     
 
 def get_custom_prompt(user_id, chatbot_id):
     with g.db_conn.cursor() as cursor:
         cursor.execute("""
-            SELECT job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone 
+            SELECT job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, no_support_email, no_support_phone
             FROM chatbot_settings 
             WHERE user_id = %s AND id = %s;
         """, (user_id, chatbot_id))
@@ -115,7 +121,9 @@ def get_custom_prompt(user_id, chatbot_id):
                 "restrictions": row[3],
                 "uncertainty_response": row[4],
                 "support_email": row[5],
-                "support_phone": row[6]
+                "support_phone": row[6],
+                "no_support_email": row[7],
+                "no_support_phone": row[8]
             }
         else:
             return "Default prompt part"
@@ -474,12 +482,15 @@ def create_chatbot():
         'LLM': 'gpt-3.5-turbo',
         'bot_bubble_color': '#dcdcdc',  # Default bot bubble color
         'user_bubble_color': '#5fc9f8',  # Default user bubble color
-        'open_by_default': 'False'
+        'open_by_default': 'False',
+        'no_support_email': 'False',
+        'no_support_phone': 'False',
+        'exclude_sources': 'False'
     }
 
     g.cursor.execute("""
-            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color, popup_message, LLM, bot_bubble_color, user_bubble_color, open_by_default)
-            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(job_description)s, %(tone_1)s, %(tone_2)s, %(restrictions)s, %(uncertainty_response)s, %(support_email)s, %(support_phone)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(popup_message)s, %(LLM)s, %(bot_bubble_color)s, %(user_bubble_color)s, %(open_by_default)s)
+            INSERT INTO chatbot_settings (user_id, widget_icon_url, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, chatbot_name, primary_color, secondary_color, popup_message, LLM, bot_bubble_color, user_bubble_color, open_by_default, no_support_email, no_support_phone, exclude_sources)
+            VALUES (%(user_id)s, %(widget_icon_url)s, %(background_color)s, %(font_style)s, %(bot_temperature)s, %(greeting_message)s, %(job_description)s, %(tone_1)s, %(tone_2)s, %(restrictions)s, %(uncertainty_response)s, %(support_email)s, %(support_phone)s, %(dot_color)s, %(logo)s, %(chatbot_title)s, %(title_color)s, %(border_color)s, %(chatbot_name)s, %(primary_color)s, %(secondary_color)s, %(popup_message)s, %(LLM)s, %(bot_bubble_color)s, %(user_bubble_color)s, %(open_by_default)s, %(no_support_email)s, %(no_support_phone)s, %(exclude_sources)s)
             RETURNING id;
         """, {'user_id': user_id, **default_settings})
     chatbot_id = g.cursor.fetchone()[0]
@@ -524,7 +535,7 @@ def chatbot(user_id, chatbot_id):
     print()
 
     # Query PostgreSQL to get the settings
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, LLM, bot_bubble_color, user_bubble_color, include_email_form, open_by_default FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, LLM, bot_bubble_color, user_bubble_color, include_email_form, open_by_default, no_support_email, no_support_phone, exclude_sources FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id))
     row = g.cursor.fetchone()
 
     if row is None:
@@ -555,7 +566,10 @@ def chatbot(user_id, chatbot_id):
         'bot_bubble_color': row[21],  # Added bot_bubble_color
         'user_bubble_color': row[22],  # Added user_bubble_color
         'include_email_form': row[23],
-        'open_by_default': row[24]
+        'open_by_default': row[24],
+        'no_support_email': row[25],
+        'no_support_phone': row[26],
+        'exclude_sources': row[27]
     }
 
     g.cursor.execute("SELECT question, response FROM premade_questions WHERE user_id = %s AND chatbot_id = %s;", (user_id, chatbot_id,))
@@ -857,6 +871,8 @@ def chat(user_id, chatbot_id):
     bot_temperature = get_bot_temperature(user_id, chatbot_id)
     prompt_data = get_custom_prompt(user_id, chatbot_id)
     model = get_LLM(user_id, chatbot_id)
+    exlcude_sources = get_exclude_sources(user_id, chatbot_id)
+    print(f"Exclude Sources: {exlcude_sources}")
     print(f"Model: {model}")
 
     llm = ChatOpenAI(
@@ -883,8 +899,8 @@ def chat(user_id, chatbot_id):
     CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(_template)
 
     # Check for support email and phone presence
-    noSupportEmail = prompt_data['support_email'] == ''
-    noSupportPhone = prompt_data['support_phone'] == ''
+    noSupportEmail = prompt_data['no_support_email']
+    noSupportPhone = prompt_data['no_support_phone']
 
     humanAssistanceInfo = ''
     if not noSupportEmail and not noSupportPhone:
@@ -972,6 +988,7 @@ def chat(user_id, chatbot_id):
     response_dict = {
         'content': response.content,
         'sources': sources,
+        'exclude_sources': exlcude_sources
         # Add any other fields as necessary
     }
     # Save the memory back to the session at the end of the request
@@ -1343,7 +1360,7 @@ def settings(chatbot_id):
     g.cursor.execute("SELECT subscription_item_id FROM users WHERE id = %s", (user_id,))
     user_plan = g.cursor.fetchone()[0]
 
-    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, LLM, bot_bubble_color, user_bubble_color, include_email_form, open_by_default FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
+    g.cursor.execute("SELECT widget_icon_url, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, LLM, bot_bubble_color, user_bubble_color, include_email_form, open_by_default, no_support_email, no_support_phone, exclude_sources FROM chatbot_settings WHERE user_id = %s AND id = %s;", (user_id, chatbot_id,))
     row = g.cursor.fetchone()
 
     settings = {
@@ -1372,7 +1389,10 @@ def settings(chatbot_id):
         'bot_bubble_color': row[22],  # Added bot_bubble_color
         'user_bubble_color': row[23],  # Added user_bubble_color
         'include_email_form': row[24],
-        'open_by_default': row[25]
+        'open_by_default': row[25],
+        'no_support_email': row[26],
+        'no_support_phone': row[27],
+        'exclude_sources': row[28]
     }
 
     # Fetch the pre-made questions and answers
@@ -1381,14 +1401,14 @@ def settings(chatbot_id):
 
     return render_template('settings.html', settings=settings, user_id=user_id, user_plan=user_plan, chatbot_id=chatbot_id, premade_questions=premade_questions)
 
-def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form, open_by_default):
+def update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form, open_by_default, no_support_email, no_support_phone, exclude_sources):
     user_id = current_user.id
     sql = """
     UPDATE chatbot_settings
-    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, job_description = %s, tone_1 = %s, tone_2 = %s, restrictions = %s, uncertainty_response = %s, support_email = %s, support_phone = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s, popup_message = %s, chatbot_name = %s, LLM = %s, bot_bubble_color = %s, user_bubble_color = %s, include_email_form = %s, open_by_default = %s WHERE user_id = %s AND id = %s;
+    SET widget_icon_url = %s, background_color = %s, font_style = %s, bot_temperature = %s, greeting_message = %s, job_description = %s, tone_1 = %s, tone_2 = %s, restrictions = %s, uncertainty_response = %s, support_email = %s, support_phone = %s, dot_color = %s, logo = %s, chatbot_title = %s, title_color = %s, border_color = %s, primary_color = %s, secondary_color = %s, popup_message = %s, chatbot_name = %s, LLM = %s, bot_bubble_color = %s, user_bubble_color = %s, include_email_form = %s, open_by_default = %s, no_support_email = %s, no_support_phone = %s, exclude_sources = %s WHERE user_id = %s AND id = %s;
     """
 
-    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form, open_by_default, user_id, chatbot_id)) 
+    g.cursor.execute(sql, (widget_icon, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form, open_by_default, no_support_email, no_support_phone, exclude_sources, user_id, chatbot_id)) 
     g.db_conn.commit()
 
 @app.route('/delete_question', methods=['DELETE'])
@@ -1473,6 +1493,9 @@ def update_chatbot_settings(chatbot_id):
     uncertainty_response = request.form.get('uncertainty_response')
     support_email = request.form.get('support_email')
     support_phone = request.form.get('support_phone')
+    no_support_email = request.form.get('no_support_email')
+    no_support_phone = request.form.get('no_support_phone')
+    exclude_sources = request.form.get('exclude_sources')
     dot_color = request.form.get('dot_color')
     chatbot_title = request.form.get('chatbot_title')
     title_color = request.form.get('title_color')
@@ -1502,7 +1525,7 @@ def update_chatbot_settings(chatbot_id):
     # If a new logo was uploaded, use its URL, otherwise use the existing logo URL
     logo = logo_url if logo_url else get_existing_logo_url(chatbot_id)
 
-    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form, open_by_default)
+    update_chatbot_settings_in_db(chatbot_id, widget_icon, background_color, font_style, bot_temperature, greeting_message, job_description, tone_1, tone_2, restrictions, uncertainty_response, support_email, support_phone, dot_color, logo, chatbot_title, title_color, border_color, primary_color, secondary_color, popup_message, chatbot_name, llm, bot_bubble_color, user_bubble_color, include_email_form, open_by_default, no_support_email, no_support_phone, exclude_sources)
 
     flash('Chatbot settings updated successfully!', 'success')
     return redirect(url_for('settings', chatbot_id=chatbot_id))

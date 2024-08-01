@@ -235,7 +235,7 @@
                                                     <input type="email" id="support_email" name="support_email" class="form-input" placeholder="Enter your support email address" value="{{ settings['support_email'] }}">
                                                     <div class="switch-container">
                                                         <label class="switch" for="no_support_email">
-                                                            <input type="checkbox" id="no_support_email" name="no_support_email">
+                                                            <input type="checkbox" id="no_support_email" name="no_support_email" {% if settings['no_support_email'] %}checked{% endif %}>
                                                             <span class="slider round"></span>
                                                         </label>
                                                         <span class="switch-label">Exclude</span>
@@ -247,7 +247,7 @@
                                                     <input type="tel" id="support_phone" name="support_phone" class="form-input" placeholder="##########" value="{{ settings['support_phone'] }}">
                                                     <div class="switch-container">
                                                         <label class="switch" for="no_support_phone">
-                                                            <input type="checkbox" id="no_support_phone" name="no_support_phone">
+                                                            <input type="checkbox" id="no_support_phone" name="no_support_phone" {% if settings['no_support_phone'] %}checked{% endif %}>
                                                             <span class="slider round"></span>
                                                         </label>
                                                         <span class="switch-label">Exclude</span>
@@ -258,7 +258,7 @@
                                                     <label for="exclude_sources">Exclude Sources:</label>
                                                     <div class="switch-container">
                                                         <label class="switch">
-                                                            <input type="checkbox" id="exclude_sources" name="exclude_sources">
+                                                            <input type="checkbox" id="exclude_sources" name="exclude_sources" {% if settings['exclude_sources'] %}checked{% endif %}>
                                                             <span class="slider round"></span>
                                                         </label>
                                                         <span class="switch-label">When enabled, the chatbot will not display sources with its answers.</span>

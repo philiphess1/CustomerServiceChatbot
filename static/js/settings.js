@@ -169,7 +169,7 @@ ${humanAssistanceInfo}`;
         document.getElementById('custom_prompt').value = customPrompt;
 
         // Include the exclude sources setting
-        document.getElementById('exclude_sources_hidden').value = excludeSources;
+        document.getElementById('exclude_sources').value = excludeSources;
 
         // Submit the form
         this.submit();

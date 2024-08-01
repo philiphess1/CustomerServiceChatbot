@@ -580,6 +580,10 @@
                     // Assuming the API response includes a 'sources' array
                     let sources = data.sources || []; // Fallback to an empty array if no sources are provided
 
+                    if (data.exclude_sources) {
+                        sources = [];
+                    }
+
                     // Now pass the content and sources to appendMessage
                     appendMessage("Chatbot", "left", data.content, sources);
                 }
