@@ -876,8 +876,8 @@ def chat(user_id, chatbot_id):
     bot_temperature = get_bot_temperature(user_id, chatbot_id)
     prompt_data = get_custom_prompt(user_id, chatbot_id)
     model = get_LLM(user_id, chatbot_id)
-    exlcude_sources = get_exclude_sources(user_id, chatbot_id)
-    print(f"Exclude Sources: {exlcude_sources}")
+    exclude_sources = get_exclude_sources(user_id, chatbot_id)
+    print(f"Exclude Sources: {exclude_sources}")
     print(f"Model: {model}")
 
     llm = ChatOpenAI(
@@ -993,9 +993,9 @@ def chat(user_id, chatbot_id):
     response_dict = {
         'content': response.content,
         'sources': sources,
-        'exclude_sources': exlcude_sources
-        # Add any other fields as necessary
+        'exclude_sources': exclude_sources  
     }
+
     # Save the memory back to the session at the end of the request
     session[f'memory_{session.sid}'] = pickle.dumps(memory)
 

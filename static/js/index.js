@@ -558,40 +558,48 @@
         function botResponse(rawText) {
             // Get the current URL path
             var path = window.location.pathname;
-
+        
             // Split the path into segments
             var segments = path.split('/');
-
+        
             // The user ID should be the first segment after the leading empty segment
             var userId = segments[1];
-
+        
             // The chatbot ID should be the second segment
             var chatbotId = segments[2];
-
+        
             $.post("/" + userId + "/" + chatbotId + "/chat", { message: rawText })
             .done(function(data) {
                 // Hide the typing indicator when the bot responds
                 hideTypingIndicator();
-
+        
                 // Check if the response status is 'error' and display the message
                 if (data.status && data.status === "error") {
                     appendMessage("Chatbot", "left", data.message);
                 } else {
                     // Assuming the API response includes a 'sources' array
                     let sources = data.sources || []; // Fallback to an empty array if no sources are provided
-
+        
                     if (data.exclude_sources) {
                         sources = [];
                     }
-
-                    // Now pass the content and sources to appendMessage
-                    appendMessage("Chatbot", "left", data.content, sources);
+        
+                    // Step 1: Check if the content starts with "Response:"
+                    let content = data.content;
+                    const prefix = "Response:";
+                    if (content.startsWith(prefix)) {
+                        // Step 2: Remove the prefix
+                        content = content.substring(prefix.length).trim();
+                    }
+        
+                    // Step 3: Now pass the modified content and sources to appendMessage
+                    appendMessage("Chatbot", "left", content, sources);
                 }
             })
             .fail(function() {
                 // Hide the typing indicator in case of an error
                 hideTypingIndicator();
-
+        
                 appendMessage("Chatbot", "left", "An error occurred while processing your request");
             });
         }
