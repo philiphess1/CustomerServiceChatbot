@@ -43,19 +43,9 @@ from datetime import timedelta
 from urllib.parse import urlparse
 import redis
 import subprocess
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-from webcrawler.webcrawler.spiders.safe_spider import SafeSpider
-import json
-from scrapy.crawler import CrawlerRunner
-from twisted.internet import reactor
-from scrapy.utils.project import get_project_settings
-from threading import Thread
-from queue import Queue
-import crochet
-from webcrawler.webcrawler.pipelines import CollectItemsPipeline
-from webcrawler.webcrawler.pipelines import global_items
-
+from urllib.parse import urlparse, urljoin
+import time
+import robotparser
 
 load_dotenv()
 
@@ -1273,67 +1263,109 @@ def process_excel_text(full_text, headers, filename,user_id, chatbot_id):
         index.upsert(upsert_data, namespace=f"{user_id}{chatbot_id}")
 
 
-# Add these imports at the top of your file (if not already present)
-from twisted.internet import reactor
-from scrapy.crawler import CrawlerRunner
-from scrapy.utils.project import get_project_settings
-from threading import Thread
-from queue import Queue
-from webcrawler.webcrawler.spiders.safe_spider import SafeSpider
-from webcrawler.webcrawler.pipelines import global_items, CollectItemsPipeline
-
-# ... (other imports and Flask setup code) ...
-
-def run_spider_in_thread(url, q):
-    try:
-        runner = CrawlerRunner(get_project_settings())
-        deferred = runner.crawl(SafeSpider, start_urls=[url])
-        deferred.addBoth(lambda _: reactor.stop())
-        reactor.run(installSignalHandlers=0)
-        q.put(None)
-    except Exception as e:
-        app.logger.error(f"Exception in run_spider_in_thread: {str(e)}")
-        q.put(e)
-
-@app.route('/<int:chatbot_id>/scrape', methods=['POST'])
+@app.route('/<int:chatbot_id>/crawl', methods=['POST'])
 @login_required
-def scrape_url(chatbot_id):
-    url = request.form['url']
+def crawl_website(chatbot_id):
+    start_url = request.form['url']
     user_id = current_user.id
-
-    app.logger.info(f"Starting scrape for URL: {url}")
-
-    # Clear previous scraped data
-    global global_items
-    global_items.clear()
-
-    # Create a queue to get the result from the thread
-    q = Queue()
     
-    # Run the spider in a separate thread
-    thread = Thread(target=run_spider_in_thread, args=(url, q))
-    thread.start()
-    thread.join()
-
-    # Check if there was an exception
-    result = q.get()
-    if isinstance(result, Exception):
-        app.logger.exception(f"Error during crawl: {str(result)}")
-        flash("An error occurred while scraping the website. Please try again or contact support.", "error")
+    # Initialize crawler
+    crawler = WebsiteCrawler(start_url, user_id, chatbot_id)
+    
+    try:
+        # Start the crawl process
+        crawler.crawl()
+        
+        # After crawling is complete, redirect to admin page
         return redirect(url_for('admin', chatbot_id=chatbot_id))
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Error crawling website: {str(e)}"})
 
-    # Copy the scraped data
-    scraped_data = global_items.copy()
-    global_items.clear()  # Clear the global items for the next run
+class WebsiteCrawler:
+    def __init__(self, start_url, user_id, chatbot_id):
+        self.start_url = start_url
+        self.user_id = user_id
+        self.chatbot_id = chatbot_id
+        self.visited_urls = set()
+        self.to_visit = [start_url]
+        self.domain = urlparse(start_url).netloc
+        self.session = requests.Session()
+        self.robots_parser = self.get_robots_parser()
 
-    app.logger.info(f"Scraping finished. Collected {len(scraped_data)} items.")
+    def get_robots_parser(self):
+        robots_url = f"{self.start_url.rstrip('/')}/robots.txt"
+        try:
+            robots_content = self.session.get(robots_url).text
+            return robotparser.RobotFileParser()
+            parser.parse(robots_content.splitlines())
+            return parser
+        except:
+            return None
 
-    if not scraped_data:
-        app.logger.error("No data was scraped. There might be an issue with the crawler.")
-        flash("No data was scraped from the website. Please check the URL and try again.", "error")
-        return redirect(url_for('admin', chatbot_id=chatbot_id))
+    def can_fetch(self, url):
+        if self.robots_parser:
+            return self.robots_parser.can_fetch("*", url)
+        return True
 
-    # ... (rest of the function remains the same)
+    def crawl(self):
+        while self.to_visit:
+            url = self.to_visit.pop(0)
+            if url in self.visited_urls or not self.can_fetch(url):
+                continue
+
+            try:
+                response = self.session.get(url, timeout=10)
+                self.visited_urls.add(url)
+
+                if response.status_code == 200 and 'text/html' in response.headers.get('Content-Type', ''):
+                    self.process_page(url, response.text)
+                    self.extract_links(url, response.text)
+
+            except requests.RequestException as e:
+                print(f"Error fetching {url}: {e}")
+
+            time.sleep(1)  # Be polite, wait between requests
+
+    def process_page(self, url, html_content):
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        # Remove script and style elements
+        for script in soup(["script", "style"]):
+            script.extract()
+
+        # Get text
+        text = soup.get_text()
+
+        # Break into lines and remove leading and trailing space on each
+        lines = (line.strip() for line in text.splitlines())
+        # Break multi-headlines into a line each
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        # Drop blank lines
+        text = '\n'.join(chunk for chunk in chunks if chunk)
+
+        # Calculate file size
+        file_size = len(text.encode('utf-8'))/1000000
+
+        # Insert into database
+        with get_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (url, file_size, self.user_id, self.chatbot_id))
+                conn.commit()
+
+        # Process the text and put it in the vector database
+        process_text(text, url, 0, f"{self.user_id}", f"{self.chatbot_id}", f"{url}")
+
+    def extract_links(self, base_url, html_content):
+        soup = BeautifulSoup(html_content, 'html.parser')
+        for link in soup.find_all('a', href=True):
+            href = link['href']
+            full_url = urljoin(base_url, href)
+            if urlparse(full_url).netloc == self.domain and full_url not in self.visited_urls:
+                self.to_visit.append(full_url)
+
+def get_db_connection():
+    return psycopg2.connect(database_url)
+
 @app.route('/<int:chatbot_id>/delete/<doc_id>', methods=['POST'])
 @login_required
 def delete(chatbot_id, doc_id):
