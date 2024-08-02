@@ -989,11 +989,13 @@ def chat(user_id, chatbot_id):
     response = result['answer']
     docs = result['docs']
     # Convert the AIMessage to a dictionary
-    sources = [{'source_url': doc.metadata['source_url'], 'filename': doc.metadata['filename']} for doc in docs]
+    if exclude_sources:
+        sources = []
+    else:
+        sources = [{'source_url': doc.metadata['source_url'], 'filename': doc.metadata['filename']} for doc in docs]
     response_dict = {
         'content': response.content,
         'sources': sources,
-        'exclude_sources': exclude_sources  
     }
 
     # Save the memory back to the session at the end of the request
