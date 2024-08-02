@@ -452,9 +452,6 @@ def create_chatbot():
     if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and chatbot_count >= 1:
         flash("You have exceeded your chatbot limit for the free plan!")
         return redirect(url_for('home'))
-    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and chatbot_count >= 2:
-        flash("You have exceeded your chatbot limit for the starter plan!")
-        return redirect(url_for('home'))
     elif user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and chatbot_count >= 3:
         flash("You have exceeded your chatbot limit for the professional plan!")
         return redirect(url_for('home'))
@@ -845,8 +842,6 @@ def chat(user_id, chatbot_id):
     # Check if the user has exceeded their question limit
     if user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and question_count >= 50:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the free plan!"})
-    elif user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and question_count >= 100:
-        return jsonify({"status": "error", "message": "You have exceeded your question limit for the starter plan!"})
     elif user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and question_count >= 500:
         return jsonify({"status": "error", "message": "You have exceeded your question limit for the professional plan!"})
 
@@ -1108,7 +1103,6 @@ def admin(chatbot_id):
 
     plans = {
         'price_1P9FIULO2ToUaMQEmx2wG1qC': 5,
-        'price_1OuIu1LO2ToUaMQE7Prun5Xt': 10,
         'price_1PXpCPLO2ToUaMQElU97Rdyx': 25
     }
 
@@ -1160,7 +1154,6 @@ def upload_file(chatbot_id):
 
     # Check if the user has exceeded their file size limit
     if (user_plan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' and total_upload_size > 5) or \
-        (user_plan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' and total_upload_size > 10) or \
         (user_plan == 'price_1PXpCPLO2ToUaMQElU97Rdyx' and total_upload_size > 25):  # 1 GB is 1024 MB
         return jsonify({"status": "error", "message": "File size exceeds the limit for your plan!"})
 
@@ -1570,7 +1563,6 @@ def analytics(chatbot_id):
     # Determine the user's plan based on the subscription item id
     plans = {
         'price_1P9FIULO2ToUaMQEmx2wG1qC': 50,
-        'price_1OuIu1LO2ToUaMQE7Prun5Xt': 100,
         'price_1PXpCPLO2ToUaMQElU97Rdyx': 500
     }
     user_plan = plans.get(subscription_item_id, 0)

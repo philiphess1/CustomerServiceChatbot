@@ -66,7 +66,7 @@
                             <a class="nav-link" href="{{ url_for('get_conversations', chatbot_id=chatbot_id) }}" id="conversations_nav">
                                 <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                                 Conversations
-                                {% if subscription_item_id == 'price_1P9FIULO2ToUaMQEmx2wG1qC' or subscription_item_id == 'price_1OuIu1LO2ToUaMQE7Prun5Xt' %}
+                                {% if subscription_item_id == 'price_1P9FIULO2ToUaMQEmx2wG1qC' %}
                                     <i class="fas fa-lock" style="margin-left: 5px;"></i>
                                 {% endif %}
                             </a>
@@ -105,21 +105,6 @@
                                       </ul>
                                     <a href="https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM" class="select-plan-button">Select Plan</a>
                                     </div>
-                                    <div class="plan">
-                                      <header>
-                                        <h4 class="plan-title">
-                                           
-                                          Starter
-                                        </h4>
-                                        <div class="plan-cost"><span class="plan-price">$10</span><span class="plan-type">/month</span></div>
-                                      </header>
-                                      <ul class="plan-features">
-                                        <li><i class="ion-android-remove"> </i>2 Chatbots</li>
-                                        <li><i class="ion-android-remove"> </i>100 Messages Per Month</li>
-                                        <li><i class="ion-android-remove"> </i>10MB of Storage</li>
-                                      </ul>
-                                      <a href="https://billing.stripe.com/p/login/28obM8eCBcsRbxCcMM" class="select-plan-button">Select Plan</a>
-                                    </div>
                                     <div class="plan featured">
                                       <header>
                                         <h4 class="plan-title">
@@ -151,7 +136,7 @@
             viewConversationsLink.addEventListener(
                 "click",
                 function (event) {
-                    if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC' || userPlan == 'price_1OuIu1LO2ToUaMQE7Prun5Xt') {
+                    if (userPlan == 'price_1P9FIULO2ToUaMQEmx2wG1qC') {
                         event.preventDefault();
                         myPopup.classList.add("show");
                     }

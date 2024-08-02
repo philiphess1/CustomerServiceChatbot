@@ -3,7 +3,7 @@
 
 .snip1517 {
     display: flex;
-    justify-content: space-between; /* Space items horizontally */
+    justify-content: space-around; /* Space items horizontally */
     align-items: stretch; /* Make child elements (.plan) stretch to fill the container's height */
     font-family: 'Source Sans Pro', Arial, sans-serif;
     color: #ffffff;
