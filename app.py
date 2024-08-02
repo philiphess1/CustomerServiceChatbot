@@ -47,6 +47,15 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 from webcrawler.webcrawler.spiders.safe_spider import SafeSpider
 import json
+from scrapy.crawler import CrawlerRunner
+from twisted.internet import reactor
+from scrapy.utils.project import get_project_settings
+from threading import Thread
+from queue import Queue
+import crochet
+from webcrawler.webcrawler.pipelines import CollectItemsPipeline
+from webcrawler.webcrawler.pipelines import global_items
+
 
 load_dotenv()
 
@@ -1264,46 +1273,67 @@ def process_excel_text(full_text, headers, filename,user_id, chatbot_id):
         index.upsert(upsert_data, namespace=f"{user_id}{chatbot_id}")
 
 
+# Add these imports at the top of your file (if not already present)
+from twisted.internet import reactor
+from scrapy.crawler import CrawlerRunner
+from scrapy.utils.project import get_project_settings
+from threading import Thread
+from queue import Queue
+from webcrawler.webcrawler.spiders.safe_spider import SafeSpider
+from webcrawler.webcrawler.pipelines import global_items, CollectItemsPipeline
+
+# ... (other imports and Flask setup code) ...
+
+def run_spider_in_thread(url, q):
+    try:
+        runner = CrawlerRunner(get_project_settings())
+        deferred = runner.crawl(SafeSpider, start_urls=[url])
+        deferred.addBoth(lambda _: reactor.stop())
+        reactor.run(installSignalHandlers=0)
+        q.put(None)
+    except Exception as e:
+        app.logger.error(f"Exception in run_spider_in_thread: {str(e)}")
+        q.put(e)
+
 @app.route('/<int:chatbot_id>/scrape', methods=['POST'])
 @login_required
 def scrape_url(chatbot_id):
     url = request.form['url']
     user_id = current_user.id
 
-    # Set up the crawler process
-    process = CrawlerProcess(get_project_settings())
+    app.logger.info(f"Starting scrape for URL: {url}")
+
+    # Clear previous scraped data
+    global global_items
+    global_items.clear()
+
+    # Create a queue to get the result from the thread
+    q = Queue()
     
-    # Create a list to store the scraped data
-    scraped_data = []
+    # Run the spider in a separate thread
+    thread = Thread(target=run_spider_in_thread, args=(url, q))
+    thread.start()
+    thread.join()
 
-    # Define a custom pipeline to collect items
-    class CollectItemsPipeline:
-        def process_item(self, item, spider):
-            scraped_data.append(item)
-            return item
+    # Check if there was an exception
+    result = q.get()
+    if isinstance(result, Exception):
+        app.logger.exception(f"Error during crawl: {str(result)}")
+        flash("An error occurred while scraping the website. Please try again or contact support.", "error")
+        return redirect(url_for('admin', chatbot_id=chatbot_id))
 
-    # Add the custom pipeline to the crawler settings
-    process.settings.set('ITEM_PIPELINES', {'__main__.CollectItemsPipeline': 100})
+    # Copy the scraped data
+    scraped_data = global_items.copy()
+    global_items.clear()  # Clear the global items for the next run
 
-    # Start the crawling process
-    process.crawl(SafeSpider, start_urls=[url])
-    process.start()
+    app.logger.info(f"Scraping finished. Collected {len(scraped_data)} items.")
 
-    # Process the scraped data
-    text = ' '.join([item['content'] for item in scraped_data])
+    if not scraped_data:
+        app.logger.error("No data was scraped. There might be an issue with the crawler.")
+        flash("No data was scraped from the website. Please check the URL and try again.", "error")
+        return redirect(url_for('admin', chatbot_id=chatbot_id))
 
-    # Calculate file size
-    file_size = len(text.encode('utf-8'))/1000000
-
-    # Insert into database
-    g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (url, file_size, user_id, chatbot_id))
-    g.db_conn.commit()
-
-    # Process the text and put it in the vector database
-    process_text(text, url, 0, f"{user_id}", f"{chatbot_id}", f"{url}")
-
-    return redirect(url_for('admin', chatbot_id=chatbot_id))
-
+    # ... (rest of the function remains the same)
 @app.route('/<int:chatbot_id>/delete/<doc_id>', methods=['POST'])
 @login_required
 def delete(chatbot_id, doc_id):

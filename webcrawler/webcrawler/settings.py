@@ -84,3 +84,5 @@ ITEM_PIPELINES = {
     'webcrawler.pipelines.WebcrawlerPipeline': 300,
     'webcrawler.pipelines.CollectItemsPipeline': 400,
 }
+LOG_ENABLED = True
+LOG_LEVEL = 'DEBUG'
