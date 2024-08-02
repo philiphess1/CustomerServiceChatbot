@@ -42,6 +42,11 @@ from collections import defaultdict
 from datetime import timedelta
 from urllib.parse import urlparse
 import redis
+import subprocess
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+from webcrawler.webcrawler.spiders.safe_spider import SafeSpider
+import json
 
 load_dotenv()
 
@@ -1264,46 +1269,40 @@ def process_excel_text(full_text, headers, filename,user_id, chatbot_id):
 def scrape_url(chatbot_id):
     url = request.form['url']
     user_id = current_user.id
-    try:
-        response = requests.get(url)
-        raw_html = response.text
-        print(f"Raw HTML: {raw_html}")  # Print raw HTML
 
-        soup = BeautifulSoup(raw_html, 'html.parser')
+    # Set up the crawler process
+    process = CrawlerProcess(get_project_settings())
+    
+    # Create a list to store the scraped data
+    scraped_data = []
 
-        # Remove script and style elements
-        for script in soup(["script", "style"]):
-            script.extract()
+    # Define a custom pipeline to collect items
+    class CollectItemsPipeline:
+        def process_item(self, item, spider):
+            scraped_data.append(item)
+            return item
 
-        # Get text
-        text = soup.get_text()
-        print(f"Text after removing script and style elements: {text}")  # Print text after removing script and style elements
+    # Add the custom pipeline to the crawler settings
+    process.settings.set('ITEM_PIPELINES', {'__main__.CollectItemsPipeline': 100})
 
-        # Break into lines and remove leading and trailing space on each
-        lines = (line.strip() for line in text.splitlines())
-        # Break multi-headlines into a line each
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        # Drop blank lines
-        text = '\n'.join(chunk for chunk in chunks if chunk)
-        print(f"Final text: {text}")  # Print final text
+    # Start the crawling process
+    process.crawl(SafeSpider, start_urls=[url])
+    process.start()
 
-        # Calculate file size
-        file_size = len(text.encode('utf-8'))/1000000
-        print(f"File size: {file_size}")  # Print file size
+    # Process the scraped data
+    text = ' '.join([item['content'] for item in scraped_data])
 
-        # Insert into database
-        g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (url, file_size, user_id, chatbot_id))
-        g.db_conn.commit()
+    # Calculate file size
+    file_size = len(text.encode('utf-8'))/1000000
 
-        # Process the text and put it in the vector database
-        process_text(text, url, 0, f"{user_id}", f"{chatbot_id}", f"{url}")
+    # Insert into database
+    g.cursor.execute("INSERT INTO document_mapping (filename, file_size, user_id, chatbot_id) VALUES (%s, %s, %s, %s) RETURNING id;", (url, file_size, user_id, chatbot_id))
+    g.db_conn.commit()
 
-        return redirect(url_for('admin', chatbot_id=chatbot_id))
+    # Process the text and put it in the vector database
+    process_text(text, url, 0, f"{user_id}", f"{chatbot_id}", f"{url}")
 
-    except requests.RequestException as e:
-        return jsonify({"status": "error", "message": f"Error processing URL: {str(e)}"})
-    except Exception as e:
-        return jsonify({"status": "error", "message": f"Unexpected error: {str(e)}"})
+    return redirect(url_for('admin', chatbot_id=chatbot_id))
 
 @app.route('/<int:chatbot_id>/delete/<doc_id>', methods=['POST'])
 @login_required
