@@ -42,6 +42,12 @@ from collections import defaultdict
 from datetime import timedelta
 from urllib.parse import urlparse
 import redis
+import time
+import xml.etree.ElementTree as ET
+from urllib.robotparser import RobotFileParser
+from urllib.parse import urljoin, urlparse
+import requests
+import time
 
 load_dotenv()
 
@@ -1254,36 +1260,99 @@ def process_excel_text(full_text, headers, filename,user_id, chatbot_id):
         index.upsert(upsert_data, namespace=f"{user_id}{chatbot_id}")
 
 
+def get_sitemap(url):
+    domain = urlparse(url).netloc
+    sitemap_url = f"https://{domain}/sitemap.xml"
+    try:
+        response = requests.get(sitemap_url)
+        if response.status_code == 500:
+            root = ET.fromstring(response.content)
+            return [elem.text for elem in root.iter('{http://www.sitemaps.org/schemas/sitemap/0.9}loc')]
+    except Exception as e:
+        print(f"Error fetching sitemap: {e}")
+    return None
+
+def get_all_urls(start_url, max_pages):
+    urls = set()
+    to_crawl = [start_url]
+    start_path = urlparse(start_url).path
+    domain = urlparse(start_url).netloc
+
+    # Set up robots.txt parsing
+    rp = RobotFileParser()
+    robots_url = f"https://{domain}/robots.txt"
+    try:
+        rp.set_url(robots_url)
+        rp.read()
+    except Exception as e:
+        print(f"Could not fetch robots.txt for {domain}: {e}")
+        rp = None
+
+    while to_crawl and len(urls) < max_pages:
+        current_url = to_crawl.pop(0)
+        if current_url not in urls and (rp is None or rp.can_fetch("*", current_url)):
+            try:
+                time.sleep(1)  # Rate limiting
+                response = requests.get(current_url, timeout=10)
+                urls.add(current_url)
+                print(f"Crawled: {current_url}")
+
+                soup = BeautifulSoup(response.text, 'html.parser')
+                for link in soup.find_all('a'):
+                    href = link.get('href')
+                    if href:
+                        full_url = urljoin(current_url, href)
+                        parsed_url = urlparse(full_url)
+                        # Check if the new URL is under the starting path
+                        if parsed_url.netloc == domain and parsed_url.path.startswith(start_path):
+                            if full_url not in urls and full_url not in to_crawl:
+                                to_crawl.append(full_url)
+            except Exception as e:
+                print(f"Error crawling {current_url}: {str(e)}")
+
+    return list(urls)
+
 @app.route('/<int:chatbot_id>/scrape', methods=['POST'])
 @login_required
 def scrape_url(chatbot_id):
     url = request.form['url']
     user_id = current_user.id
     try:
-        response = requests.get(url)
-        raw_html = response.text
-        print(f"Raw HTML: {raw_html}")  # Print raw HTML
+        print(f"Starting URL: {url}")
 
-        soup = BeautifulSoup(raw_html, 'html.parser')
+        # Set a conservative limit for the number of pages to crawl
+        max_pages = 500  # Adjust this number based on your needs and the site's capacity
+        urls = get_all_urls(url, max_pages)
 
-        # Remove script and style elements
-        for script in soup(["script", "style"]):
-            script.extract()
+        print(f"Number of URLs to scrape: {len(urls)}")
 
-        # Get text
-        text = soup.get_text()
-        print(f"Text after removing script and style elements: {text}")  # Print text after removing script and style elements
+        total_text = ""
+        for page_url in urls:
+            try:
+                response = requests.get(page_url, timeout=10)
+                soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Break into lines and remove leading and trailing space on each
-        lines = (line.strip() for line in text.splitlines())
-        # Break multi-headlines into a line each
-        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-        # Drop blank lines
-        text = '\n'.join(chunk for chunk in chunks if chunk)
-        print(f"Final text: {text}")  # Print final text
+                # Remove script and style elements
+                for script in soup(["script", "style"]):
+                    script.extract()
+
+                # Get text
+                text = soup.get_text()
+
+                # Break into lines and remove leading and trailing space on each
+                lines = (line.strip() for line in text.splitlines())
+                # Break multi-headlines into a line each
+                chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+                # Drop blank lines
+                text = '\n'.join(chunk for chunk in chunks if chunk)
+
+                total_text += f"URL: {page_url}\n\n{text}\n\n"
+                print(f"Scraped: {page_url}")
+            except Exception as e:
+                print(f"Error scraping {page_url}: {str(e)}")
 
         # Calculate file size
-        file_size = len(text.encode('utf-8'))/1000000
+        file_size = len(total_text.encode('utf-8'))/1000000
         print(f"File size: {file_size}")  # Print file size
 
         # Insert into database
@@ -1291,7 +1360,7 @@ def scrape_url(chatbot_id):
         g.db_conn.commit()
 
         # Process the text and put it in the vector database
-        process_text(text, url, 0, f"{user_id}", f"{chatbot_id}", f"{url}")
+        process_text(total_text, url, 0, f"{user_id}", f"{chatbot_id}", f"{url}")
 
         return redirect(url_for('admin', chatbot_id=chatbot_id))
 
@@ -1299,7 +1368,7 @@ def scrape_url(chatbot_id):
         return jsonify({"status": "error", "message": f"Error processing URL: {str(e)}"})
     except Exception as e:
         return jsonify({"status": "error", "message": f"Unexpected error: {str(e)}"})
-
+    
 @app.route('/<int:chatbot_id>/delete/<doc_id>', methods=['POST'])
 @login_required
 def delete(chatbot_id, doc_id):
@@ -1332,6 +1401,7 @@ def delete(chatbot_id, doc_id):
         }
 
         list_response = requests.get(list_url, headers=headers)
+        print(f"List response: {list_response.json()}")
         if list_response.status_code == 200:
             ids_to_delete = [record['id'] for record in list_response.json().get('vectors', [])]
             if ids_to_delete:

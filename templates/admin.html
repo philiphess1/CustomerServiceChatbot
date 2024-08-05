@@ -58,13 +58,15 @@
                     <!-- url form -->
                     <form class="form form_1" action="/{{ chatbot_id }}/scrape" method="post" enctype="multipart/form-data" id="url-form">
                         <div id="url-area" class="{{ 'disabled-content' if used_storage >= max_storage_limit }}">
-                            <div id="url-input">
-                                <label class="url-label" for="url">Or enter a URL:</label>
-                                <input type="url" id="url" name="url" required {{ 'disabled' if not can_upload }}>
-                            </div>
-                            <button id="submit-button" type="submit" value="Upload" class="url-button" {{ 'disabled' if not can_upload }}>
-                                <span class="button__icon"><img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="upload"></span>
-                            </button>
+                            <form id="url-form" action="{{ url_for('scrape_url', chatbot_id=chatbot_id) }}" method="post">
+                                <div id="url-input">
+                                    <label for="url">Or enter a URL:</label>
+                                    <input type="url" id="url" name="url" placeholder="Enter website URL" required>
+                                </div>
+                                <button type="submit" class="button__icon">
+                                    <img src="{{ url_for('static', filename='images/upload.png') }}" height="30" width="30" alt="upload">
+                                </button>
+                            </form>
                         </div>
                         <div id="loading_1" class="loader-div">
                             <div class="lds-ring" id="lds-ring"><div></div><div></div><div></div><div></div></div>
