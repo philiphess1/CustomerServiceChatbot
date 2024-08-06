@@ -301,6 +301,7 @@ p {
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+    border-radius: 4px;
 }
 .menu-options a {
     color: black;
@@ -310,6 +311,7 @@ p {
 }
 .menu-options a:hover {
     background-color: #d7d7d7;
+    border-radius: 4px;
 }
 /* The Modal (background) */
 .modal {
@@ -332,6 +334,7 @@ p {
     padding: 20px;
     border: 1px solid #888;
     width: 20%; /* Could be more or less, depending on screen size */
+    border-radius: 4px; /* Rounded corners */
 }
   
   /* The Close Button */
